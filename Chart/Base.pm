@@ -1,14 +1,14 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Base                #
-#                             #
-#  written by david bonner    #
-#  dbonner@cs.bu.edu          #
-#                             #
-#  maintained by peter clark  #
-#  ninjaz@webexpress.com      #
-#                             #
-#  theft is treason, citizen  #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Base                   #
+#                                #
+#  written by david bonner       #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#  theft is treason, citizen     #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Base;
 
@@ -17,9 +17,10 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = 0.99;
+$Chart::Base::VERSION = 1.00;
 
 use vars qw(%named_colors);
+
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -163,7 +164,7 @@ sub png {
 
   # do a sanity check on the data, and collect some basic facts
   # about the data
-  $self->_check_data;
+  $self->_check_data();
 
   # pass off the real work to the appropriate subs
   $self->_draw();
@@ -172,7 +173,7 @@ sub png {
   # to be nice to the poor ppl using nt
   binmode $fh;
   print $fh $self->{'gd_obj'}->png();
-
+  
   # now exit
   return 1;
 }
@@ -236,6 +237,110 @@ sub scalar_png {
   $self->{'gd_obj'}->png();
 }
 
+
+##  called after the options are set, this method
+##  invokes all my private methods to actually
+##  draw the chart and plot the data
+sub jpeg {
+  my $self = shift;
+  my $file = shift;
+  my $dataref = shift;
+  my $fh;
+
+  # do some ugly checking to see if they gave me
+  # a filehandle or a file name
+  if ((ref \$file) eq 'SCALAR') {  
+    # they gave me a file name
+    $fh = FileHandle->new (">$file");
+  }
+  elsif ((ref \$file) =~ /^(?:REF|GLOB)$/) {
+    # either a FileHandle object or a regular file handle
+    $fh = $file;
+  }
+  else {
+    croak "I'm not sure what you gave me to write this jpeg to,\n",
+          "but it wasn't a filename or a filehandle.\n";
+  }
+
+  # allocate the background color
+  $self->_set_colors();
+
+  # make sure the object has its copy of the data
+  $self->_copy_data($dataref);
+
+  # do a sanity check on the data, and collect some basic facts
+  # about the data
+  $self->_check_data;
+
+  # pass off the real work to the appropriate subs
+  $self->_draw();
+
+  # now write it to the file handle, and don't forget
+  # to be nice to the poor ppl using nt
+  binmode $fh;
+  print $fh $self->{'gd_obj'}->jpeg([100]);   # high quality need
+
+  # now exit
+  return 1;
+}
+
+##  called after the options are set, this method
+##  invokes all my private methods to actually
+##  draw the chart and plot the data
+sub cgi_jpeg {
+  my $self = shift;
+  my $dataref = shift;
+
+  # allocate the background color
+  $self->_set_colors();
+
+  # make sure the object has its copy of the data
+  $self->_copy_data($dataref);
+
+  # do a sanity check on the data, and collect some basic facts
+  # about the data
+  $self->_check_data();
+
+  # pass off the real work to the appropriate subs
+  $self->_draw();
+
+  # print the header (ripped the crlf octal from the CGI module)
+  if ($self->{no_cache} =~ /^true$/i) {
+      print "Content-type: image/jpeg\015\012Pragma: no-cache\015\012\015\012";
+  } else {
+      print "Content-type: image/jpeg\015\012\015\012";
+  }
+
+  # now print the png, and binmode it first so nt likes us
+  binmode STDOUT;
+  print STDOUT $self->{'gd_obj'}->jpeg([100]);
+
+  # now exit
+  return 1;
+}
+
+##  called after the options are set, this method
+##  invokes all my private methods to actually
+##  draw the chart and plot the data
+sub scalar_jpeg {
+  my $self = shift;
+  my $dataref = shift;
+
+  # make sure the object has its copy of the data
+  $self->_copy_data($dataref);
+
+  # do a sanity check on the data, and collect some basic facts
+  # about the data
+  $self->_check_data();
+
+  # pass off the real work to the appropriate subs
+  $self->_draw();
+
+  # returns the png image as a scalar value, so that
+  # the programmer-user can do whatever the heck
+  # s/he wants to with it
+  $self->{'gd_obj'}->jpeg([100]);
+}
 
 sub make_gd {
   my $self = shift;
@@ -382,6 +487,10 @@ sub _init {
 
   $self->{typeStyle} = 'default';
 
+  # used function to transform x- and y-tick labels to strings
+  $self->{f_x_tick} = \&_default_f_tick;
+  $self->{f_y_tick} = \&_default_f_tick;
+  
   # default color specs for various color roles.
   # Subclasses should extend as needed.
   my $d = 0;
@@ -393,7 +502,10 @@ sub _init {
     y_label2	=> 'black',
     grid_lines	=> 'black',
     grey_background => 'grey',
-    (map { 'dataset'.$d++ => $_ } qw (red green blue purple peach orange mauve olive pink light_purple light_blue plum yellow turquoise light_green brown) ),
+    (map { 'dataset'.$d++ => $_ } qw (red green blue purple peach orange mauve olive pink light_purple light_blue plum yellow turquoise light_green brown 
+                                      HotPink PaleGreen1 DarkBlue BlueViolet orange2 chocolate1 LightGreen pink light_purple light_blue plum yellow turquoise light_green brown 
+                                      pink PaleGreen2 MediumPurple PeachPuff1 orange3 chocolate2 olive pink light_purple light_blue plum yellow turquoise light_green brown 
+                                      DarkOrange PaleGreen3 SlateBlue BlueViolet PeachPuff2 orange4 chocolate3 LightGreen pink light_purple light_blue plum yellow turquoise light_green brown) ),
 
   };
   
@@ -474,10 +586,11 @@ sub _check_data {
 
   # find the longest x-tick label
   for (@{$self->{'dataref'}->[0]}) {
-    if (length($_) > $length) {
-      $length = length ($_);
+    if (length($self->{f_x_tick}->($_)) > $length) {
+      $length = length ($self->{f_x_tick}->($_));
     }
   }
+  if ( $length <= 0 ) { $length = 1; }    # make sure $length is positive and greater 0
 
   # now store it in the object
   $self->{'x_tick_label_length'} = $length;
@@ -534,6 +647,9 @@ sub _draw {
   'green'		=> [0,175,0],
   'blue'		=> [0,0,200],
   'orange'		=> [250,125,0],
+  'orange2'		=> [238,154,0],
+  'orange3'		=> [205,133,0],
+  'orange4'		=> [139,90,0],
   'yellow'		=> [225,225,0],
   'purple'		=> [200,0,200],
   'light_blue'		=> [0,125,250],
@@ -547,6 +663,32 @@ sub _draw {
   'mauve'		=> [200,125,125],
   'brown'		=> [160,80,0],
   'grey'		=> [225,225,225],
+  'HotPink'             => [255,105,180],
+  'PaleGreen1'          => [154,255,154],
+  'PaleGreen2'          => [144,238,144],
+  'PaleGreen3'          => [124,205,124],
+  'PaleGreen4'          => [84,138,84],
+  'DarkBlue'            => [0,0,139],
+  'BlueViolet'          => [138,43,226],
+  'PeachPuff'           => [255,218,185],
+  'PeachPuff1'          => [255,218,185],
+  'PeachPuff2'          => [238,203,173],
+  'PeachPuff3'          => [205,175,149],
+  'PeachPuff4'          => [139,119,101],
+  'chocolate1'          => [255,127,36], 
+  'chocolate2'          => [238,118,33], 
+  'chocolate3'          => [205,102,29], 
+  'chocolate4'          => [139,69,19],
+  'LightGreen'          => [144,238,144],
+  'lavender'            => [230,230,250],
+  'MediumPurple'        => [147,112,219],
+  'DarkOrange'          => [255,127,0],
+  'DarkOrange2'         => [238,118,0],
+  'DarkOrange3'         => [205,102,0],
+  'DarkOrange4'         => [139,69,0],
+  'SlateBlue'           => [106,90,205],
+  'BlueViolet'          => [138,43,226],
+  'RoyalBlue'           => [65,105,225],
 );
 
 
@@ -779,7 +921,7 @@ sub _set_colors {
         }
         
         $self->{'color_table'}->{$role} = $index;
-    }
+      }
       $index;
     } @_;
     (wantarray && @_ > 1 ? @result : $result[0]);
@@ -1011,10 +1153,16 @@ sub _find_y_scale {
   else { # custom y tick labels
     croak "Need $self->{'y_ticks'} y_tick_labels, got " . scalar(@$labels) . "\n"
       unless @$labels == $self->{'y_ticks'};
+   
   }
+#  for my $label ( @$labels ) {
+#    if (length($label) > $length) {
+#      $length = length($label);
+#    }
+#  }
   for my $label ( @$labels ) {
-    if (length($label) > $length) {
-      $length = length($label);
+    if (length($self->{f_y_tick}->($label)) > $length) {
+      $length = length($self->{f_y_tick}->($label));
     }
   }
 
@@ -1079,7 +1227,7 @@ sub _plot {
   $self->_draw_y2_grid_lines if ($self->{'y2_grid_lines'} =~ /^true$/i);
 
   # plot the data
-  $self->_draw_data;
+  $self->_draw_data();
 
   # and return
   return 1;
@@ -1641,22 +1789,22 @@ sub _draw_x_ticks {
     if ($self->{'skip_x_ticks'}) { # draw only every nth tick and label
       for (0..int (($self->{'num_datapoints'} - 1) / $self->{'skip_x_ticks'})) {
         $x2 = $x1 + ($delta / 2) + ($delta * ($_ * $self->{'skip_x_ticks'})) 
-	        - ($w*length($data->[0][$_*$self->{'skip_x_ticks'}])) / 2;
+	        - ($w*length($self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]))) / 2;
         $self->{'gd_obj'}->string($font, $x2, $y1, 
-	                          $data->[0][$_*$self->{'skip_x_ticks'}], 
+	                          $self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]), 
 				  $textcolor);
       }     
     }
     elsif ($self->{'custom_x_ticks'}) { # draw only the ticks they wanted
       for (@{$self->{'custom_x_ticks'}}) {
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($self->{f_x_tick}->($data->[0][$_]))) / 2;
+        $self->{'gd_obj'}->string($font, $x2, $y1, $self->{f_x_tick}->($data->[0][$_]), $textcolor);
       }
     }
     else {
       for (0..$self->{'num_datapoints'}-1) {
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($self->{f_x_tick}->($data->[0][$_]))) / 2;
+        $self->{'gd_obj'}->string($font, $x2, $y1, $self->{f_x_tick}->($data->[0][$_]), $textcolor);
       }
     }
   }
@@ -1664,13 +1812,13 @@ sub _draw_x_ticks {
     if ($self->{'skip_x_ticks'}) {
       $stag = 0;
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
-        $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) 
-	        - ($w*length($data->[0][$_*$self->{'skip_x_ticks'}])) / 2;
+        $x2 = $x1 + ($delta / 2) + ($delta * ($_ * $self->{'skip_x_ticks'})) 
+	        - ($w*length($self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]))) / 2;
         if (($stag % 2) == 1) {
           $y1 -= $self->{'text_space'} + $h;
         }
         $self->{'gd_obj'}->string($font, $x2, $y1, 
-	                          $data->[0][$_*$self->{'skip_x_ticks'}], 
+	                          $self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]), 
 				  $textcolor);
         if (($stag % 2) == 1) {
           $y1 += $self->{'text_space'} + $h;
@@ -1681,11 +1829,11 @@ sub _draw_x_ticks {
     elsif ($self->{'custom_x_ticks'}) {
       $stag = 0;
       for (sort (@{$self->{'custom_x_ticks'}})) { # sort to make it look good
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($self->{f_x_tick}->($data->[0][$_]))) / 2;
         if (($stag % 2) == 1) {
           $y1 -= $self->{'text_space'} + $h;
         }
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $self->{'gd_obj'}->string($font, $x2, $y1, $self->{f_x_tick}->($data->[0][$_]), $textcolor);
         if (($stag % 2) == 1) {
           $y1 += $self->{'text_space'} + $h;
         }
@@ -1694,11 +1842,11 @@ sub _draw_x_ticks {
     }
     else {
       for (0..$self->{'num_datapoints'}-1) {
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($self->{f_x_tick}->($data->[0][$_]))) / 2;
         if (($_ % 2) == 1) {
           $y1 -= $self->{'text_space'} + $h;
         }
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $self->{'gd_obj'}->string($font, $x2, $y1, $self->{f_x_tick}->($data->[0][$_]), $textcolor);
         if (($_ % 2) == 1) {
           $y1 += $self->{'text_space'} + $h;
         }
@@ -1711,28 +1859,28 @@ sub _draw_x_ticks {
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
         $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) - $h/2;
         $y2 = $y1 - (($self->{'x_tick_label_length'} 
-	              - length($data->[0][$_*$self->{'skip_x_ticks'}])) * $w);
+	              - length($self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]))) * $w);
         $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
-                                    $data->[0][$_*$self->{'skip_x_ticks'}], 
+                                    $self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]), 
 				    $textcolor);
       }
     }
     elsif ($self->{'custom_x_ticks'}) {
       for (@{$self->{'custom_x_ticks'}}) {
         $x2 = $x1 + ($delta/2) + ($delta*$_) - $h/2;
-        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($data->[0][$_]))
+        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($self->{f_x_tick}->($data->[0][$_])))
                       * $w);
         $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
-                                    $data->[0][$_], $textcolor);
+                                    $self->{f_x_tick}->($data->[0][$_]), $textcolor);
       }
     }
     else {
       for (0..$self->{'num_datapoints'}-1) {
         $x2 = $x1 + ($delta/2) + ($delta*$_) - $h/2;
-        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($data->[0][$_]))
+        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($self->{f_x_tick}->($data->[0][$_])))
                       * $w);
         $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
-                                    $data->[0][$_], $textcolor);
+                                    $self->{f_x_tick}->($data->[0][$_]), $textcolor);
       }
     }
   }
@@ -1861,7 +2009,7 @@ sub _draw_y_ticks {
     # now draw the labels
     for (0..$#labels) {
       $y2 = $y1 - ($delta * $_);
-      $self->{'gd_obj'}->string($font, $x1, $y2, $labels[$_], $textcolor);
+      $self->{'gd_obj'}->string($font, $x1, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
     }
   }
   elsif ($side eq 'both') { # put the ticks on the both sides
@@ -1877,8 +2025,8 @@ sub _draw_y_ticks {
     for (0..$#labels) {
       $y2 = $y1 - ($delta * $_);
       $x2 = $x1 + ($w * $self->{'y_tick_label_length'}) 
-              - ($w * length($labels[$_]));
-      $self->{'gd_obj'}->string($font, $x2, $y2, $labels[$_], $textcolor);
+              - ($w * length($self->{f_y_tick}->($labels[$_])));
+      $self->{'gd_obj'}->string($font, $x2, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
     }
 
     # and update the current x-min value
@@ -1931,7 +2079,7 @@ sub _draw_y_ticks {
     # now draw the labels
     for (0..$#labels) {
       $y2 = $y1 - ($delta * $_);
-      $self->{'gd_obj'}->string($font, $x1, $y2, $labels[$_], $textcolor);
+      $self->{'gd_obj'}->string($font, $x1, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
     }   
   }
   else { # just the left side
@@ -1945,8 +2093,8 @@ sub _draw_y_ticks {
     for (0..$#labels) {
       $y2 = $y1 - ($delta * $_);
       $x2 = $x1 + ($w * $self->{'y_tick_label_length'}) 
-              - ($w * length($labels[$_]));
-      $self->{'gd_obj'}->string($font, $x2, $y2, $labels[$_], $textcolor);
+              - ($w * length($self->{f_y_tick}->($labels[$_])));
+      $self->{'gd_obj'}->string($font, $x2, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
     }
 
     # and update the current x-min value
@@ -2005,7 +2153,9 @@ sub _draw_x_grid_lines {
   my ($x, $y, $i);
 
   foreach $x (@{ $self->{grid_data}->{'x'} }) {
-    $self->{gd_obj}->line(($x, $self->{'curr_y_min'} + 1), $x, ($self->{'curr_y_max'} - 1), $gridcolor);
+    if ( defined $x) {
+       $self->{gd_obj}->line(($x, $self->{'curr_y_min'} + 1), $x, ($self->{'curr_y_max'} - 1), $gridcolor);
+    }
   }
   return 1;
 }
@@ -2195,6 +2345,17 @@ $^W = 1;
 
     # set the new image as the main object's brush
     return $brush;
+}
+
+#
+# default tick conversion function
+# This function is pointed to be $self->{f_x_tick} resp. $self->{f_y_tick}
+# if the user does not provide another function
+#
+sub _default_f_tick {
+    my $label     = shift;
+    
+    return $label;
 }
 
 ## be a good module and return positive

@@ -4,8 +4,8 @@
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
 #                             #
-#  maintained by peter clark  #
-#  ninjaz@webexpress.com      #
+#  maintained by Chart Group  #
+#  Chart@wettzell.ifag.de     #
 #                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
@@ -18,7 +18,10 @@ use Carp;
 use strict;
 
 @Chart::Composite::ISA = qw(Chart::Base);
-$Chart::Composite::VERSION = 0.99;
+$Chart::Composite::VERSION = 1.00;
+
+
+my $DEBUG = 0;
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

@@ -1,14 +1,14 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Lines               #
-#                             #
-#  written by david bonner    #
-#  dbonner@cs.bu.edu          #
-#                             #
-#  maintained by peter clark  #
-#  ninjaz@webexpress.com      #
-#                             #
-#  theft is treason, citizen  #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Lines                   #
+#                                 #
+#  written by david bonner        #
+#  dbonner@cs.bu.edu              #
+#                                 #
+#  maintained by the Chart Group  #
+#  Chart@wettzell.ifag.de         #
+#                                 #
+#  theft is treason, citizen      #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Lines;
 
@@ -18,7 +18,10 @@ use Carp;
 use strict;
 
 @Chart::Lines::ISA = qw(Chart::Base);
-$Chart::Lines::VERSION = 0.99;
+$Chart::Lines::VERSION = 1.00;
+
+
+my $DEBUG = 0;
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -69,6 +72,7 @@ sub _draw_data {
                              $misccolor);
   }
   
+  printf "Limit: y_max: %7.2f, y_min: %7.2f\n",$self->{'curr_y_max'},$self->{'curr_y_min'}  if $DEBUG;
   # draw the lines
   for $i (1..$self->{'num_datasets'}) {
     # get the color for this dataset, and set the brush
@@ -86,7 +90,80 @@ sub _draw_data {
 	$y3 = $y1 - (($data->[$i][$j] - $mod) * $map);
 
 	# draw the line
+        printf "draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
+        if ( $y2 < $self->{'curr_y_min'} && $y3 < $self->{'curr_y_min'} ||
+             $y2 > $self->{'curr_y_max'} && $y3 > $self->{'curr_y_max'} ) {
+            # the line starts and ends outside the frame
+            # do not draw any line
+            print  "corrected: no draw\n" if $DEBUG;
+            next;
+        }
+        if ( $y2 < $self->{'curr_y_min'} && $y3 >= $self->{'curr_y_min'} && $y3 <= $self->{'curr_y_max'}) {
+           # the line starts outside y top line and ends inside the frame
+           my $y4 = $self->{'curr_y_min'};
+           my $deltax32 = $x3-$x2;
+           my $deltay23 = $y2-$y3;
+           if ( $deltay23 != 0 ) {
+              my $x4 = -$deltax32/$deltay23*($y4-$y3)+$x3;
+              $x2 = $x4;
+              $y2 = $y4; 
+           }
+           printf  "corrected draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
+        }
+        elsif ( $y3 < $self->{'curr_y_min'} && $y2 <= $self->{'curr_y_max'} && $y2 >= $self->{'curr_y_min'} ) {
+           # the line starts inside the frame and ends outside the top y line
+           my $y4 = $self->{'curr_y_min'};
+           my $deltax32 = $x3-$x2;
+           my $deltay32 = $y3-$y2;
+           if ( $deltay32 != 0 ) {
+              my $x4 =  ($y4-$y2)/$deltay32*$deltax32+$x2;
+              $x3 = $x4;
+              $y3 = $y4; 
+           }
+           printf  "corrected draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
+        }
+        elsif ( $y2 <= $self->{'curr_y_max'} && $y2 >= $self->{'curr_y_min'} && $y3 > $self->{'curr_y_max'} ) {
+           # the line starts inside the frame and below the bottom y line
+           my $y4 = $self->{'curr_y_max'};
+           my $x4 = ($x2-$x3)/$y3*$y2+$x3;
+           $x3 = $x4;
+           $y3 = $y4;
+           printf  "corrected draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
+        } 
+        elsif ( $y2 > $self->{'curr_y_max'} && $y3 <= $self->{'curr_y_max'} && $y3 >= $self->{'curr_y_min'} ) {
+           # the line starts below the bottom y line and ends inside the frame
+           my $y4 = $self->{'curr_y_max'};
+           my $x4 = ($x2-$x3)/$y2*$y3+$x3;
+           $x2 = $x4;
+           $y2 = $y4;
+           printf  "corrected draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
+        }
+        elsif ( $y2 > $self->{'curr_y_max'} && $y3 < $self->{'curr_y_min'} ) {
+           # the line starts below the bottom y line and ends outside the top y line
+           my $y4 = $self->{'curr_y_max'};
+           my $y5 = $self->{'curr_y_min'};
+           my $x4 = ($y4-$y2)/($y3-$y2)*($x3-$x2)+$x2;   # (x4,y4) --> (x2,y2)
+           my $x5 = ($y5-$y2)/($y3-$y2)*($x3-$x2)+$x2;   # (x5,y5) --> (x3,y3)
+           $x2 = $x4;
+           $y2 = $y4;
+           $x3 = $x5;
+           $y3 = $y5;
+           printf  "corrected draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
+        }
+        elsif ( $y2 < $self->{'curr_y_min'} && $y3 > $self->{'curr_y_max'} ) {
+           # the line starts outside the top y line and ends below the bottom y line
+           my $y4 = $self->{'curr_y_min'};
+           my $y5 = $self->{'curr_y_max'};
+           my $x4 = ($y4-$y2)/($y3-$y2)*($x3-$x2)+$x2;   # (x4,y4) --> (x2,y2)
+           my $x5 = ($y5-$y2)/($y3-$y2)*($x3-$x2)+$x2;   # (x5,y5) --> (x3,y3)
+           $x2 = $x4;
+           $y2 = $y4;
+           $x3 = $x5;
+           $y3 = $y5;
+           printf  "corrected draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
+        } 
 	$self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
+        
 
 	# store the imagemap data if they asked for it
 	if ($self->{'imagemap'} =~ /^true$/i) {
@@ -102,7 +179,7 @@ sub _draw_data {
     }
   }
       
-  # and finaly box it off 
+  # and finally box it off 
   $self->{'gd_obj'}->rectangle ($self->{'curr_x_min'},
   				$self->{'curr_y_min'},
 				$self->{'curr_x_max'},

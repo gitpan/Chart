@@ -1,14 +1,14 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Bars                #
-#                             #
-#  written by david bonner    #
-#  dbonner@cs.bu.edu          #
-#                             #
-#  maintained by peter clark  #
-#  ninjaz@webexpress.com      #
-#                             #
-#  theft is treason, citizen  #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Bars                   #
+#                                #
+#  written by david bonner       #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#  theft is treason, citizen     #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Bars;
 
@@ -18,7 +18,9 @@ use Carp;
 use strict;
 
 @Chart::Bars::ISA = qw(Chart::Base);
-$Chart::Bars::VERSION = 0.99;
+$Chart::Bars::VERSION = 1.0;
+
+my $DEBUG = 0;
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -97,6 +99,11 @@ sub _draw_data {
 	$y3 = $y1 - (($data->[$i][$j] - $mod) * $map);
 
 	# draw the bar
+        printf "Rectangle  %7.2f,%7.2f,%7.2f,%7.2f\n",$x2,$y3,$x3,$y2 if $DEBUG;
+        if ( $y3 < $self->{'curr_y_min'} ) {
+           $y3 = $self->{'curr_y_min'};
+           printf "corrected: %7.2f,%7.2f,%7.2f,%7.2f\n",$x2,$y3,$x3,$y2 if $DEBUG;
+        }
 	## y2 and y3 are reversed in some cases because GD's fill
 	## algorithm is lame
 	if ($data->[$i][$j] > 0) {

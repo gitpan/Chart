@@ -1,26 +1,6 @@
 ------------------------------------------------------------------------
-Chart version 0.99c-pre3 
+Chart version 1.0
 ------------------------------------------------------------------------
-
-**** WARNING ****
-
-This version of chart has replaced gif support with png support due to the
-Unisys patent problems.  This is the first png-enabled release.
-
-This version has fixed the x-axis placement bug in 0.99b, and all
-existing functionality, save for gif creation should be stable.
-
-New (and incomplete) area pattern functionality is currently Mountain.
-See t/mountain.t for calling details.
-
-Please send comments/patches/etc to ninjaz@webexpress.com (read: the current
-pattern API is subject to change)
-
-----------
-
-There are some very nice additions this iteration.  Specifically, black & white
-readability has been extremely improved by custom points for LinesPoints & 
-Points, and patterns are now optional.  Mountain Charts have also been added.
 
 
 ----------
@@ -47,6 +27,11 @@ Lincoln Stein's GD module version 1.20 or higher.
 -------
 CHANGES
 -------
+0.99c-pre3 - 1.0:
+        Fixed _draw_data in Lines.pm: lines are limited to the frame
+        Added f_x_tick, f_y_tick
+        Added jpeg(), cgi_jpeg() to produce the format jpeg
+        Delete GIF support, added PNG and JPEG instead
 
 0.99b - 0.99c-pre3:
 	James F Miner <jfm@winternet.com>:
@@ -107,12 +92,13 @@ CHANGES
 MAINTAINER
 ------
 
-Peter Clark (ninjaz@webexpress.com)
+Chart-Group (chart@wettzell.ifag.de)
 
 ---------
 COPYRIGHT
 ---------
 
-Copyright(c) 1997-1998 David Bonner, 1999 Peter Clark.  All rights reserved.
+Copyright(c) 1997-1998 David Bonner, 1999 Peter Clark, 2001 Chart-Group at BKG.
+All rights reserved.
 This program is free software; you can redistribute it and/or modify it under 
 the same terms as Perl itself.

@@ -21,14 +21,15 @@
 
 package Chart::Mountain;
 
-use Chart::Base 0.99;
+use Chart::Base 1.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Mountain::ISA = qw ( Chart::Base );
-@Chart::Mountain::VERSION = '0.02';
+@Chart::Mountain::VERSION = '0.03';
 
+my $DEBUG = 0;
 
 ##  Some Mountain chart details:
 #
@@ -119,6 +120,9 @@ sub _draw_data {
 	    if ( defined $datum && $datum >= 0 ) {
 		$sum += $datum;
 		$y[$i-1][$j] = $y_max - $map * $sum;
+                if ( $y[$i-1][$j] < $self->{'curr_y_min'} ) {
+                   $y[$i-1][$j] = $self->{'curr_y_min'};
+                }
 	    }
 	    else { # missing value, force all to undefined
 		foreach my $k (1..$#{$data}) { $y[$k-1][$j] = undef }

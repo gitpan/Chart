@@ -4,8 +4,8 @@
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
 #                             #
-#  maintained by peter clark  #
-#  ninjaz@webexpress.com      #
+#  maintained by Chart Group  #
+#  Chart@wettzell.ifag.de     #
 #                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
@@ -18,7 +18,7 @@ use Carp;
 use strict;
 
 @Chart::Points::ISA = qw(Chart::Base);
-$Chart::Points::VERSION = 0.99;
+$Chart::Points::VERSION = 1.00;
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -72,7 +72,7 @@ sub _draw_data {
   # draw the points
   for $i (1..$self->{'num_datasets'}) {
     # get the color for this dataset, and set the brush
-    $color = $self->{'color_table'}{'dataset'.($i-1)};
+    $color = $self->_color_role_to_index('dataset'.($i-1));
     $brush = $self->_prepare_brush ($color);
     $self->{'gd_obj'}->setBrush ($brush);
 
@@ -86,8 +86,10 @@ sub _draw_data {
 	$y3 = $y2;
 
 	# draw the point
-	$self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
-
+        if ( $y2 >= $self->{'curr_y_min'} && $y2 <= $self->{'curr_y_max'} &&
+             $y3 >= $self->{'curr_y_min'} && $y3 <= $self->{'curr_y_max'} ) {
+	   $self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
+        }
 	# store the imagemap data if they asked for it
 	if ($self->{'imagemap'} =~ /^true$/i) {
 	  $self->{'imagemap_data'}->[$i][$j] = [ $x2, $y2 ];
