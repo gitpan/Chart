@@ -30,10 +30,10 @@ sub find_range {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my $max = 0;
-    my $tmp;
+    my ($tmp, $i);
     
     for (1..$#{$dataref}) {
-	for my $i (0..$#{$dataref->[$_]}) {
+	for $i (0..$#{$dataref->[$_]}) {
 	    if ($dataref->[$_][$i] > $max) {
 		$max = $dataref->[$_][$i];
 	    }
@@ -261,14 +261,14 @@ sub draw_data {
 sub data_map {
     my $obj = shift;
     my $dataref = $obj->{'data'};
-    my ($ref, $map);
+    my ($ref, $map, $i, $j);
     
     $map = ($obj->{'max_val'})
 	        ? ($obj->{'y_max'} - $obj->{'y_min'}) / $obj->{'max_val'}
 		: ($obj->{'y_max'} - $obj->{'y_min'}) / 10;
 
-    for my $i (1..$#{$dataref}) {
-	for my $j (0..$#{$dataref->[$i]}) {
+    for $i (1..$#{$dataref}) {
+	for $j (0..$#{$dataref->[$i]}) {
 	    $ref->[$i-1][$j] = $obj->{'y_max'} - $map * $dataref->[$i][$j];
 	}
     }

@@ -21,8 +21,8 @@ Chart::* - a series of charting modules
     $obj->cgi_gif ( \@data );
 
     # Graph.pm-style API
-    $obj->add_pt ($label, $val_1, ..., $val_n);
-    $obj->add_dataset ($val_1, ..., $val_n);
+    $obj->add_pt ($label, $val_1, ... , $val_n);
+    $obj->add_dataset ($val_1, ... , $val_n);
     $obj->gif ( "filename" );
     $obj->cgi_gif ();
 
@@ -40,12 +40,13 @@ module for all of its graphics primitives calls.
 =head2 use-ing Chart
 
 Okay, so you caught me.  There's really no Chart::type module.
-All of the different chart types (points, lines, bars, linespoints, pie,
-and pareto so far) are classes by themselves, each inheriting a bunch
-of methods from the Chart::Base class.  Simply replace the word type
-with the type of chart you want and you're on your way.  For example,
+All of the different chart types (Points, Lines, Bars, LinesPoints,
+StackedBars, Pie, and Pareto so far) are classes by themselves, each
+inheriting a bunch of methods from the Chart::Base class.  Simply replace
+the word type with the type of chart you want and you're on your way.  
+For example,
   
-  use Chart::lines;
+  use Chart::Lines;
 
 would invoke the lines module.
 
@@ -56,9 +57,9 @@ case it returns an object with the default image size (400x300 pixels),
 or you can specify the width and height of the image.  Just remember
 to replace type with the type of graph you want.  For example,
 
-  $obj = Chart::bars (600,400);
+  $obj = Chart::Bars (600,400);
 
-would return a Chart::bars object containing a 600x400 pixel
+would return a Chart::Bars object containing a 600x400 pixel
 image.  New also initializes most of the default variables, which you 
 can subsequently change with the set method.
 

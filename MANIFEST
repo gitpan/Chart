@@ -1,6 +1,3 @@
-MANIFEST
-README
-Makefile.PL
 Chart.pod
 Chart/Bars.pm
 Chart/Base.pm
@@ -9,10 +6,14 @@ Chart/LinesPoints.pm
 Chart/Pareto.pm
 Chart/Pie.pm
 Chart/Points.pm
-samples/
+Chart/StackedBars.pm
+MANIFEST
+Makefile.PL
+README
 t/bars.t
 t/lines.t
 t/linespoints.t
 t/pareto.t
 t/pie.t
 t/points.t
+t/stackedbars.t

@@ -30,10 +30,10 @@ sub find_range {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my $max = 0;
-    my $tmp;
+    my ($tmp, $i);
     
     for (1..$#{$dataref}) {
-	for my $i (0..$#{$dataref->[$_]}) {
+	for $i (0..$#{$dataref->[$_]}) {
 	    if ($dataref->[$_][$i] > $max) {
 		$max = $dataref->[$_][$i];
 	    }
@@ -228,7 +228,7 @@ sub draw_data {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my $black = $obj->get_color ('black');
-    my ($x_step, $offset, $ref, @data, $color);
+    my ($x_step, $offset, $ref, @data, $color, $i, $j);
 
     if (!($obj->{'max_val'})) { $obj->find_range ($dataref); }
     $obj->draw_ticks ($dataref);
@@ -237,10 +237,10 @@ sub draw_data {
     $offset = $x_step / $#{$dataref};
     $ref = $obj->data_map ($dataref);
 
-    for my $i (0..$#{$ref}) {
+    for $i (0..$#{$ref}) {
 	$color = $obj->data_color ($i);
 	@data = @{$ref->[$i]};
-	for my $j (0..$#data) {
+	for $j (0..$#data) {
 	    $obj->{'im'}->filledRectangle ($obj->{'x_min'} + $i * $offset
 					       + $x_step * $j,
 					   $data[$j],
@@ -264,13 +264,13 @@ sub draw_data {
 sub data_map {
     my $obj = shift;
     my $dataref = $obj->{'data'};
-    my ($ref, $map);
+    my ($ref, $map, $i);
     
     $map = ($obj->{'max_val'})
                 ? ($obj->{'y_max'} - $obj->{'y_min'}) / $obj->{'max_val'}
                 : ($obj->{'y_max'} - $obj->{'y_min'}) / 10;
 
-    for my $i (1..$#{$dataref}) {
+    for $i (1..$#{$dataref}) {
 	for my $j (0..$#{$dataref->[$i]}) {
 	    $ref->[$i-1][$j] = $obj->{'y_max'} - $map * $dataref->[$i][$j];
 	}

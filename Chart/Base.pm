@@ -13,7 +13,7 @@ use Carp;
 use GD;
 use strict;
 
-$Chart::Base::VERSION = 0.92;
+$Chart::Base::VERSION = 0.93;
 
 #==================#
 #  public methods  #
@@ -40,14 +40,16 @@ sub set {
 
 sub add_pt {
     my $obj = shift;
-    
+    my @data = @_;   
+    my $i = 0;
+ 
     if ($obj->{'data'} && $#_ != $#{$obj->{'data'}}) {
 	carp ("New points must have a value for each dataset");
 	return undef;
     }
     else {
-	for my $i (0..$#_) {
-	    push @{$obj->{'data'}->[$i]}, $_[$i];
+	for $i (0..$#data) {
+	    push @{$obj->{'data'}->[$i]}, $data[$i];
 	}
 	return 1;
     }
@@ -55,7 +57,7 @@ sub add_pt {
 
 sub add_dataset {
     my $obj = shift;
-    my $set;
+    my ($set, $i);
     
     if ($obj->{'data'} && $#_ != $#{$obj->{'data'}->[0]}) {
 	carp ("New datasets must have as many points as the current ones");
@@ -63,7 +65,7 @@ sub add_dataset {
     }
     else {
 	$set = $#{$obj->{'data'}} + 1;
-	for my $i (0..$#_) {
+	for $i (0..$#_) {
 	    push @{$obj->{'data'}->[$set]}, $_[$i];
 	}
 	return 1;
@@ -184,7 +186,7 @@ sub my_init {
     $self->{'text_space'} = 2;
 
     #  pesky pareto graph needs to default sort
-    $self->{'sort'} = 'desc' if (ref ($self) eq 'Chart::Pareto');
+    $self->{'sort'} = ['desc', 1, 'num'] if (ref ($self) eq 'Chart::Pareto');
 }
 
 sub set_colors {
@@ -203,12 +205,13 @@ sub copy_data {
     my $obj = shift;
     my $their_ref = shift;
     my $my_ref = [];
+    my $i;
 
     if ($obj->{'data'}) {
 	return -1;
     }
     else {
-	for my $i (0..$#{$their_ref}) {
+	for $i (0..$#{$their_ref}) {
 	    for my $j (0..$#{$their_ref->[$i]}) {
 		$my_ref->[$i][$j] = $their_ref->[$i][$j];
 	    }
@@ -309,7 +312,7 @@ sub draw_labels {
     
     if ($obj->{'y_label'}) {
 	$y = (($obj->{'y_max'} - $obj->{'y_min'}) / 2) + $obj->{'y_min'} +
-	    (length ($obj->{'y_label'}) / 2) * $h;
+	    (length ($obj->{'y_label'}) / 2) * $w;
 	$x = $obj->{'x_min'} + $obj->{'text_space'};
 	$obj->{'im'}->stringUp (gdMediumBoldFont, $x, $y, 
 				$obj->{'y_label'}, $black);
@@ -423,7 +426,7 @@ sub sort_data {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my ($order, $set, $type);
-    my $ref;
+    my ($ref, $i, $j);
 
     if ($obj->{'nosort'}) { return }
 
@@ -434,11 +437,11 @@ sub sort_data {
 	$order = $obj->{'sort'};
     }
 
-    $set = 1 unless ($set);
-    $type = 'num' unless ($type);
+    $set = 0 unless ($set);
+    $type = 'alpha' unless ($type);
 
-    for my $i (0..$#{$dataref->[0]}) {
-	for my $j (0..$#{$dataref}) {
+    for $i (0..$#{$dataref->[0]}) {
+	for $j (0..$#{$dataref}) {
 	    $ref->[$i][$j] = $dataref->[$j][$i];
 	}
     }
@@ -464,8 +467,8 @@ sub sort_data {
         }   
     }
     
-    for my $i (0..$#{$dataref->[0]}) {
-        for my $j (0..$#{$dataref}) {
+    for $i (0..$#{$dataref->[0]}) {
+        for $j (0..$#{$dataref}) {
             $dataref->[$j][$i] = $ref->[$i][$j];
         }
     }

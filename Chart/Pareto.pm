@@ -92,14 +92,14 @@ sub find_range {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my $sum = 0;
-    my $tmp;
+    my ($tmp, $i, $j);
 
     if ($#{$dataref} != 1) {
 	croak "Only one data set suported for pareto graphs";
     }
 
-    for my $i (0..1) {
-	for my $j (0..$#{$dataref->[$i]}) {
+    for $i (0..1) {
+	for $j (0..$#{$dataref->[$i]}) {
 	    $sum += $dataref->[$i][$j] if ($i == 1);
 	}
     }
@@ -426,23 +426,23 @@ sub draw_data {
 sub data_map {
     my $obj = shift;
     my $dataref = shift;
-    my ($ref, $map);
+    my ($ref, $map, $i);
 
     $map = ($obj->{'max_val'})
                 ? ($obj->{'y_max'} - $obj->{'y_min'}) / $obj->{'max_val'}
                 : ($obj->{'y_max'} - $obj->{'y_min'}) / 10;
 
     if ($obj->{'nocutoff'}) {
-	for my $i (0..$#{$dataref->[1]}) {
+	for $i (0..$#{$dataref->[1]}) {
 	    $ref->[$i] = $obj->{'y_max'} - $map * $dataref->[1][$i];
 	}
     }
     else {
-	for my $i (0..$obj->{'cutoff'}-1) {
+	for $i (0..$obj->{'cutoff'}-1) {
 	    $ref->[$i] = $obj->{'y_max'} - $map * $dataref->[1][$i];
 	}
 	
-	for my $i ($obj->{'cutoff'}..$#{$dataref->[1]}) {
+	for $i ($obj->{'cutoff'}..$#{$dataref->[1]}) {
 	    $ref->[$obj->{'cutoff'}] += $dataref->[1][$i];
 	}
 	

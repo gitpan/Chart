@@ -1,11 +1,12 @@
 -----------------------------------------------------------------------
-Chart::* version 0.92
+Chart::* version 0.93
 -----------------------------------------------------------------------
 
 	This is an alpha release of a general-purpose graphing module 
 using Lincoln Stein's GD.pm for graphics primitives.  It allows easy 
-generation of line, bar, point, point-and-line, pie, and pareto graphs,
-and is designed to be easily modified/extended/built upon.
+generation of line, bar, point, point-and-line, stacked bar, pie, and 
+pareto graphs, and is designed to be easily modified/extended/built
+upon.
 
 
 ----------
@@ -29,7 +30,16 @@ PREREQUISITES
 
 Lincoln Stein's GD.pm module
 
+-------
+CHANGES
+-------
 
+0.92 - 0.93: 
+	Fixed the sort problem
+	Fixed the y-axis label centering problem
+	Fixed pre-5.004 compilation problem
+	Added StackedBars charts
+	
 ------
 AUTHOR
 ------

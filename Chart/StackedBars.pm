@@ -1,20 +1,20 @@
 #============================#
 #                            #
-#  Chart::Points	     #
+#  Chart::StackedBars        #
 #  written by davidb bonner  #
 #  dbonner@cs.bu.edu         #
 #                            #
 #============================#
 
-package Chart::Points;
+package Chart::StackedBars;
 
 use Chart::Base;
 use GD;
 use Carp;
 use strict;
 
-@Chart::Points::ISA = qw ( Chart::Base );
-$Chart::Points::VERSION = $Chart::Base::VERSION;
+@Chart::StackedBars::ISA = qw ( Chart::Base );
+$Chart::StackedBars::VERSION = $Chart::Base::VERSION;
 
 #==================#
 #  public methods  #
@@ -49,11 +49,11 @@ sub draw_ticks {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my $black = $obj->get_color ('black');
-    my ($y_step, $y_diff, $x_step, $val, $str_len);
     my ($h, $w) = (gdSmallFont->height, gdSmallFont->width);
     my $str_max = 0;
-    my ($x_min, $x_max);
     my $stag = 0;
+    my ($y_step, $y_diff, $x_step, $val, $str_len);
+    my ($x_min, $x_max);
     my @ticks;
     
     #===============================#
@@ -61,7 +61,7 @@ sub draw_ticks {
     #===============================#
 
     if ($obj->{'custom_x_ticks'}) {
-	@ticks = sort {$Chart::Points::a <=> $Chart::Points::b} 
+	@ticks = sort {$Chart::StackedBars::a <=> $Chart::StackedBars::b} 
 	           @{$obj->{'custom_x_ticks'}};
     }
 
@@ -87,11 +87,10 @@ sub draw_ticks {
 
     
     for (0..$obj->{'y_ticks'}) {
-	$val = ($obj->{'max_val'} / $obj->{'y_ticks'}) * $_;
+	$val = int (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
 	$str_len = length($val);
 	$obj->{'im'}->string (gdSmallFont,
-			      $obj->{'x_min'} + ($str_max - $str_len) * $w 
-			          + 2 * $obj->{'text_space'},
+			      $obj->{'x_min'} + ($str_max - $str_len) * $w,
 			      $obj->{'y_max'} - $y_step * $_ - $h / 2
 			         - $obj->{'tick_len'} - $y_diff,
 			      $val,
@@ -99,15 +98,15 @@ sub draw_ticks {
     }
 
     $obj->{'x_min'} += ($str_max * $w) + 3 * $obj->{'text_space'};
-    
+
     #==========================#
     #  draw the x tick labels  #
     #==========================#
 
-    ($x_min, $x_max) = ($obj->{'x_min'} + 10 + $obj->{'tick_len'},
-			$obj->{'x_max'} - 10);
-    $x_step = ($x_max - $x_min) / $#{$dataref->[0]};
-    
+    $x_step = (($obj->{'x_max'} - ($obj->{'x_min'} + $obj->{'tick_len'})) 
+	       / ($#{$dataref->[0]} + 1));
+    ($x_min, $x_max) = ($obj->{'x_min'} + $obj->{'tick_len'} + $x_step / 2,
+			$obj->{'x_max'} - $x_step / 2);
 
     if (@ticks) {  #custom ticks
 	for (@ticks) {
@@ -122,11 +121,11 @@ sub draw_ticks {
 	    else {
 		$y = $obj->{'y_max'} - (1.5 * $h);
 	    }
-	    
+
 	    $obj->{'im'}->string (gdSmallFont,
-				  $x_min - $str_len + ($x_step * $_),
+				  $x_min + $x_step * $_ - $str_len,
 				  $y,
-				  $val,
+				  $dataref->[0][$_],
 				  $black);
 	}
     }
@@ -143,12 +142,12 @@ sub draw_ticks {
 		else {
 		    $y = $obj->{'y_max'} - (1.5 * $h);
 		}
-		
+
 		$obj->{'im'}->string (gdSmallFont,
-				      $x_min - $str_len + ($x_step * $_),
-				      $y,
-				      $val,
-				      $black);
+				  $x_min + $x_step * $_ - $str_len,
+				  $y,
+				  $dataref->[0][$_],
+				  $black);
 	    }
 	}
     }
@@ -166,36 +165,37 @@ sub draw_ticks {
 		$y = $obj->{'y_max'} - (1.5 * $h);
 	    }
 		
-
 	    $obj->{'im'}->string (gdSmallFont,
-				  $x_min - $str_len + ($x_step * $_),
+				  $x_min + ($x_step * $_) - $str_len,
 				  $y,
 				  $val,
 				  $black);
 	}
     }
-
-    $obj->{'y_max'} -= ($obj->{'stagger_x_labels'} eq 'true') 
+    
+    $obj->{'y_max'} -= ($obj->{'stagger_x_labels'}) 
 	? 2 * $h + $obj->{'text_space'} 
         : $h + $obj->{'text_space'};
 
-    #==================#
-    #  draw the ticks  #
-    #==================#
-
-    $obj->{'x_min'} += $obj->{'tick_len'};
-    $obj->{'y_max'} -= $obj->{'tick_len'};
-
-    $y_step = ($obj->{'y_max'} - $obj->{'y_min'}) / $obj->{'y_ticks'};
-    ($x_min, $x_max) = ($obj->{'x_min'} + 10, $obj->{'x_max'} - 10);
-    $x_step = ($x_max - $x_min) / $#{$dataref->[0]};
-
+    #======================#
+    #  now draw the ticks  #
+    #======================#
+    
+    for (0..$obj->{'y_ticks'}-1) {
+	$obj->{'im'}->line ($obj->{'x_min'} + 2 * $obj->{'text_space'},
+			    $obj->{'y_min'} + $y_step * $_,
+			    $obj->{'x_min'} - $obj->{'tick_len'} 
+			        + 2 * $obj->{'text_space'},
+			    $obj->{'y_min'} + $y_step * $_,
+			    $black);
+    }
+    
     if (@ticks) {  #custom ticks
 	for (@ticks) {
 	    $obj->{'im'}->line ($x_min + ($x_step * $_),
 				$obj->{'y_max'},
 				$x_min + $x_step * $_,
-				$obj->{'y_max'} + $obj->{'tick_len'},
+				$obj->{'y_max'} - $obj->{'tick_len'},
 				$black);
 	}
     }
@@ -205,7 +205,7 @@ sub draw_ticks {
 		$obj->{'im'}->line ($x_min + ($x_step * $_),
 				    $obj->{'y_max'},
 				    $x_min + $x_step * $_,
-				    $obj->{'y_max'} + $obj->{'tick_len'},
+				    $obj->{'y_max'} - $obj->{'tick_len'},
 				    $black);
 	    }
 	}
@@ -215,63 +215,65 @@ sub draw_ticks {
 	    $obj->{'im'}->line ($x_min + ($x_step * $_),
 				$obj->{'y_max'},
 				$x_min + $x_step * $_,
-				$obj->{'y_max'} + $obj->{'tick_len'},
+				$obj->{'y_max'} - $obj->{'tick_len'},
 				$black);
 	}
     }
-
-    for (0..$obj->{'y_ticks'}-1) {
-	$obj->{'im'}->line ($obj->{'x_min'},
-			    $obj->{'y_min'} + $y_step * $_,
-			    $obj->{'x_min'} - $obj->{'tick_len'},
-			    $obj->{'y_min'} + $y_step * $_,
-			    $black);
-    }
+    
+    $obj->{'x_min'} += $obj->{'tick_len'};
+    $obj->{'y_max'} -= $obj->{'tick_len'};
 }
 
 sub draw_data {
     my $obj = shift;
     my $dataref = $obj->{'data'};
-    my ($x_step, $ref);
-    my ($dataset, $color, @data);
-    my ($x_min, $x_max);
-
-    if (!($obj->{'max_val'})) { $obj->find_range ($dataref); }
-    $obj->draw_ticks ($dataref);
-
-    ($x_min, $x_max) = ($obj->{'x_min'} + 10, $obj->{'x_max'} - 10);
-    $x_step = ($x_max - $x_min) / $#{$dataref->[0]};
-
-    $ref = $obj->data_map ($dataref);
+    my $black = $obj->get_color ('black');
+    my ($x_step, $offset, $ref, @data, $color, $i, $j);
     
-    for $dataset (0..$#{$ref}) {
-	$color = $obj->data_color ($dataset);
-	@data = @{$ref->[$dataset]};
-	for (0..$#data) {
-	    $obj->{'im'}->filledRectangle (($_) * $x_step + $x_min
-					   - ($obj->{'pt_size'} / 2),
-					   $data[$_] - ($obj->{'pt_size'} / 2),
-					   ($_) * $x_step + $x_min
-					   + ($obj->{'pt_size'} / 2),
-					   $data[$_] + ($obj->{'pt_size'} / 2),
-					   $color);
+    for $i (2..$#{$dataref}) {
+	for $j (0..$#{$dataref->[$i]}) {
+	    $dataref->[$i][$j] += $dataref->[$i-1][$j];
 	}
     }
-
+    
+    if (!($obj->{'max_val'})) { $obj->find_range ($dataref); }
+    $obj->draw_ticks ($dataref);
+    
+    $x_step = ($obj->{'x_max'} - $obj->{'x_min'}) / ($#{$dataref->[0]} + 1);
+    $ref = $obj->data_map ($dataref);
+    
+    for $i (0..$#{$ref}) {
+	$i = $#{$ref} - $i;
+	$color = $obj->data_color ($i);
+	@data = @{$ref->[$i]};
+	for $j (0..$#data) {
+	    $obj->{'im'}->filledRectangle ($obj->{'x_min'} + $x_step * $j,
+					   $data[$j],
+					   $obj->{'x_min'} + $x_step * ($j+1),
+					   $obj->{'y_max'},
+					   $color);
+	    $obj->{'im'}->rectangle ($obj->{'x_min'} + $x_step * $j,
+				     $data[$j],
+				     $obj->{'x_min'} + $x_step * ($j+1),
+				     $obj->{'y_max'},
+				     $black);
+	}
+    }
+    
     $obj->draw_axes;
-}    
+}
 
 sub data_map {
     my $obj = shift;
     my $dataref = $obj->{'data'};
-    my ($ref, $map, $i, $j);
+    my ($ref, $map, $i);
     
     $map = ($obj->{'max_val'})
                 ? ($obj->{'y_max'} - $obj->{'y_min'}) / $obj->{'max_val'}
                 : ($obj->{'y_max'} - $obj->{'y_min'}) / 10;
 
     for $i (1..$#{$dataref}) {
-	for $j (0..$#{$dataref->[$i]}) {
+	for my $j (0..$#{$dataref->[$i]}) {
 	    $ref->[$i-1][$j] = $obj->{'y_max'} - $map * $dataref->[$i][$j];
 	}
     }
