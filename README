@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 1.0
+Chart version 1.0.1
 ------------------------------------------------------------------------
 
 
@@ -27,6 +27,9 @@ Lincoln Stein's GD module version 1.20 or higher.
 -------
 CHANGES
 -------
+1.0 - 1.0.1:
+        Fixed _draw_bottom_legend in Base.pm
+
 0.99c-pre3 - 1.0:
         Fixed _draw_data in Lines.pm: lines are limited to the frame
         Added f_x_tick, f_y_tick

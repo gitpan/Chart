@@ -17,7 +17,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = 1.00;
+$Chart::Base::VERSION = 1.0.1;
 
 use vars qw(%named_colors);
 
@@ -1366,15 +1366,14 @@ sub _draw_bottom_legend {
 
         # reset the brush for points
         $brush = $self->_prepare_brush($color, 'point',
-				$self->{'pointStyle' . $_});
+				$self->{'pointStyle' . $index});
         $self->{'gd_obj'}->setBrush($brush);
         # draw the point
-        $self->{'gd_obj'}->line(int(($x3+$x2)/2), $y2,
-	  	int(($x3+$x2)/2), $y2, gdBrushed);
+        $x3 = int($x + $self->{'legend_example_size'}/2);
+        $self->{'gd_obj'}->line($x3, $y, $x3, $y, gdBrushed);
 
         # adjust the x-y coordinates for the start of the label
 	$x += $self->{'legend_example_size'} + (2 * $self->{'text_space'});
-	$y -= $h/2;
 
 	# now draw the label
 	$self->{'gd_obj'}->string($font, $x, $y, $labels[$index], $color);

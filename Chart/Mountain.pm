@@ -107,8 +107,8 @@ sub _draw_data {
     # Calculate array of y pixel positions for upper boundary each dataset (@y).
     
     my $map = ($self->{'max_val'})
-		? ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / $self->{'max_val'}
-		: ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / 10;
+ 		? ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / $self->{'max_val'}
+                : ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / 10;
 
     my $y_max = $self->{'curr_y_max'}; # max pixel point (lower y values)
     
