@@ -1,556 +1,1594 @@
-#===========================#
-#                           #
-#  Chart::Base              #
-#  written by david bonner  #
-#  dbonner@cs.bu.edu        #
-#                           #
-#===========================#
-
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Base                #
+#                             #
+#  written by david bonner    #
+#  dbonner@cs.bu.edu          #
+#  theft is treason, citizen  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Base;
 
-use Carp;
 use GD;
 use strict;
+use Carp;
+use FileHandle;
 
+$Chart::Base::VERSION = 0.99;
 
-#==================#
-#  public methods  #
-#==================#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  public methods go here  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
+##  standard nice object creator
 sub new {
-    my $class = shift;
-    my $self = {};
-    
-    bless $self, $class;
-    $self->my_init (@_);
+  my $proto = shift;
+  my $class = ref($proto) || $proto;
+  my $self = {};
 
-    return $self;
+  bless $self, $class;
+  $self->_init(@_);
+
+  return $self;
 }
 
+
+##  main method for customizing the chart, lets users
+##  specify values for different parameters
 sub set {
-    my $obj = shift;
-    my %hash = @_;
+  my $self = shift;
+  my %opts = @_;
+  
+  # basic error checking on the options, just warn 'em
+  unless ($#_ % 2) {
+    carp "Whoops, some option to be set didn't have a value.\n",
+         "You might want to look at that.\n";
+  }
+  
+  # set the options
+  for (keys %opts) {
+    $self->{$_} = $opts{$_};
+  }
 
-    for (keys (%hash)) {
-	    $obj->{$_} = $hash{$_};
-    }
+  # now return
+  return;
 }
 
+
+##  Graph API
 sub add_pt {
-    my $obj = shift;
-    my @data = @_;   
-    my $i = 0;
- 
-    if ($obj->{'data'} && $#_ != $#{$obj->{'data'}}) {
-	carp ("New points must have a value for each dataset");
-	return undef;
-    }
-    else {
-	for $i (0..$#data) {
-	    push @{$obj->{'data'}->[$i]}, $data[$i];
-	}
-	return 1;
-    }
+  my $self = shift;
+  my @data = @_;
+
+  # error check the data (carp, don't croak)
+  if ($self->{'dataref'} && ($#{$self->{'dataref'}} != $#data)) {
+    carp "New point to be added has an incorrect number of data sets";
+  }
+
+  # copy it into the dataref
+  for (0..$#data) {
+    push @{$self->{'dataref'}}, $data[$_];
+  }
+  
+  # now return
+  return;
 }
 
+
+##  more Graph API
 sub add_dataset {
-    my $obj = shift;
-    my ($set, $i);
-    
-    if ($obj->{'data'} && $#_ != $#{$obj->{'data'}->[0]}) {
-	carp ("New datasets must have as many points as the current ones");
-	return undef;
-    }
-    else {
-	$set = $#{$obj->{'data'}} + 1;
-	for $i (0..$#_) {
-	    push @{$obj->{'data'}->[$set]}, $_[$i];
-	}
-	return 1;
-    }
+  my $self = shift;
+  my @data = @_;
+
+  # error check the data (carp, don't croak)
+  if ($self->{'dataref'} && ($#{$self->{'dataref'}->[0]} != $#data)) {
+    carp "New data set to be added has an incorrect number of points";
+  }
+
+  # copy it into the dataref
+  push @{$self->{'dataref'}}, [ @data ];
+  
+  # now return
+  return;
 }
 
+
+##  even more Graph API
 sub clear_data {
-    my $obj = shift;
-    
-    undef $obj->{'data'};
+  my $self = shift;
+
+  # undef the internal data reference
+  $self->{'dataref'} = undef;
+
+  # now return
+  return;
 }
 
+
+##  and the last of the Graph API
 sub get_data {
-    my $obj = shift;
-    
-    return $obj->{'data'};
+  my $self = shift;
+  my $ref = [];
+  my ($i, $j);
+
+  # give them a copy, not a reference into the object
+  for $i (0..$#{$self->{'dataref'}}) {
+    for $j (0..$#{$self->{'dataref'}->[$i]}) {
+      $ref->[$i][$j] = $self->{'dataref'}->[$i][$j];
+    }
+  }
+
+  # return it
+  return $ref;
 }
 
+
+##  called after the options are set, this method
+##  invokes all my private methods to actually
+##  draw the chart and plot the data
 sub gif {
-    my $obj = shift;
-    my $file = shift;
-    my $dataref = shift;
-    my $prev_data;
-    
-    $prev_data = $obj->copy_data ($dataref);
-    if ($prev_data == 1) {
-	if ($#{$dataref} < 1) {
-	    croak "Chart::* needs an array of labels and at least one array of data";
-	}
-	if ($#{$dataref->[0]} == 0) {
-	    croak "There aren't any data points!";
-	}
-    }
-	
-    $obj->my_plot;
-    
-    open (GIF, ">$file") or croak ("Couldn\'t open $file:  $!");
-    print GIF $obj->{'im'}->gif;
-    close GIF;
+  my $self = shift;
+  my $file = shift;
+  my $dataref = shift;
+  my $fh;
+
+  # do some ugly checking to see if they gave me
+  # a filehandle or a file name
+  if ((ref \$file) eq 'SCALAR') {  
+    # they gave me a file name
+    $fh = FileHandle->new (">$file");
+  }
+  elsif ((ref \$file) =~ /^(?:REF|GLOB)$/) {
+    # either a FileHandle object or a regular file handle
+    $fh = $file;
+  }
+  else {
+    croak "I'm not sure what you gave me to write this gif to,\n",
+          "but it wasn't a filename or a filehandle.\n";
+  }
+
+  # make sure the object has its copy of the data
+  $self->_copy_data($dataref);
+
+  # do a sanity check on the data, and collect some basic facts
+  # about the data
+  $self->_check_data;
+
+  # pass off the real work to the appropriate subs
+  $self->_draw();
+
+  # now write it to the file handle, and don't forget
+  # to be nice to the poor ppl using nt
+  binmode $fh;
+  print $fh $self->{'gd_obj'}->gif();
+
+  # now exit
+  return;
 }
 
+
+##  called after the options are set, this method
+##  invokes all my private methods to actually
+##  draw the chart and plot the data
 sub cgi_gif {
-    my $obj = shift;
-    my $dataref = shift;
-    my $prev_data;
-    
-    $prev_data = $obj->copy_data ($dataref);
-    if ($prev_data == 1) {
-	if ($#{$dataref} < 1) {
-	    croak "Chart::* needs an array of labels and at least one array of data";
-	}
-	if ($#{$dataref->[0]} == 0) {
-	    croak "There aren't any data points!";
-	}
-    }
-    
-    $obj->my_plot;
-    
-    print "Content-type: image/gif\n\n";
-    print $obj->{'im'}->gif;
-}
+  my $self = shift;
+  my $file = shift;
+  my $dataref = shift;
 
-#===================#
-#  private methods  #
-#===================#
+  # make sure the object has its copy of the data
+  $self->_copy_data($dataref);
 
-sub my_init {
-    my $self = shift;
-    
-    #  gimme that image  
-    if ($#_ == 1) {
-	$self->{'im'} = new GD::Image($_[0], $_[1]);
-	$self->{'x_min'} = 0;
-	$self->{'x_max'} = $_[0];
-	$self->{'y_min'} = 0;
-	$self->{'y_max'} = $_[1];
-    }
-    else {
-	$self->{'im'} = new GD::Image(400,300);
-	$self->{'x_min'} = 0;
-	$self->{'x_max'} = 400;
-	$self->{'y_min'} = 0;
-	$self->{'y_max'} = 300;
-    }
-    
+  # do a sanity check on the data, and collect some basic facts
+  # about the data
+  $self->_check_data();
 
-    #  allocate some colors
-    $self->set_colors;
+  # pass off the real work to the appropriate subs
+  $self->_draw();
 
-    #  set the image to be interlaced
-    $self->{'im'}->interlaced('true');
+  # print the header (ripped the crlf octal from the CGI modle)
+  print "Content-type: image/gif\015\012\015\012";
 
-    #  tick length of 4 pixels
-    $self->{'tick_len'} = 4;
+  # now print the gif, and binmode it first so nt likes us
+  binmode STDOUT;
+  print STDOUT $self->{'gd_obj'}->gif();
 
-    #  gimme 5 y ticks
-    $self->{'y_ticks'} = 5;
-
-    #  show me the legend
-    $self->{'legend'} = 'true';
-
-    #  stagger those x-tick labels
-    $self->{'stagger_x_labels'} = 'true';
-
-    #  set the pareto cutoff to be 5
-    $self->{'cutoff'} = 5;
-
-    #  set the point size to a 5 pixel square
-    $self->{'pt_size'} = 4;
-
-    #  give me a 10 pixel border around the whole thing
-    $self->{'gif_border'} = 10;
-
-    #  give me a 10 pixel border between the labels and the graph
-    $self->{'graph_border'} = 10;
-
-    #  a little space for the text
-    $self->{'text_space'} = 2;
-
-    #  pesky pareto graph needs to default sort
-    $self->{'sort'} = ['desc', 1, 'num'] if (ref ($self) eq 'Chart::Pareto');
-}
-
-sub set_colors {
-    my $self = shift;
-
-    $self->{'im'}->colorAllocate (250, 250, 250);
-    $self->{'im'}->colorAllocate (0, 0, 0);
-    $self->{'im'}->colorAllocate (225, 0, 0);
-    $self->{'im'}->colorAllocate (0, 225, 0);
-    $self->{'im'}->colorAllocate (0, 0, 225);
-    $self->{'im'}->colorAllocate (200, 0, 200);
-    $self->{'im'}->colorAllocate (0, 200, 200);
-    $self->{'im'}->colorAllocate (225, 225, 0);
-    $self->{'im'}->colorAllocate (250, 170, 85);
-    $self->{'im'}->colorAllocate (200,200,200);
-}
-
-sub copy_data {
-    my $obj = shift;
-    my $their_ref = shift;
-    my $my_ref = [];
-    my ($i, $j);
-
-    if ($obj->{'data'}) {
-	return -1;
-    }
-    else {
-	for $i (0..$#{$their_ref}) {
-	    for $j (0..$#{$their_ref->[$i]}) {
-		$my_ref->[$i][$j] = $their_ref->[$i][$j];
-	    }
-	}
-	$obj->{'data'} = $my_ref;
-	return 1;
-    }
-}
-
-sub my_plot {
-    my $obj = shift;
-    my $dataref = $obj->{'data'};
-
-    if ($obj->{'colors'}) { $obj->set_user_colors }
-    if ($obj->{'transparent'} && $obj->{'transparent'} eq 'true') { 
-	my $white = $obj->get_color ('white');
-	$obj->{'im'}->transparent ($white);
-    }
-    
-    $obj->{'x_min'} += $obj->{'gif_border'};
-    $obj->{'y_min'} += $obj->{'gif_border'};
-    $obj->{'x_max'} -= $obj->{'gif_border'};
-    $obj->{'y_max'} -= $obj->{'gif_border'};
-
-    $obj->check_data; 
-
-    if ($obj->{'title'}) { $obj->draw_title; }
-    if ($obj->{'sub_title'}) { $obj->draw_sub_title; }
-    if ($obj->{'legend'} eq 'true') { $obj->draw_legend ($dataref) }
-    if ($obj->{'x_label'} or $obj->{'y_label'}) { $obj->draw_labels; }
-
-    $obj->{'x_min'} += $obj->{'graph_border'};
-    $obj->{'y_min'} += $obj->{'graph_border'};
-    $obj->{'x_max'} -= $obj->{'graph_border'};
-    $obj->{'y_max'} -= $obj->{'graph_border'};
-
-
-    if ($obj->{'sort'}) { $obj->sort_data; } 
-    $obj->draw_data;
-}
-
-sub check_data {
-    my $obj = shift;
-    my $ref = $obj->{'data'};
-    my $mismatch;
-
-    CHECK: for (1..$#{$ref}) {
-	       if ($#{$ref->[$_]} > $#{$ref->[0]}) {
-		   $mismatch = 1;
-		   last CHECK;
-	       }
-    }
-
-    if ($mismatch) {
-	croak ("One or more data sets longer than set of data point labels");
-    }
-}
-    
-sub draw_title {
-    my $obj = shift;
-    my ($w, $h) = (gdLargeFont->width,gdLargeFont->height);
-    my $black = $obj->get_color ('black');
-    my ($x, $y);
-    
-    $y = $obj->{'y_min'} + $obj->{'text_space'};
-    $obj->{'y_min'} += $h + 2 * $obj->{'text_space'} + $obj->{'gif_border'} / 2;
-    $x = ((($obj->{'x_max'} - $obj->{'x_min'}) / $obj->{'text_space'}) - 
-	  (($w * length ($obj->{'title'})) / $obj->{'text_space'}));
-    $obj->{'im'}->string (gdLargeFont, $x, $y, $obj->{'title'}, $black);
-} 
-
-sub draw_sub_title {
-    my $obj = shift;
-    my ($w, $h) = (gdLargeFont->width,gdLargeFont->height);
-    my $black = $obj->get_color ('black');
-    my ($x, $y);
-		        
-    $y = $obj->{'y_min'} + $obj->{'text_space'};
-    $obj->{'y_min'} += $h + 2 * $obj->{'text_space'} + $obj->{'gif_border'} / 2;
-    $x = ((($obj->{'x_max'} - $obj->{'x_min'}) / $obj->{'text_space'}) -
-          (($w * length ($obj->{'sub_title'})) / $obj->{'text_space'}));
-    $obj->{'im'}->string (gdLargeFont, $x, $y, $obj->{'sub_title'}, $black);
+  # now exit
+  return;
 }
 
 
-sub draw_labels {
-    my $obj = shift;
-    my ($w, $h) = (gdMediumBoldFont->width,gdMediumBoldFont->height);
-    my $black = $obj->get_color ('black');
-    my ($x, $y);
-    
-    if ($obj->{'x_label'}) {
-	$y = $obj->{'y_max'} - ($obj->{'text_space'} + $h);
-	$x = (($obj->{'x_max'} - $obj->{'x_min'}) / 2) + $obj->{'x_min'}
-	        - (length ($obj->{'x_label'}) / 2) * $w;
-	$obj->{'im'}->string (gdMediumBoldFont, $x, $y, 
-			      $obj->{'x_label'}, $black);
-    }
-    
-    if ($obj->{'y_label'}) {
-	$y = (($obj->{'y_max'} - $obj->{'y_min'}) / 2) + $obj->{'y_min'} +
-	    (length ($obj->{'y_label'}) / 2) * $w;
-	$x = $obj->{'x_min'} + $obj->{'text_space'};
-	$obj->{'im'}->stringUp (gdMediumBoldFont, $x, $y, 
-				$obj->{'y_label'}, $black);
-    }
+##  get the information to turn the chart into an imagemap
+sub imagemap_dump {
+  my $self = shift;
+  my $ref = [];
+  my ($i, $j);
+ 
+  # croak if they didn't ask me to remember the data, or if they're asking
+  # for the data before I generate it
+  unless (($self->{'imagemap'} =~ /^true$/i) && $self->{'imagemap_data'}) {
+    croak "You need to set the imagemap option to true, and then call the gif method, before you can get the imagemap data";
+  }
 
-    $obj->{'y_max'} -= ($obj->{'x_label'}) ? $h + 2 * $obj->{'text_space'} : 0;
-    $obj->{'x_min'} += ($obj->{'y_label'}) ? $h + 2 * $obj->{'text_space'} : 0;
+  # can't just return a ref to my internal structures...
+  for $i (0..$#{$self->{'imagemap_data'}}) {
+    for $j (0..$#{$self->{'imagemap_data'}->[$i]}) {
+      $ref->[$i][$j] = [ @{ $self->{'imagemap_data'}->[$i][$j] } ];
+    }
+  }
+
+  # return their copy
+  return $ref;
 }
 
-sub draw_legend {
-    my $obj = shift;
-    my $dataref = $obj->{'data'};
-    my (@labels, $legend_w, $legend_h, $color, $dash, $ymin);
-    my ($w, $h) = (gdSmallFont->width, gdSmallFont->height);
-    my $black = $obj->get_color ('black');
-    my $max_len = 0;
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  private methods go here  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
-    #==========================#
-    #  prepare list of labels  #
-    #==========================#
+##  initialize all the default options here
+sub _init {
+  my $self = shift;
+  my $x = shift || 400;  # give them a 400x300 image
+  my $y = shift || 300;  # unless they say otherwise
+  
+  # get the gd object
+  $self->{'gd_obj'} = GD::Image->new($x, $y);
 
-    if ($obj->{'legend_labels'}) {
-	@labels = @{$obj->{'legend_labels'}};
-	if ($#labels != $#{$dataref} - 1) {
-	    croak ("Number of data set labels does not match number of data sets");
-	}
+  # start keeping track of used space
+  $self->{'curr_y_min'} = 0;
+  $self->{'curr_y_max'} = $y;
+  $self->{'curr_x_min'} = 0;
+  $self->{'curr_x_max'} = $x;
+
+  # use a 10 pixel border around the whole gif
+  $self->{'gif_border'} = 10;
+
+  # leave some space around the text fields
+  $self->{'text_space'} = 2;
+
+  # and leave some more space around the chart itself
+  $self->{'graph_border'} = 10;
+
+  # leave a bit of space inside the legend box
+  $self->{'legend_space'} = 4;
+  
+  # set some default fonts
+  $self->{'title_font'} = gdLargeFont;
+  $self->{'sub_title_font'} = gdLargeFont;
+  $self->{'legend_font'} = gdSmallFont;
+  $self->{'label_font'} = gdMediumBoldFont;
+  $self->{'tick_label_font'} = gdSmallFont;
+
+  # put the legend on the right of the chart
+  $self->{'legend'} = 'right';
+
+  # default to an empty list of labels
+  $self->{'legend_labels'} = [];
+
+  # use 20 pixel length example lines in the legend
+  $self->{'legend_example_size'} = 20;
+
+  # use 6 ticks on the y-axis
+  $self->{'y_ticks'} = 6;
+
+  # make the ticks 4 pixels long
+  $self->{'tick_len'} = 4;
+
+  # let the lines in Chart::Lines be 6 pixels wide
+  $self->{'brush_size'} = 6;
+
+  # let the points in Chart::Points and Chart::LinesPoints be 18 pixels wide
+  $self->{'pt_size'} = 18;
+
+  # use the new spaced bars
+  $self->{'spaced_bars'} = 'true';
+
+  # use the new grey background for the plots
+  $self->{'grey_background'} = 'true';
+
+  # don't default to transparent
+  $self->{'transparent'} = 'false';
+
+  # default to "normal" x_tick drawing
+  $self->{'x_ticks'} = 'normal';
+
+  # we're not a component until Chart::Composite says we are
+  $self->{'component'} = 'false';
+
+  # don't force the y-axes in a Composite chare to be the same
+  $self->{'same_y_axes'} = 'false';
+
+  # don't force integer y-ticks
+  $self->{'integer_ticks_only'} = 'false';
+
+  # don't waste time/memory by storing imagemap info unless they ask
+  $self->{'imagemap'} = 'false';
+
+  # and return
+  return;
+}
+
+
+##  be nice and leave their data alone
+sub _copy_data {
+  my $self = shift;
+  my $extern_ref = shift;
+  my ($ref, $i, $j);
+
+  # look to see if they used the other api
+  if ($self->{'dataref'}) {
+    # we've already got a copy, thanks
+    return;
+  }
+  else {
+    # get an array reference
+    $ref = [];
+    
+    # loop through and copy
+    for $i (0..$#{$extern_ref}) {
+      for $j (0..$#{$extern_ref->[$i]}) {
+	$ref->[$i][$j] = $extern_ref->[$i][$j];
+      }
     }
-    else {
-	for (1..$#{$dataref}) {
-	    $labels[$_-1] = "Dataset $_";
-	}
+
+    # put it in the object
+    $self->{'dataref'} = $ref;
+  }
+}
+
+
+##  make sure the data isn't really weird
+##  and collect some basic info about it
+sub _check_data {
+  my $self = shift;
+  my $length = 0;
+
+  # first make sure there's something there
+  unless (scalar (@{$self->{'dataref'}}) >= 2) {
+    croak "Call me again when you have some data to chart";
+  }
+
+  # remember the number of datasets
+  $self->{'num_datasets'} = $#{$self->{'dataref'}};
+
+  # remember the number of points in the largest dataset
+  $self->{'num_datapoints'} = 0;
+  for (0..$self->{'num_datasets'}) {
+    if (scalar(@{$self->{'dataref'}[$_]}) > $self->{'num_datapoints'}) {
+      $self->{'num_datapoints'} = scalar(@{$self->{'dataref'}[$_]});
     }
+  }
 
-    for (@labels) {
-	my $str_len = length ($_);
-	if ($str_len > $max_len) {
-	    $max_len = $str_len;
-	}
+  # find good min and max y-values for the plot
+  $self->_find_y_scale;
+
+  # find the longest x-tick label
+  for (@{$self->{'dataref'}->[0]}) {
+    if (length($_) > $length) {
+      $length = length ($_);
     }
+  }
 
-    #===============#
-    #  draw legend  #
-    #===============#
+  # now store it in the object
+  $self->{'x_tick_label_length'} = $length;
 
-    $ymin = $obj->{'y_min'} + $obj->{'graph_border'};
+  return;
+}
 
-    if (!($obj->{'dashed_lines'})) {
-	$legend_h = ($#labels + 1) * ($h + 2 * $obj->{'text_space'});
-	$legend_w = ($max_len * $w) + 3 * $obj->{'text_space'};
-	$obj->{'x_max'} -= $legend_w + 2 * $obj->{'text_space'};
+
+##  plot the chart to the gd object
+sub _draw {
+  my $self = shift;
+  
+  # use their colors if they want
+  if ($self->{'colors'}) {
+    $self->_set_user_colors();
+  }
+
+  # fill in the defaults for the colors
+  $self->_set_colors();
+
+  # leave the appropriate border on the gif
+  $self->{'curr_x_max'} -= $self->{'gif_border'};
+  $self->{'curr_x_min'} += $self->{'gif_border'};
+  $self->{'curr_y_max'} -= $self->{'gif_border'};
+  $self->{'curr_y_min'} += $self->{'gif_border'};
+
+  # draw in the title
+  $self->_draw_title() if $self->{'title'};
+
+  # have to leave this here for backwards compatibility
+  $self->_draw_sub_title() if $self->{'sub_title'};
+
+  # sort the data if they want to (mainly here to make sure
+  # pareto charts get sorted)
+  $self->_sort_data() if $self->{'sort'};
+
+  # start drawing the data (most methods in this will be
+  # overridden by the derived classes)
+  # include _draw_legend() in this to ensure that the legend
+  # will be flush with the chart
+  $self->_plot();
+
+  # and return
+  return;
+}
+
+
+##  let the user specify their own colors
+sub _set_user_colors {
+  my $self = shift;
+  my $color_table = {};
+  my @rgb;
+  
+  # see if they want a different background
+  if (($self->{'colors'}{'background'}) &&
+      (scalar(@{$self->{'colors'}{'background'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'background'}};
+    $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+  else { # make sure white becomes the background color
+    @rgb = (255, 255, 255);
+    $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
+  # make the background transparent if they asked nicely
+  if ($self->{'transparent'} =~ /^true$/i) {
+    $self->{'gd_obj'}->transparent ($color_table->{'background'});
+  }
+
+  # next check for the color for the miscellaneous stuff
+  # (the axes on the plot, the box around the legend, etc.)
+  if (($self->{'colors'}{'misc'}) &&
+      (scalar(@{$self->{'colors'}{'misc'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'misc'}};
+    $color_table->{'misc'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
+  # what about the text?
+  if (($self->{'colors'}{'text'}) &&
+      (scalar(@{$self->{'colors'}{'text'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'text'}};
+    $color_table->{'text'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+    
+  # okay, now go for the data sets
+  for (keys(%{$self->{'colors'}})) {
+    if (($_ =~ /^dataset/i) && (scalar(@{$self->{'colors'}{$_}}) == 3)) {
+      @rgb = @{$self->{'colors'}{$_}};
+      $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
+    }
+  }
+
+  # stick the color table in the object
+  $self->{'color_table'} = $color_table;
+
+  # and return
+  return;
+}
+
+
+##  specify my colors
+sub _set_colors {
+  my $self = shift;
+  my %colors = ('white'		=> [255,255,255],
+  		'black'		=> [0,0,0],
+		'red'		=> [200,0,0],
+		'green'		=> [0,175,0],
+		'blue'		=> [0,0,200],
+		'orange'	=> [250,125,0],
+		'yellow'	=> [225,225,0],
+		'purple'	=> [200,0,200],
+		'light_blue'	=> [0,125,250],
+		'light_green'	=> [125,250,0],
+		'light_purple'	=> [145,0,250],
+		'pink'		=> [250,0,125],
+		'peach'		=> [250,125,125],
+		'olive'		=> [125,125,0],
+		'plum'		=> [125,0,125],
+		'turquoise'	=> [0,125,125],
+		'mauve'		=> [200,125,125],
+		'brown'		=> [160,80,0],
+		'grey'		=> [225,225,225]);
+  my ($color_table, @rgb, @colors);
+
+  # check to see if they specified colors
+  if ($self->{'color_table'}) {
+    $color_table = $self->{'color_table'};
+  }
+  else {
+    $color_table = {};
+  }
+  
+  # put the background in first
+  unless ($color_table->{'background'}) {
+    @rgb = @{$colors{'white'}};
+    $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);    
+  }
+
+  # make the background transparent if they asked for it
+  if ($self->{'transparent'} =~ /^true$/i) {
+    $self->{'gd_obj'}->transparent ($color_table->{'background'});
+  }
+
+  # now get all my named colors
+  for (keys (%colors)) {
+    @rgb = @{$colors{$_}};
+    $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
+  # set up the datatset* colors
+  @colors = qw (red green blue purple peach orange mauve olive pink light_purple light_blue plum yellow turquoise light_green brown);
+  for (0..$#colors) {
+    unless ($color_table->{'dataset'.$_}) { # don't override their colors
+      $color_table->{'dataset'.$_} = $color_table->{$colors[$_]};
+    }
+  }
+
+  # set up the miscellaneous color
+  unless ($color_table->{'misc'}) {
+    $color_table->{'misc'} = $color_table->{'black'};
+  }
+
+  # and the text color
+  unless ($color_table->{'text'}) {
+    $color_table->{'text'} = $color_table->{'black'};
+  }
+
+  # put the color table back in the object
+  $self->{'color_table'} = $color_table;
+  
+  # and return
+  return; 
+}
+
+
+##  draw the title for the chart
+sub _draw_title {
+  my $self = shift;
+  my $font = $self->{'title_font'};
+  my $color = $self->{'color_table'}{'text'};
+  my ($h, $w, @lines, $x, $y);
+
+  # make sure we're actually using a real font
+  unless ((ref $font) eq 'GD::Font') {
+    croak "The title font you specified isn\'t a GD Font object";
+  }
+
+  # get the height and width of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # split the title into lines
+  @lines = split (/\\n/, $self->{'title'});
+
+  # write the first line
+  $x = ($self->{'curr_x_max'} - $self->{'curr_x_min'}) / 2
+         + $self->{'curr_x_min'} - (length($lines[0]) * $w) /2;
+  $y = $self->{'curr_y_min'} + $self->{'text_space'};
+  $self->{'gd_obj'}->string($font, $x, $y, $lines[0], $color);
+
+  # now loop through the rest of them
+  for (1..$#lines) {
+    $self->{'curr_y_min'} += $self->{'text_space'} + $h;
+    $x = ($self->{'curr_x_max'} - $self->{'curr_x_min'}) / 2
+           + $self->{'curr_x_min'} - (length($lines[$_]) * $w) /2;
+    $y = $self->{'curr_y_min'} + $self->{'text_space'};
+    $self->{'gd_obj'}->string($font, $x, $y, $lines[$_], $color);
+  }
+
+  # mark off that last space
+  $self->{'curr_y_min'} += 2 * $self->{'text_space'} + $h;
+
+  # and return
+  return;
+}
+
+
+##  pesky backwards-compatible sub
+sub _draw_sub_title {
+  my $self = shift;
+  my $font = $self->{'sub_title_font'};
+  my $color = $self->{'color_table'}{'text'};
+  my $text = $self->{'sub_title'};
+  my ($h, $w, $x, $y);
+
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # figure out the placement
+  $x = ($self->{'curr_x_max'} - $self->{'curr_x_min'}) / 2
+         + $self->{'curr_x_min'} - (length($text) * $w) / 2;
+  $y = $self->{'curr_y_min'}; 
+  
+  # now draw the subtitle
+  $self->{'gd_obj'}->string ($font, $x, $y, $text, $color);
+
+  # and return
+  return;
+}
+
+
+##  sort the data nicely (mostly for the pareto charts)
+sub _sort_data {
+
+}
+
+
+##  find good values for the minimum and maximum y-value on the chart
+sub _find_y_scale {
+  my $self = shift;
+  my $data = $self->{'dataref'};
+  my ($i, $j, $max, $min);
+  my ($order, $mult, $tmp);
+  my ($range, $delta, @dec, $y_ticks);
+  my $labels = [];
+  my $length = 0;
+
+  # use realy improbable starting max and min values
+  $max = -999999999999;
+  $min = 999999999999;
+
+  # get the real max and min values
+  for $i (1..$#{$data}) {
+    for $j (0..$#{$data->[$i]}) {
+      if ($data->[$i][$j] > $max) {
+	$max = $data->[$i][$j];
+      }
+      if ($data->[$i][$j] < $min) {
+	$min = $data->[$i][$j];
+      }
+    }
+  }
+
+  # calculate good max_val
+  if ($max < -10) {
+    $tmp = -$max;
+    $order = int((log $tmp) / (log 10));
+    $mult = int ($tmp / (10 ** $order));
+    $tmp = ($mult - 1) * (10 ** $order);
+    $max = -$tmp;
+  }
+  elsif ($max < 0) {
+    $max = 0;
+  }
+  elsif ($max > 10) {
+    $order = int((log $max) / (log 10));
+    $mult = int ($max / (10 ** $order));
+    $max = ($mult + 1) * (10 ** $order);
+  }
+  elsif ($max >= 0) {
+    $max = 10;
+  }
+
+  # now go for a good min_val
+  if ($min < -10) {
+    $tmp = -$min;
+    $order = int((log $tmp) / (log 10));
+    $mult = int ($tmp / (10 ** $order));
+    $tmp = ($mult + 1) * (10 ** $order);
+    $min = -$tmp;
+  }
+  elsif ($min < 0) {
+    $min = -10;
+  }
+  elsif ($min > 10) {
+    $order = int ((log $min) / (log 10));
+    $mult = int ($min / (10 ** $order));
+    $min = $mult * (10 ** $order);
+  }
+  elsif ($min >= 0) {
+    $min = 0;
+  }
+
+  # put min_val and max_val into the object unless they're already there
+  unless (defined ($self->{'max_val'})) {
+    $self->{'max_val'} = $max;
+  }
+  unless (defined ($self->{'min_val'})) {
+    $self->{'min_val'} = $min;
+  }
+
+  # find the range of the y-axis, modify the number of y-ticks
+  # if they asked for integer ticks only
+  $range = $self->{'max_val'} - $self->{'min_val'};
+  $y_ticks = $self->{'y_ticks'} - 1;
+  if ($self->{'integer_ticks_only'} =~ /^true$/i) {
+    unless (($range % $y_ticks) == 0) {
+      while (($range % $y_ticks) != 0) {
+	$y_ticks++;
+      }
+      $self->{'y_ticks'} = $y_ticks + 1;
+    }
+  }
+
+  # generate the y-tick labels, find the longest one
+  $delta = $range / $y_ticks;
+  for (0..$y_ticks) {
+    $tmp = $self->{'min_val'} + ($delta * $_);
+    @dec = split /\./, $tmp;
+    if ($dec[1] && (length($dec[1]) > 3)) {
+      $tmp = sprintf("%.3f", $tmp);
+    }
+    $labels->[$_] = $tmp;
+    if (length($tmp) > $length) {
+      $length = length($tmp);
+    }
+  }
+
+  # store it in the object
+  $self->{'y_tick_labels'} = $labels;
+  $self->{'y_tick_label_length'} = $length;
+ 
+  # and return
+  return;
+}
+
+
+## main sub that controls all the plotting of the actual chart
+sub _plot {
+  my $self = shift;
+
+  # draw the legend first
+  $self->_draw_legend unless $self->{'legend'} =~ /none/i;
+
+  # mark off the graph_border space
+  $self->{'curr_x_min'} += $self->{'graph_border'};
+  $self->{'curr_x_max'} -= $self->{'graph_border'};
+  $self->{'curr_y_min'} += $self->{'graph_border'};
+  $self->{'curr_y_max'} -= $self->{'graph_border'};
+
+  # draw the x- and y-axis labels
+  $self->_draw_x_label if $self->{'x_label'};
+  $self->_draw_y_label('left') if $self->{'y_label'};
+  $self->_draw_y_label('right') if $self->{'y_label2'};
+
+  # draw the ticks and tick labels
+  $self->_draw_ticks;
+
+  # give the plot a grey background if they want it
+  $self->_grey_background if ($self->{'grey_background'} =~ /^true$/i);
+
+  # plot the data
+  $self->_draw_data;
+
+  # and return
+  return;
+}
+
+
+##  let them know what all the pretty colors mean
+sub _draw_legend {
+  my $self = shift;
+  my ($length);
+
+  # check to see if they have as many labels as datasets,
+  # warn them if not
+  if (($#{$self->{'legend_labels'}} >= 0) && 
+       ((scalar(@{$self->{'legend_labels'}})) != $self->{'num_datasets'})) {
+    carp "The number of legend labels and datasets doesn\'t match";
+  }
+
+  # init a field to store the length of the longest legend label
+  unless ($self->{'max_legend_label'}) {
+    $self->{'max_legend_label'} = 0;
+  }
+
+  # fill in the legend labels, find the longest one
+  for (1..$self->{'num_datasets'}) {
+    unless ($self->{'legend_labels'}[$_-1]) {
+      $self->{'legend_labels'}[$_-1] = "Dataset $_";
+    }
+    $length = length($self->{'legend_labels'}[$_-1]);
+    if ($length > $self->{'max_legend_label'}) {
+      $self->{'max_legend_label'} = $length;
+    }
+  }
+      
+  # different legend types
+  if ($self->{'legend'} eq 'bottom') {
+    $self->_draw_bottom_legend;
+  }
+  elsif ($self->{'legend'} eq 'right') {
+    $self->_draw_right_legend;
+  }
+  elsif ($self->{'legend'} eq 'left') {
+    $self->_draw_left_legend;
+  }
+  elsif ($self->{'legend'} eq 'top') {
+    $self->_draw_top_legend;
+  }
+  else {
+    carp "I can't put a legend there\n";
+  }
+
+  # and return
+  return;
+}
+
+
+## put the legend on the bottom of the chart
+sub _draw_bottom_legend {
+  my $self = shift;
+  my @labels = @{$self->{'legend_labels'}};
+  my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
+  my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h);
+  my $font = $self->{'legend_font'};
+
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # find the base x values
+  $x1 = $self->{'curr_x_min'} + $self->{'graph_border'}
+          + ($self->{'y_tick_label_length'} * $self->{'tick_label_font'}->width)
+	  + $self->{'tick_len'} + (3 * $self->{'text_space'});
+  $x2 = $self->{'curr_x_max'} - $self->{'graph_border'};
+  if ($self->{'y_label'}) {
+    $x1 += $self->{'label_font'}->height + 2 * $self->{'text_space'};
+  }
+  if ($self->{'y_label2'}) {
+    $x2 -= $self->{'label_font'}->height + 2 * $self->{'text_space'};
+  }
+
+  # figure out how wide the columns need to be, and how many we
+  # can fit in the space available
+  $empty_width = ($x2 - $x1) - (2 * $self->{'legend_space'});
+  $max_label_width = $self->{'max_legend_label'} * $w
+    + (4 * $self->{'text_space'}) + $self->{'legend_example_size'};
+  $cols = int ($empty_width / $max_label_width);
+  unless ($cols) {
+    $cols = 1;
+  }
+  $col_width = $empty_width / $cols;
+
+  # figure out how many rows we need, remember how tall they are
+  $rows = int ($self->{'num_datasets'} / $cols);
+  unless (($self->{'num_datasets'} % $cols) == 0) {
+    $rows++;
+  }
+  unless ($rows) {
+    $rows = 1;
+  }
+  $row_height = $h + $self->{'text_space'};
+
+  # box the legend off
+  $y1 = $self->{'curr_y_max'} - $self->{'text_space'}
+          - ($rows * $row_height) - (2 * $self->{'legend_space'});
+  $y2 = $self->{'curr_y_max'};
+  $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
+                               $self->{'color_table'}{'misc'});
+  $x1 += $self->{'legend_space'} + $self->{'text_space'};
+  $x2 -= $self->{'legend_space'};
+  $y1 += $self->{'legend_space'} + $self->{'text_space'};
+  $y2 -= $self->{'legend_space'} + $self->{'text_space'};
+
+  # draw in the actual legend
+  for $r (0..$rows-1) {
+    for $c (0..$cols-1) {
+      $index = ($r * $cols) + $c;  # find the index in the label array
+      if ($labels[$index]) {
+	# get the color
+        $color = $self->{'color_table'}{'dataset'.$index}; 
+
+        # get the x-y coordinate for the start of the example line
+	$x = $x1 + ($col_width * $c);
+        $y = $y1 + ($row_height * $r) + $h/2;
 	
-	$obj->{'im'}->rectangle ($obj->{'x_max'} + 2 * $obj->{'text_space'},
-				 $ymin,
-				 $obj->{'x_max'} + 2 * $obj->{'text_space'} 
-			             + $legend_w,
-				 $ymin + $legend_h,
-				 $black);
-	
-	for (0..$#labels) {
-	    $color = $obj->data_color($_);
-	    
-	    $obj->{'im'}->string (gdSmallFont,
-				  $obj->{'x_max'} + 7,
-				  $ymin + $obj->{'text_space'} 
-			              + $_ * ($h + 2 * $obj->{'text_space'}),
-				  $labels[$_],
-				  $color);
-	}
+	# now draw the example line
+        $self->{'gd_obj'}->line($x, $y, 
+                                $x + $self->{'legend_example_size'}, $y,
+                                $color);
+
+        # adjust the x-y coordinates for the start of the label
+	$x += $self->{'legend_example_size'} + (2 * $self->{'text_space'});
+	$y -= $h/2;
+
+	# now draw the label
+	$self->{'gd_obj'}->string($font, $x, $y, $labels[$index], $color);
+      }
     }
-    else {
-	$legend_h = ($#labels + 1) * ($h + 2 * $obj->{'text_space'});
-	$legend_w = ($max_len * $w) + 3 * $obj->{'text_space'} + 22;
-	$obj->{'x_max'} -= $legend_w + 2 * $obj->{'text_space'} + 22;
-	
-	$obj->{'im'}->rectangle ($obj->{'x_max'} + 2 * $obj->{'text_space'},
-				 $ymin,
-				 $obj->{'x_max'} + 2 * $obj->{'text_space'} 
-			             + $legend_w,
-				 $ymin + $legend_h,
-				 $black);
-	
-	$dash = $obj->{'dashed_lines'};
-	$obj->{'dashed_lines'} = '';
+  }
 
-	for (0..$#labels) {
-	    $color = $obj->data_color($_);
-	    
-	    $obj->{'im'}->string (gdSmallFont,
-				  $obj->{'x_max'} + 29,
-				  $ymin + $obj->{'text_space'} 
-				      + $_ * ($h + 2 * $obj->{'text_space'}),
-				  $labels[$_],
-				  $color);
-	}
+  # mark off the space used
+  $self->{'curr_y_max'} -= ($rows * $row_height) + $self->{'text_space'}
+			      + (2 * $self->{'legend_space'}); 
 
-	$obj->{'dashed_lines'} = $dash;
-
-	for (0..$#labels) {
-	    $color = $obj->data_color($_);
-	    
-	    $obj->{'im'}->line ($obj->{'x_max'} + 7,
-				$ymin + $obj->{'text_space'} + $h/2
-				    + $_ * ($h + 2 * $obj->{'text_space'}),
-				$obj->{'x_max'} + 27,
-				$ymin + $obj->{'text_space'} + $h/2
-				    + $_ * ($h + 2 * $obj->{'text_space'}),
-				$color);
-	}
-    }
+  # now return
+  return;
 }
 
-sub sort_data {
-    my $obj = shift;
-    my $dataref = $obj->{'data'};
-    my ($order, $set, $type);
-    my ($ref, $i, $j);
 
-    if ($obj->{'nosort'}) { return }
+## put the legend on the right of the chart
+sub _draw_right_legend {
+  my $self = shift;
+  my @labels = @{$self->{'legend_labels'}};
+  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h);
+  my $font = $self->{'legend_font'};
+ 
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
 
-    if (ref ($obj->{'sort'})) {
-	($order, $set, $type) = @{$obj->{'sort'}};
-    }
-    else {
-	$order = $obj->{'sort'};
-    }
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
 
-    $set = 0 unless ($set);
-    $type = 'alpha' unless ($type);
+  # get the miscellaneous color
+  $misccolor = $self->{'color_table'}{'misc'};
 
-    for $i (0..$#{$dataref->[0]}) {
-	for $j (0..$#{$dataref}) {
-	    $ref->[$i][$j] = $dataref->[$j][$i];
-	}
-    }
+  # find out how wide the largest label is
+  $width = (2 * $self->{'text_space'})
+    + ($self->{'max_legend_label'} * $w)
+    + $self->{'legend_example_size'}
+    + (2 * $self->{'legend_space'});
+
+  # get some starting x-y values
+  $x1 = $self->{'curr_x_max'} - $width;
+  $x2 = $self->{'curr_x_max'};
+  $y1 = $self->{'curr_y_min'} + $self->{'graph_border'} ;
+  $y2 = $self->{'curr_y_min'} + $self->{'graph_border'} + $self->{'text_space'}
+          + ($self->{'num_datasets'} * ($h + $self->{'text_space'}))
+	  + (2 * $self->{'legend_space'});
+
+  # box the legend off
+  $self->{'gd_obj'}->rectangle ($x1, $y1, $x2, $y2, $misccolor);
+
+  # leave that nice space inside the legend box
+  $x1 += $self->{'legend_space'};
+  $y1 += $self->{'legend_space'} + $self->{'text_space'};
+
+  # now draw the actual legend
+  for (0..$#labels) {
+    # get the color
+    $color = $self->{'color_table'}{'dataset'.$_};
+
+    # find the x-y coords
+    $x2 = $x1;
+    $x3 = $x2 + $self->{'legend_example_size'};
+    $y2 = $y1 + ($_ * ($self->{'text_space'} + $h)) + $h/2;
+
+    # do the line first
+    $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
     
-    if ($order eq 'asc') {
-	if ($type eq 'alpha') {
-            @{$ref} = sort {$Chart::Base::a->[$set] cmp $Chart::Base::b->[$set]}
-	                       @{$ref};
-	}
-	else {
-	    @{$ref} = sort {$Chart::Base::a->[$set] <=> $Chart::Base::b->[$set]}
-	                       @{$ref};
-	} 
+    # now the label
+    $x2 = $x3 + (2 * $self->{'text_space'});
+    $y2 -= $h/2;
+    $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$_], $color);
+  }
+
+  # mark off the used space
+  $self->{'curr_x_max'} -= $width;
+
+  # and return
+  return;
+}
+
+
+## put the legend on top of the chart
+sub _draw_top_legend {
+  my $self = shift;
+  my @labels = @{$self->{'legend_labels'}};
+  my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
+  my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h);
+  my $font = $self->{'legend_font'};
+
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # get some base x coordinates
+  $x1 = $self->{'curr_x_min'} + $self->{'graph_border'}
+          + $self->{'y_tick_label_length'} * $self->{'tick_label_font'}->width
+	  + $self->{'tick_len'} + (3 * $self->{'text_space'});
+  $x2 = $self->{'curr_x_max'} - $self->{'graph_border'};
+  if ($self->{'y_label'}) {
+    $x1 += $self->{'label_font'}->height + 2 * $self->{'text_space'};
+  }
+  if ($self->{'y_label2'}) {
+    $x2 -= $self->{'label_font'}->height + 2 * $self->{'text_space'};
+  }
+
+  # figure out how wide the columns can be, and how many will fit
+  $empty_width = ($x2 - $x1) - (2 * $self->{'legend_space'});
+  $max_label_width = (4 * $self->{'text_space'})
+    + ($self->{'max_legend_label'} * $w)
+    + $self->{'legend_example_size'};
+  $cols = int ($empty_width / $max_label_width);
+  unless ($cols) {
+    $cols = 1;
+  }
+  $col_width = $empty_width / $cols;
+
+  # figure out how many rows we need and remember how tall they are
+  $rows = int ($self->{'num_datasets'} / $cols);
+  unless (($self->{'num_datasets'} % $cols) == 0) {
+    $rows++;
+  }
+  unless ($rows) {
+    $rows = 1;
+  }
+  $row_height = $h + $self->{'text_space'};
+
+  # box the legend off
+  $y1 = $self->{'curr_y_min'};
+  $y2 = $self->{'curr_y_min'} + $self->{'text_space'}
+          + ($rows * $row_height) + (2 * $self->{'legend_space'});
+  $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
+                               $self->{'color_table'}{'misc'});
+
+  # leave some space inside the legend
+  $x1 += $self->{'legend_space'} + $self->{'text_space'};
+  $x2 -= $self->{'legend_space'};
+  $y1 += $self->{'legend_space'} + $self->{'text_space'};
+  $y2 -= $self->{'legend_space'} + $self->{'text_space'};
+
+  # draw in the actual legend
+  for $r (0..$rows-1) {
+    for $c (0..$cols-1) {
+      $index = ($r * $cols) + $c;  # find the index in the label array
+      if ($labels[$index]) {
+	# get the color
+        $color = $self->{'color_table'}{'dataset'.$index}; 
+        
+	# find the x-y coords
+	$x = $x1 + ($col_width * $c);
+        $y = $y1 + ($row_height * $r) + $h/2;
+
+	# draw the line first
+        $self->{'gd_obj'}->line($x, $y, 
+                                $x + $self->{'legend_example_size'}, $y,
+                                $color);
+
+        # now the label
+	$x += $self->{'legend_example_size'} + (2 * $self->{'text_space'});
+	$y -= $h/2;
+	$self->{'gd_obj'}->string($font, $x, $y, $labels[$index], $color);
+      }
+    }
+  }
+      
+  # mark off the space used
+  $self->{'curr_y_min'} += ($rows * $row_height) + $self->{'text_space'}
+			      + 2 * $self->{'legend_space'}; 
+
+  # now return
+  return;
+}
+
+
+## put the legend on the left of the chart
+sub _draw_left_legend {
+  my $self = shift;
+  my @labels = @{$self->{'legend_labels'}};
+  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h);
+  my $font = $self->{'legend_font'};
+ 
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # get the miscellaneous color
+  $misccolor = $self->{'color_table'}{'misc'};
+
+  # find out how wide the largest label is
+  $width = (2 * $self->{'text_space'})
+    + ($self->{'max_legend_label'} * $w)
+    + $self->{'legend_example_size'}
+    + (2 * $self->{'legend_space'});
+
+  # get some base x-y coordinates
+  $x1 = $self->{'curr_x_min'};
+  $x2 = $self->{'curr_x_min'} + $width;
+  $y1 = $self->{'curr_y_min'} + $self->{'graph_border'} ;
+  $y2 = $self->{'curr_y_min'} + $self->{'graph_border'} + $self->{'text_space'}
+          + ($self->{'num_datasets'} * ($h + $self->{'text_space'}))
+	  + (2 * $self->{'legend_space'});
+
+  # box the legend off
+  $self->{'gd_obj'}->rectangle ($x1, $y1, $x2, $y2, $misccolor);
+
+  # leave that nice space inside the legend box
+  $x1 += $self->{'legend_space'};
+  $y1 += $self->{'legend_space'} + $self->{'text_space'};
+
+  # now draw the actual legend
+  for (0..$#labels) {
+    # get the color
+    $color = $self->{'color_table'}{'dataset'.$_};
+
+    # find the x-y coords
+    $x2 = $x1;
+    $x3 = $x2 + $self->{'legend_example_size'};
+    $y2 = $y1 + ($_ * ($self->{'text_space'} + $h)) + $h/2;
+
+    # do the line first
+    $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+    
+    # now the label
+    $x2 = $x3 + (2 * $self->{'text_space'});
+    $y2 -= $h/2;
+    $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$_], $color);
+  }
+
+  # mark off the used space
+  $self->{'curr_x_min'} += $width;
+
+  # and return
+  return;
+}
+
+
+## draw the label for the x-axis
+sub _draw_x_label {
+  my $self = shift;
+  my $label = $self->{'x_label'};
+  my $font = $self->{'label_font'};
+  my $color = $self->{'color_table'}{'text'};
+  my ($h, $w, $x, $y);
+
+  # make sure it's a real GD Font object
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The x-axis label font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # make sure it goes in the right place
+  $x = ($self->{'curr_x_max'} - $self->{'curr_x_min'}) / 2
+         + $self->{'curr_x_min'} - (length($label) * $w) / 2;
+  $y = $self->{'curr_y_max'} - ($self->{'text_space'} + $h);
+
+  # now write it
+  $self->{'gd_obj'}->string ($font, $x, $y, $label, $color);
+
+  # mark the space written to as used
+  $self->{'curr_y_max'} -= $h + 2 * $self->{'text_space'};
+
+  # and return
+  return;
+}
+
+
+## draw the label for the y-axis
+sub _draw_y_label {
+  my $self = shift;
+  my $side = shift;
+  my $font = $self->{'label_font'};
+  my $color = $self->{'color_table'}{'text'};
+  my ($label, $h, $w, $x, $y);
+
+  # get the label
+  if ($side eq 'left') {
+    $label = $self->{'y_label'};
+  }
+  elsif ($side eq 'right') {
+    $label = $self->{'y_label2'};
+  }
+
+  # make sure it's a real GD Font object
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The x-axis label font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # make sure it goes in the right place
+  if ($side eq 'left') {
+    $x = $self->{'curr_x_min'} + $self->{'text_space'};
+  }
+  elsif ($side eq 'right') {
+    $x = $self->{'curr_x_max'} - $self->{'text_space'} - $h;
+  }
+  $y = ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / 2
+         + $self->{'curr_y_min'} + (length($label) * $w) / 2;
+
+  # write it
+  $self->{'gd_obj'}->stringUp($font, $x, $y, $label, $color);
+
+  # mark the space written to as used
+  if ($side eq 'left') {
+    $self->{'curr_x_min'} += $h + 2 * $self->{'text_space'};
+  }
+  elsif ($side eq 'right') {
+    $self->{'curr_x_max'} -= $h + 2 * $self->{'text_space'};
+  }
+
+  # now return
+  return;
+}
+
+
+## draw the ticks and tick labels
+sub _draw_ticks {
+  my $self = shift;
+
+  # draw the x ticks
+  $self->_draw_x_ticks;
+
+  # now the y ticks
+  $self->_draw_y_ticks;
+
+  # then return
+  return;
+}
+
+
+## draw the x-ticks and their labels
+sub _draw_x_ticks {
+  my $self = shift;
+  my $data = $self->{'dataref'};
+  my $font = $self->{'tick_label_font'};
+  my $textcolor = $self->{'color_table'}{'text'};
+  my $misccolor = $self->{'color_table'}{'misc'};
+  my ($h, $w);
+  my ($x1, $x2, $y1, $y2);
+  my ($width, $delta);
+  my ($stag);
+
+  # make sure we got a real font
+  unless ((ref $font) eq 'GD::Font') {
+    croak "The tick label font you specified isn\'t a GD Font object";
+  }
+
+  # get the height and width of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # allow for the amount of space the y-ticks will push the
+  # axes over to the right
+  $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
+         + (3 * $self->{'text_space'}) + $self->{'tick_len'};
+  $y1 = $self->{'curr_y_max'} - $h - $self->{'text_space'};
+
+  # get the delta value, figure out how to draw the labels
+  $width = $self->{'curr_x_max'} - $x1;
+  $delta = $width / $self->{'num_datapoints'};
+  if ($delta <= ($self->{'x_tick_label_length'} * $w)) {
+    if ($self->{'x_ticks'} =~ /^normal$/i) {
+      $self->{'x_ticks'} = 'staggered';
+    }
+  }
+ 
+  # now draw the labels 
+  if ($self->{'x_ticks'} =~ /^normal$/i) { # normal ticks
+    if ($self->{'skip_x_ticks'}) { # draw only every nth tick and label
+      for (0..int (($self->{'num_datapoints'} - 1) / $self->{'skip_x_ticks'})) {
+        $x2 = $x1 + ($delta / 2) + ($delta * ($_ * $self->{'skip_x_ticks'})) 
+	        - ($w*length($data->[0][$_*$self->{'skip_x_ticks'}])) / 2;
+        $self->{'gd_obj'}->string($font, $x2, $y1, 
+	                          $data->[0][$_*$self->{'skip_x_ticks'}], 
+				  $textcolor);
+      }     
+    }
+    elsif ($self->{'custom_x_ticks'}) { # draw only the ticks they wanted
+      for (@{$self->{'custom_x_ticks'}}) {
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+      }
     }
     else {
-	if ($type eq 'alpha') {
-            @{$ref} = sort {$Chart::Base::b->[$set] cmp $Chart::Base::a->[$set]}
-	                       @{$ref};
+      for (0..$self->{'num_datapoints'}-1) {
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+      }
+    }
+  }
+  elsif ($self->{'x_ticks'} =~ /^staggered$/i) { # staggered ticks
+    if ($self->{'skip_x_ticks'}) {
+      $stag = 0;
+      for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
+        $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) 
+	        - ($w*length($data->[0][$_*$self->{'skip_x_ticks'}])) / 2;
+        if (($stag % 2) == 1) {
+          $y1 -= $self->{'text_space'} + $h;
         }
-        else {
-            @{$ref} = sort {$Chart::Base::b->[$set] <=> $Chart::Base::a->[$set]}
-                               @{$ref};
-        }   
-    }
-    
-    for $i (0..$#{$dataref->[0]}) {
-        for $j (0..$#{$dataref}) {
-            $dataref->[$j][$i] = $ref->[$i][$j];
+        $self->{'gd_obj'}->string($font, $x2, $y1, 
+	                          $data->[0][$_*$self->{'skip_x_ticks'}], 
+				  $textcolor);
+        if (($stag % 2) == 1) {
+          $y1 += $self->{'text_space'} + $h;
         }
+	$stag++;
+      }
     }
-					    
-    
-    $obj->{'data'} = $dataref;
-}
-
-sub draw_axes {
-    my $obj = shift;
-    my $black = $obj->get_color ('black');
-    
-    $obj->{'im'}->rectangle ($obj->{'x_min'}, $obj->{'y_min'},
-			     $obj->{'x_max'}, $obj->{'y_max'},
-			     $black);
-}
-
-sub set_user_colors {
-    my $obj = shift;
-    my @rgbs = @{$obj->{'colors'}};
-
-    for (@rgbs) {
-	if ($_) {
-	    $obj->{'im'}->colorAllocate (@{$_});
-	}
-    }
-}
-
-sub get_color {
-    my $obj = shift;
-    my $color = shift;
-    my %colors = ('white' => [250,250,250],
-		  'black' => [0,0,0],
-		  'red' => [225,0,0],
-		  'green' => [0,225,0],
-		  'blue' => [0,0,225],
-		  'purple' => [200,0,200],
-		  'light_blue' => [0,200,200],
-		  'yellow' => [225,225,0],
-		  'orange' => [250,170,85],
-		  'grey' => [200,200,200]);
-    my @rgb = (defined($colors{$color})) ? @{$colors{$color}} : (0,0,0);
-
-    return $obj->{'im'}->colorClosest(@rgb);
-}
-
-sub data_color {
-    my $obj = shift;
-    my $num = shift;
-    my %colors = (0 => 'red',
-		  1 => 'blue',
-		  2 => 'green',
-		  3 => 'purple',
-		  4 => 'orange',
-		  5 => 'light_blue',
-		  6 => 'yellow');
-    my ($col,%dots);
-
-    $col = ($obj->{'colors'}->[$num]) 
-    		? $obj->{'im'}->colorClosest (@{$obj->{'colors'}->[$num]})
-		: $obj->get_color ($colors{$num});
-
-    %dots = (4 => [$col],
-             0 => [$col,$col,gdTransparent],
-	     1 => [$col,$col,$col,$col,$col,$col,gdTransparent,gdTransparent,gdTransparent,$col,$col,$col,gdTransparent,gdTransparent,gdTransparent],
-	     2 => [$col,$col,$col,$col,$col,$col,$col,$col,gdTransparent,gdTransparent,gdTransparent,gdTransparent],
-	     3 => [$col,$col,$col,$col,gdTransparent,gdTransparent]);
-
-    if ($obj->{'dashed_lines'} && $obj->{'dashed_lines'} ne '') {
-        $obj->{'im'}->setStyle ((@{$dots{$num}}) 
-	              ? @{$dots{$num}} : ($col,gdTransparent));
-	return gdStyled;
+    elsif ($self->{'custom_x_ticks'}) {
+      $stag = 0;
+      for (sort (@{$self->{'custom_x_ticks'}})) { # sort to make it look good
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        if (($stag % 2) == 1) {
+          $y1 -= $self->{'text_space'} + $h;
+        }
+        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        if (($stag % 2) == 1) {
+          $y1 += $self->{'text_space'} + $h;
+        }
+	$stag++;
+      }
     }
     else {
-        return $col;
+      for (0..$self->{'num_datapoints'}-1) {
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        if (($_ % 2) == 1) {
+          $y1 -= $self->{'text_space'} + $h;
+        }
+        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        if (($_ % 2) == 1) {
+          $y1 += $self->{'text_space'} + $h;
+        }
+      }
     }
+  }
+  elsif ($self->{'x_ticks'} =~ /^vertical$/i) { # vertical ticks
+    $y1 = $self->{'curr_y_max'} - $self->{'text_space'};
+    if ($self->{'skip_x_ticks'}) {
+      for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
+        $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) - $h/2;
+        $y2 = $y1 - (($self->{'x_tick_label_length'} 
+	              - length($data->[0][$_*$self->{'skip_x_ticks'}])) * $w);
+        $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
+                                    $data->[0][$_*$self->{'skip_x_ticks'}], 
+				    $textcolor);
+      }
+    }
+    elsif ($self->{'custom_x_ticks'}) {
+      for (@{$self->{'custom_x_ticks'}}) {
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - $h/2;
+        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($data->[0][$_]))
+                      * $w);
+        $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
+                                    $data->[0][$_], $textcolor);
+      }
+    }
+    else {
+      for (0..$self->{'num_datapoints'}-1) {
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - $h/2;
+        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($data->[0][$_]))
+                      * $w);
+        $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
+                                    $data->[0][$_], $textcolor);
+      }
+    }
+  }
+  else { # error time
+    carp "I don't understand the type of x-ticks you specified";
+  }
+
+  # update the current y-max value
+  if ($self->{'x_ticks'} =~ /^normal$/i) {
+    $self->{'curr_y_max'} -= $h + (2 * $self->{'text_space'});
+  }
+  elsif ($self->{'x_ticks'} =~ /^staggered$/i) {
+    $self->{'curr_y_max'} -= (2 * $h) + (3 * $self->{'text_space'});
+  }
+  elsif ($self->{'x_ticks'} =~ /^vertical$/i) {
+    $self->{'curr_y_max'} -= ($w * $self->{'x_tick_label_length'})
+                               + (2 * $self->{'text_space'});
+  }
+
+  # now plot the ticks
+  $y1 = $self->{'curr_y_max'};
+  $y2 = $self->{'curr_y_max'} - $self->{'tick_len'};
+  if ($self->{'skip_x_ticks'}) {
+    for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
+      $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'}));
+      $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+    }
+  }
+  elsif ($self->{'custom_x_ticks'}) {
+    for (@{$self->{'custom_x_ticks'}}) {
+      $x2 = $x1 + ($delta/2) + ($delta*$_);
+      $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+    }
+  }
+  else {
+    for (0..$self->{'num_datapoints'}-1) {
+      $x2 = $x1 + ($delta/2) + ($delta*$_);
+      $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+    }
+  }
+
+  # update the current y-max value
+  $self->{'curr_y_max'} -= $self->{'tick_len'};
 }
 
+
+##  draw the y-ticks and their labels
+sub _draw_y_ticks {
+  my $self = shift;
+  my $side = shift || 'left';
+  my $data = $self->{'dataref'};
+  my $font = $self->{'tick_label_font'};
+  my $textcolor = $self->{'color_table'}{'text'};
+  my $misccolor = $self->{'color_table'}{'misc'};
+  my @labels = @{$self->{'y_tick_labels'}};
+  my ($w, $h);
+  my ($x1, $x2, $y1, $y2);
+  my ($height, $delta);
+  my ($s, $f);
+  
+
+  # make sure we got a real font
+  unless ((ref $font) eq 'GD::Font') {
+    croak "The tick label font you specified isn\'t a GD Font object";
+  }
+
+  # find out how big the font is
+  ($w, $h) = ($font->width, $font->height);
+
+  # figure out which ticks not to draw
+  if ($self->{'min_val'} >= 0) {
+    $s = 1;
+    $f = $#labels;
+  }
+  elsif ($self->{'max_val'} <= 0) {
+    $s = 0;
+    $f = $#labels - 1;
+  }
+  else {
+    $s = 0;
+    $f = $#labels;
+  }
+
+  # now draw them
+  if ($side eq 'right') { # put 'em on the right side of the chart
+    # get the base x-y values, and the delta value
+    $x1 = $self->{'curr_x_max'} - $self->{'tick_len'}
+            - (3 * $self->{'text_space'})
+	    - ($w * $self->{'y_tick_label_length'});
+    $y1 = $self->{'curr_y_max'};
+    $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+    $delta = $height / ($self->{'y_ticks'} - 1);
+
+    # update the curr_x_max value
+    $self->{'curr_x_max'} = $x1;
+
+    # now draw the ticks
+    $x2 = $x1 + $self->{'tick_len'};
+    for ($s..$f) {
+      $y2 = $y1 - ($delta * $_);
+      $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+    }
+  
+    # update the current x-min value
+    $x1 += $self->{'tick_len'} + (2 * $self->{'text_space'});
+    $y1 -= $h/2;
+
+    # now draw the labels
+    for (0..$#labels) {
+      $y2 = $y1 - ($delta * $_);
+      $self->{'gd_obj'}->string($font, $x1, $y2, $labels[$_], $textcolor);
+    }
+  }
+  elsif ($side eq 'both') { # put the ticks on the both sides
+    ## left side first
+
+    # get the base x-y values
+    $x1 = $self->{'curr_x_min'} + $self->{'text_space'};
+    $y1 = $self->{'curr_y_max'} - $h/2;
+
+    # now draw the labels
+    $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+    $delta = $height / ($self->{'y_ticks'} - 1);
+    for (0..$#labels) {
+      $y2 = $y1 - ($delta * $_);
+      $x2 = $x1 + ($w * $self->{'y_tick_label_length'}) 
+              - ($w * length($labels[$_]));
+      $self->{'gd_obj'}->string($font, $x2, $y2, $labels[$_], $textcolor);
+    }
+
+    # and update the current x-min value
+    $self->{'curr_x_min'} += (3 * $self->{'text_space'}) 
+                             + ($w * $self->{'y_tick_label_length'});
+  
+    # now draw the ticks (skipping the one at zero);
+    $x1 = $self->{'curr_x_min'};
+    $x2 = $self->{'curr_x_min'} + $self->{'tick_len'};
+    $y1 += $h/2;
+    for ($s..$f) {
+      $y2 = $y1 - ($delta * $_);
+      $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+    }
+  
+    # update the current x-min value
+    $self->{'curr_x_min'} += $self->{'tick_len'};
+
+    ## now the right side
+    # get the base x-y values, and the delta value
+    $x1 = $self->{'curr_x_max'} - $self->{'tick_len'}
+            - (3 * $self->{'text_space'})
+	    - ($w * $self->{'y_tick_label_length'});
+    $y1 = $self->{'curr_y_max'};
+    $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+    $delta = $height / ($self->{'y_ticks'} - 1);
+
+    # update the curr_x_max value
+    $self->{'curr_x_max'} = $x1;
+
+    # now draw the ticks (skipping the one at zero);
+    $x2 = $x1 + $self->{'tick_len'};
+    for ($s..$f) {
+      $y2 = $y1 - ($delta * $_);
+      $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+    }
+  
+    # update the current x-min value
+    $x1 += $self->{'tick_len'} + (2 * $self->{'text_space'});
+    $y1 -= $h/2;
+
+    # now draw the labels
+    for (0..$#labels) {
+      $y2 = $y1 - ($delta * $_);
+      $self->{'gd_obj'}->string($font, $x1, $y2, $labels[$_], $textcolor);
+    }   
+  }
+  else { # just the left side
+    # get the base x-y values
+    $x1 = $self->{'curr_x_min'} + $self->{'text_space'};
+    $y1 = $self->{'curr_y_max'} - $h/2;
+
+    # now draw the labels
+    $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+    $delta = $height / ($self->{'y_ticks'} - 1);
+    for (0..$#labels) {
+      $y2 = $y1 - ($delta * $_);
+      $x2 = $x1 + ($w * $self->{'y_tick_label_length'}) 
+              - ($w * length($labels[$_]));
+      $self->{'gd_obj'}->string($font, $x2, $y2, $labels[$_], $textcolor);
+    }
+
+    # and update the current x-min value
+    $self->{'curr_x_min'} += (3 * $self->{'text_space'}) 
+                             + ($w * $self->{'y_tick_label_length'});
+  
+    # now draw the ticks
+    $x1 = $self->{'curr_x_min'};
+    $x2 = $self->{'curr_x_min'} + $self->{'tick_len'};
+    $y1 += $h/2;
+    for ($s..$f) {
+      $y2 = $y1 - ($delta * $_);
+      $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+    }
+  
+    # update the current x-min value
+    $self->{'curr_x_min'} += $self->{'tick_len'};
+  }
+
+  # and return
+  return;
+}
+
+
+##  put a grey background on the plot of the data itself
+sub _grey_background {
+  my $self = shift;
+
+  # draw it
+  $self->{'gd_obj'}->filledRectangle ($self->{'curr_x_min'},
+                                      $self->{'curr_y_min'},
+				      $self->{'curr_x_max'},
+				      $self->{'curr_y_max'},
+				      $self->{'color_table'}{'grey'});
+
+  # now return
+  return;
+}
+
+
+## be a good module and return positive
 1;
-

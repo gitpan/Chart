@@ -1,10 +1,10 @@
-#============================#
-#                            #
-#  Chart::Bars               #
-#  written by davidb bonner  #
-#  dbonner@cs.bu.edu         #
-#                            #
-#============================#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Bars                #
+#                             #
+#  written by david bonner    #
+#  dbonner@cs.bu.edu          #
+#  theft is treason, citizen  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Bars;
 
@@ -13,304 +13,116 @@ use GD;
 use Carp;
 use strict;
 
-@Chart::Bars::ISA = qw ( Chart::Base );
+@Chart::Bars::ISA = qw(Chart::Base);
+$Chart::Bars::VERSION = 0.99;
 
-#==================#
-#  public methods  #
-#==================#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  public methods go here  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 
 
-#===================#
-#  private methods  #
-#===================#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  private methods go here  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
-sub find_range {
-    my $obj = shift;
-    my $dataref = $obj->{'data'};
-    my $max = 0;
-    my ($tmp, $i);
-    
-    for (1..$#{$dataref}) {
-	for $i (0..$#{$dataref->[$_]}) {
-	    if ($dataref->[$_][$i] > $max) {
-		$max = $dataref->[$_][$i];
-	    }
+## finally get around to plotting the data
+sub _draw_data {
+  my $self = shift;
+  my $data = $self->{'dataref'};
+  my $misccolor = $self->{'color_table'}{'misc'};
+  my ($x1, $x2, $x3, $y1, $y2, $y3);
+  my ($width, $height, $delta1, $delta2, $map, $mod);
+  my ($i, $j, $color);
+
+  # init the imagemap data field if they wanted it
+  if ($self->{'imagemap'} =~ /^true$/i) {
+    $self->{'imagemap_data'} = [];
+  }
+
+  # find both delta values ($delta1 for stepping between different
+  # datapoint names, $delta2 for setpping between datasets for that
+  # point) and the mapping constant
+  $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
+  $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+  $delta1 = $width / $self->{'num_datapoints'};
+  $map = $height / ($self->{'max_val'} - $self->{'min_val'});
+  if ($self->{'spaced_bars'} =~ /^true$/i) {
+    $delta2 = $delta1 / ($self->{'num_datasets'} + 2);
+  }
+  else {
+    $delta2 = $delta1 / $self->{'num_datasets'};
+  }
+
+  # get the base x-y values
+  $x1 = $self->{'curr_x_min'};
+  if ($self->{'min_val'} >= 0) {
+    $y1 = $self->{'curr_y_max'};
+    $mod = $self->{'min_val'};
+  }
+  elsif ($self->{'max_val'} <= 0) {
+    $y1 = $self->{'curr_y_min'};
+    $mod = $self->{'max_val'};
+  }
+  else {
+   $y1 = $self->{'curr_y_min'} + ($map * $self->{'max_val'});
+   $mod = 0;
+   $self->{'gd_obj'}->line ($self->{'curr_x_min'}, $y1,
+                            $self->{'curr_x_max'}, $y1,
+                            $misccolor);
+  }
+  
+  # draw the bars
+  for $i (1..$self->{'num_datasets'}) {
+    # get the color for this dataset
+    $color = $self->{'color_table'}{'dataset'.($i-1)};
+
+    # draw every bar for this dataset
+    for $j (0..$self->{'num_datapoints'}) {
+      # don't try to draw anything if there's no data
+      if (defined ($data->[$i][$j])) {
+	# find the bounds of the rectangle
+        if ($self->{'spaced_bars'} =~ /^true$/i) {
+          $x2 = $x1 + ($j * $delta1) + ($i * $delta2);
 	}
-    }
+	else {
+	  $x2 = $x1 + ($j * $delta1) + (($i - 1) * $delta2);
+	}
+	$y2 = $y1;
+	$x3 = $x2 + $delta2;
+	$y3 = $y1 - (($data->[$i][$j] - $mod) * $map);
 
-    $tmp = ($max) ? 10 ** (int (log ($max) / log (10))) : 10;
-    $max = $tmp * (int ($max / $tmp) + 1);
-    $obj->{'max_val'} = $max;
+	# draw the bar
+	## y2 and y3 are reversed in some cases because GD's fill
+	## algorithm is lame
+	if ($data->[$i][$j] > 0) {
+	  $self->{'gd_obj'}->filledRectangle ($x2, $y3, $x3, $y2, $color);
+	  if ($self->{'imagemap'} =~ /^true$/i) {
+	    $self->{'imagemap_data'}->[$i][$j] = [$x2, $y3, $x3, $y2];
+	  }
+	}
+	else {
+	  $self->{'gd_obj'}->filledRectangle ($x2, $y2, $x3, $y3, $color);
+	  if ($self->{'imagemap'} =~ /^true$/i) {
+	    $self->{'imagemap_data'}->[$i][$j] = [$x2, $y2, $x3, $y3];
+	  }
+	}
+
+	# now outline it
+	$self->{'gd_obj'}->rectangle ($x2, $y3, $x3, $y2, $misccolor);
+      }
+    }
+  }
+      
+  # and finaly box it off 
+  $self->{'gd_obj'}->rectangle ($self->{'curr_x_min'},
+  				$self->{'curr_y_min'},
+				$self->{'curr_x_max'},
+				$self->{'curr_y_max'},
+				$misccolor);
+  return;
+
 }
 
-sub draw_ticks {
-    my $obj = shift;
-    my $dataref = $obj->{'data'};
-    my $black = $obj->get_color ('black');
-    my $grey = $obj->get_color ('grey');
-    my ($h, $w) = (gdSmallFont->height, gdSmallFont->width);
-    my $str_max = 0;
-    my $stag = 0;
-    my ($y_step, $y_diff, $x_step, $val, $str_len);
-    my ($x_min, $x_max, @dec);
-    my @ticks;
-    
-    #===============================#
-    #  check for custom tick array  #
-    #===============================#
-
-    if ($obj->{'custom_x_ticks'}) {
-	@ticks = sort {$Chart::Bars::a <=> $Chart::Bars::b} 
-	           @{$obj->{'custom_x_ticks'}};
-    }
-
-    #==========================#
-    #  draw the y tick labels  #  
-    #==========================#
-
-    $y_diff = ($obj->{'stagger_x_labels'}) 
-	? 2 * $h + $obj->{'text_space'} 
-        : $h + $obj->{'text_space'};
-    $y_step = (($obj->{'y_max'} - 
-		($obj->{'y_min'} + $obj->{'tick_len'} + $y_diff)) 
-	       / $obj->{'y_ticks'});
-
-    for (0..$obj->{'y_ticks'}) {
-	$val = (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
-        @dec = split /\./, $val;
-        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
-	$str_len = length($val);
-	
-	if ($str_len > $str_max) {
-	    $str_max = $str_len;
-	}
-    }
-
-    
-    for (0..$obj->{'y_ticks'}) {
-	$val = (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
-        @dec = split /\./, $val;
-        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
-	$str_len = length($val);
-	$obj->{'im'}->string (gdSmallFont,
-			      $obj->{'x_min'} + ($str_max - $str_len) * $w,
-			      $obj->{'y_max'} - $y_step * $_ - $h / 2
-			         - $obj->{'tick_len'} - $y_diff,
-			      $val,
-			      $black);
-    }
-
-    $obj->{'x_min'} += ($str_max * $w) + 3 * $obj->{'text_space'};
-
-    #==========================#
-    #  draw the x tick labels  #
-    #==========================#
-
-    $x_step = (($obj->{'x_max'} - ($obj->{'x_min'} + $obj->{'tick_len'})) 
-	       / ($#{$dataref->[0]} + 1));
-    ($x_min, $x_max) = ($obj->{'x_min'} + $obj->{'tick_len'} + $x_step / 2,
-			$obj->{'x_max'} - $x_step / 2);
-
-    if (@ticks) {  #custom ticks
-	for (@ticks) {
-	    $val = $dataref->[0][$_];
-	    $str_len = length($val) * ($w/2);
-
-	    my $y;
-	    if ($obj->{'stagger_x_labels'} eq 'true') {
-		$y = ($stag++ % 2) ? $obj->{'y_max'} - (2 * $h)
-		    : $obj->{'y_max'} - ($h);
-	    }
-	    else {
-		$y = $obj->{'y_max'} - (1.5 * $h);
-	    }
-
-	    $obj->{'im'}->string (gdSmallFont,
-				  $x_min + $x_step * $_ - $str_len,
-				  $y,
-				  $dataref->[0][$_],
-				  $black);
-	}
-    }
-    elsif ($obj->{'skip_x_ticks'}) {  #every n ticks
-	for (0..$#{$dataref->[0]}) {
-	    $val = $dataref->[0][$_];
-	    $str_len = length($val) * ($w/2);
-	    if ($_ % $obj->{'skip_x_ticks'} == 0) {
-		my $y;
-		if ($obj->{'stagger_x_labels'} eq 'true') {
-		    $y = ($stag++ % 2) ? $obj->{'y_max'} - (2 * $h)
-			: $obj->{'y_max'} - ($h);
-		}
-		else {
-		    $y = $obj->{'y_max'} - (1.5 * $h);
-		}
-
-		$obj->{'im'}->string (gdSmallFont,
-				  $x_min + $x_step * $_ - $str_len,
-				  $y,
-				  $dataref->[0][$_],
-				  $black);
-	    }
-	}
-    }
-    else {  #all the ticks
-	for (0..$#{$dataref->[0]}) {
-	    $val = $dataref->[0][$_];
-	    $str_len = length($val) * ($w/2);
-
-	    my $y;
-	    if ($obj->{'stagger_x_labels'} eq 'true') {
-		$y = ($stag++ % 2) ? $obj->{'y_max'} - (2 * $h)
-		    : $obj->{'y_max'} - ($h);
-	    }
-	    else {
-		$y = $obj->{'y_max'} - (1.5 * $h);
-	    }
-		
-	    $obj->{'im'}->string (gdSmallFont,
-				  $x_min + ($x_step * $_) - $str_len,
-				  $y,
-				  $val,
-				  $black);
-	}
-    }
-    
-    $obj->{'y_max'} -= ($obj->{'stagger_x_labels'}) 
-	? 2 * $h + $obj->{'text_space'} 
-        : $h + $obj->{'text_space'};
-
-    #======================#
-    #  now draw the ticks  #
-    #======================#
-
-    for (0..$obj->{'y_ticks'}-1) {
-	$obj->{'im'}->line ($obj->{'x_min'} + 2 * $obj->{'text_space'},
-			    $obj->{'y_min'} + $y_step * $_,
-			    $obj->{'x_min'} - $obj->{'tick_len'} 
-			        + 2 * $obj->{'text_space'},
-			    $obj->{'y_min'} + $y_step * $_,
-			    $black);
-	if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
-	    $obj->{'im'}->line ($obj->{'x_min'} + 2 * $obj->{'text_space'},
-	                        $obj->{'y_min'} + $y_step * $_,
-				$obj->{'x_max'},
-				$obj->{'y_min'} + $y_step * $_,
-				$grey);
-	}
-    }
-
-    if (@ticks) {  #custom ticks
-	for (@ticks) {
-	    $obj->{'im'}->line ($x_min + ($x_step * $_),
-				$obj->{'y_max'},
-				$x_min + $x_step * $_,
-				$obj->{'y_max'} - $obj->{'tick_len'},
-				$black);
-	    if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
-		$obj->{'im'}->line ($x_min + ($x_step * $_),
-		                    $obj->{'y_max'} - $obj->{'tick_len'},
-				    $x_min + $x_step * $_,
-				    $obj->{'y_min'},
-				    $grey);
-	    }
-	}
-    }
-    elsif ($obj->{'skip_x_ticks'}) {  #every n ticks
-	for (0..$#{$dataref->[0]}) {
-	    if ($_ % $obj->{'skip_x_ticks'} == 0) {
-		$obj->{'im'}->line ($x_min + ($x_step * $_),
-				    $obj->{'y_max'},
-				    $x_min + $x_step * $_,
-				    $obj->{'y_max'} - $obj->{'tick_len'},
-				    $black);
-	        if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
-                    $obj->{'im'}->line ($x_min + ($x_step * $_),
-                                        $obj->{'y_max'} - $obj->{'tick_len'},
-                                        $x_min + $x_step * $_,
-                                        $obj->{'y_min'},
-                                        $grey);
-                }	
-	    }
-	}
-    }
-    else {
-	for (0..$#{$dataref->[0]}) {
-	    $obj->{'im'}->line ($x_min + ($x_step * $_),
-				$obj->{'y_max'},
-				$x_min + $x_step * $_,
-				$obj->{'y_max'} - $obj->{'tick_len'},
-				$black);
-            if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
-                $obj->{'im'}->line ($x_min + ($x_step * $_),
-                                    $obj->{'y_max'} - $obj->{'tick_len'},
-                                    $x_min + $x_step * $_,
-                                    $obj->{'y_min'},
-                                    $grey);
-            }
-	}
-    }
-
-    $obj->{'x_min'} += $obj->{'tick_len'};
-    $obj->{'y_max'} -= $obj->{'tick_len'};
-}
-
-sub draw_data {
-    my $obj = shift;
-    my $dataref = $obj->{'data'};
-    my $black = $obj->get_color ('black');
-    my ($x_step, $offset, $ref, @data, $color, $i, $j);
-
-    if (!($obj->{'max_val'})) { $obj->find_range ($dataref); }
-    $obj->draw_ticks ($dataref);
-    
-    $x_step = ($obj->{'x_max'} - $obj->{'x_min'}) / ($#{$dataref->[0]} + 1);
-    $offset = $x_step / $#{$dataref};
-    $ref = $obj->data_map ($dataref);
-
-    for $i (0..$#{$ref}) {
-	$color = $obj->data_color ($i);
-	@data = @{$ref->[$i]};
-	for $j (0..$#data) {
-	    $obj->{'im'}->filledRectangle ($obj->{'x_min'} + $i * $offset
-					       + $x_step * $j,
-					   $data[$j],
-					   $obj->{'x_min'} + ($i + 1) * $offset
-					       + $x_step * $j,
-					   $obj->{'y_max'},
-					   $color) if defined ($data[$j]);
-	    $obj->{'im'}->rectangle ($obj->{'x_min'} + $i * $offset 
-				         + $x_step * $j,
-				     $data[$j],
-				     $obj->{'x_min'} + ($i + 1) * $offset
-				         + $x_step * $j,
-				     $obj->{'y_max'},
-				     $black) if defined ($data[$j]);
-	}
-    }
-
-    $obj->draw_axes;
-}
-
-sub data_map {
-    my $obj = shift;
-    my $dataref = $obj->{'data'};
-    my ($ref, $map, $i, $j);
-    
-    $map = ($obj->{'max_val'})
-                ? ($obj->{'y_max'} - $obj->{'y_min'}) / $obj->{'max_val'}
-                : ($obj->{'y_max'} - $obj->{'y_min'}) / 10;
-
-    for $i (1..$#{$dataref}) {
-	for $j (0..$#{$dataref->[$i]}) {
-	    $ref->[$i-1][$j] = (defined ($dataref->[$i][$j]))
-	    			? $obj->{'y_max'} - $map * $dataref->[$i][$j]
-				: undef;
-	}
-    }
-
-    return $ref;
-}
-
+## be a good module and return 1
 1;

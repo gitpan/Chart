@@ -1,6 +1,6 @@
 =head1 NAME
 
-Chart::* - a series of charting modules 
+Chart - a series of charting modules 
 
 =head1 SYNOPSIS
 
@@ -18,33 +18,41 @@ Chart::* - a series of charting modules
     # GIFgraph.pm-style API
     @data = ( \@x_tick_labels, \@dataset1, ... , \@dataset_n );
     $obj->gif ( "filename", \@data );
+    $obj->gif ( $filehandle, \@data );
+    $obj->gif ( FILEHANDLE, \@data );
     $obj->cgi_gif ( \@data );
 
     # Graph.pm-style API
     $obj->add_pt ($label, $val_1, ... , $val_n);
     $obj->add_dataset ($val_1, ... , $val_n);
     $obj->gif ( "filename" );
+    $obj->gif ( $filehandle );
+    $obj->gif ( FILEHANDLE );
     $obj->cgi_gif ();
+
+    # Retrieve imagemap information
+    $obj->set ( 'imagemap' => 'true' );
+    $imagemap_ref = $obj->imagemap_dump ();
 
 =head1 DESCRIPTION
 
 This module is an attempt to build a general purpose graphing module
-that is easily modified and expanded.  I borrowed most of the API
-from Martien Verbruggen's GIFgraph module.  I liked most of GIFgraph,
-but I thought it was to difficult to modify, and it was missing a few
-things that I needed, most notably legends.  So I decided to write
-a new module from scratch, and I've designed it from the bottom up
-to be easy to modify.  Like GIFgraph, Chart::* uses Lincoln Stein's GD 
-module for all of its graphics primitives calls.
+that is easily modified and expanded.  I borrowed most of the API from
+Martien Verbruggen's GIFgraph module.  I liked most of GIFgraph, but I
+thought it was to difficult to modify, and it was missing a few things
+that I needed, most notably legends.  So I decided to write a new
+module from scratch, and I've designed it from the bottom up to be
+easy to modify.  Like GIFgraph, Chart uses Lincoln Stein's GD module
+for all of its graphics primitives calls.
 
 =head2 use-ing Chart
 
-Okay, so you caught me.  There's really no Chart::type module.
-All of the different chart types (Points, Lines, Bars, LinesPoints,
-StackedBars, Pie, and Pareto so far) are classes by themselves, each
-inheriting a bunch of methods from the Chart::Base class.  Simply replace
-the word type with the type of chart you want and you're on your way.  
-For example,
+Okay, so you caught me.  There's really no Chart::type module.  All of
+the different chart types (Points, Lines, Bars, LinesPoint,
+StackedBars, and Composite so far) are classes by themselves, each
+inheriting a bunch of methods from the Chart::Base class.  Simply
+replace the word type with the type of chart you want and you're on
+your way.  For example,
   
   use Chart::Lines;
 
@@ -52,16 +60,16 @@ would invoke the lines module.
 
 =head2 Getting an object
 
-The new method can either be called without arguments, in which
-case it returns an object with the default image size (400x300 pixels),
-or you can specify the width and height of the image.  Just remember
-to replace type with the type of graph you want.  For example,
+The new method can either be called without arguments, in which case
+it returns an object with the default image size (400x300 pixels), or
+you can specify the width and height of the image.  Just remember to
+replace type with the type of graph you want.  For example,
 
   $obj = Chart::Bars (600,400);
 
-would return a Chart::Bars object containing a 600x400 pixel
-image.  New also initializes most of the default variables, which you 
-can subsequently change with the set method.
+would return a Chart::Bars object containing a 600x400 pixel image.
+New also initializes most of the default variables, which you can
+subsequently change with the set method.
 
 =head2 Setting different options
 
@@ -73,10 +81,6 @@ values.  You can pass it a hash that you've already constructed, like
   
 or you can try just constructing the hash inside the set call, like
 
-  $obj->set ('title', 'Foo Bar');
-
-or
-
   $obj->set ('title' => 'Foo Bar');
 
 The following are all of the currently supported options:
@@ -85,13 +89,13 @@ The following are all of the currently supported options:
 
 =item 'transparent'
 
-Makes the background of the image transparent if set to 'true'.  Useful
-for making web page images.  Default is 'false'.
+Makes the background of the image transparent if set to 'true'.
+Useful for making web page images.  Default is 'false'.
 
 =item 'gif_border'
 
-Sets the number of pixels used as a border between the graph
-and the edges of the gif.  Defaults to 10.
+Sets the number of pixels used as a border between the graph and the
+edges of the gif.  Defaults to 10.
 
 =item 'graph_border'
 
@@ -106,26 +110,29 @@ readable.  Defaults to 2.
 =item 'title'
 
 Tells GD graph what to use for the title of the graph.  If empty,
-no title is drawn.  Default is empty.
+no title is drawn.  It recognizes '\n' as a newline, and acts accordingly.
+Default is empty.
 
 =item 'sub_title'
 
-The second line for the title, if needed.  Default is empty.
+Deprecated, left in for backwards-compatibility.  This option will probably
+be taken out of the next release.
 
 =item 'x_label'
 
-Tells Chart::* what to use for the x-axis label.  If empty, no label
+Tells Chart what to use for the x-axis label.  If empty, no label
 is drawn.  Default is empty.
 
 =item 'y_label'
 
-Tells Chart::* what to use for the y-axis label.  If empty, no label
+Tells Chart what to use for the y-axis label.  If empty, no label
 is drawn.  Default is empty.
 
 =item 'legend'
 
-Draws a legend in the upper-right corner of the gif when set to 'true'.  
-Default is 'true'.
+Specifies the placement of the legend.  Valid values are 'left', 'right',
+'top', 'bottom'.  Setting this to 'none' tells chart not to draw a
+legend.  Default is 'bottom'.
 
 =item 'legend_labels'
 
@@ -148,44 +155,40 @@ are taken from the array of data point labels.
 
 Sets the length of the x- and y-ticks in pixels.  Default is 4. 
 
-=item 'grid_lines'
+=item 'x_ticks'
 
-Adds light grey grid lines in the back of the chart if set to 'true'.
-Default is undef.
-
-=item 'stagger_x_labels'
-
-Staggers the x-tick labels vertically to make them readable if set 
-to 'true'.  Default is 'true'.
+Specifies how to draw the x-tick labels.  Valid values are 'normal',
+'staggered' (staggers the labels vertically), and 'vertical' (the
+labels are draw upwards).  Default is 'normal'.
 
 =item 'y_ticks'
 
-Sets the number of y_ticks to draw.  Default is 5.
+Sets the number of y_ticks to draw.  Default is 6.
 
 =item 'max_val'
 
-Sets the maximum y-value on the graph, cancelling the auto-scaling.
+Sets the maximum y-value on the graph, overriding the normal auto-scaling.
+Default is undef.
+
+=item 'min_val'
+
+Sets the minimum y-value on the graph, overriding the normal auto-scaling.
 Default is undef.
 
 =item 'pt_size'
 
-Sets the size of the points for points, linespoints, and pareto
-graphs.  Points are drawn as squares with sides of length 'pt_size'.
-Default is 4.
+Sets the radius of the points (for Chart::Points, etc.) in pixels.  
+Default is 18.
 
-=item 'dashed_lines'
+=item 'brush_size'
 
-Uses dashed lines, instead of solid lines, for the graph.  If this
-is set to any other value than '' or undef, it will draw dashed
-lines.  (I use this when the chart is going to be printed with a B&W
-printer.  Unfortunately, it's hard to differentiate the lines after
-4 datasets.  There just weren't enough different ways to make dotted
-lines.)  Default is undef.
+Sets the width of the lines (for Chart::Lines, etc.) in pixels.
+Default is 6.
 
 =item 'skip_x_ticks'
 
 Sets the number of x-ticks and x-tick labels to skip.  (ie.  
-if 'skip_x_ticks' was set to 4, Chart::* would draw every 4th x-tick
+if 'skip_x_ticks' was set to 4, Chart would draw every 4th x-tick
 and x-tick label).  Default is undef.
 
 =item 'custom_x_ticks'
@@ -199,18 +202,46 @@ array.  (ie., if 'custom_x_ticks' is assigned [0,3,4], then the 0th,
 
 =item 'colors'
 
-This option allows you to specify colors for the different datasets.
-It should be assigned a reference to an array of array references.
-Setting an entry to undef lets Chart::* pick the color for you.  So,
+This option lets you control the colors the chart will use.  It takes
+a reference to a hash.  The hash should contain keys mapped to references
+to arrays of rgb values.  For instance,
 
-    $obj->set ('colors' => [undef, [0,0,0], [255,0,0]]);
+	$obj->set('colors' => {'background' => [255,255,255]});
 
-would let Chart::* pick the color for the first dataset, set the second
-to black, and the third to red.  Default is undef.
+sets the background color to white (which is the default).  Valid keys for
+this hash are
+
+	'background' (background color for the gif)
+	'text' (all the text in the chart)
+	'dataset0'..'dataset15' (the different datasets)
+	'misc' (everything else, ie. ticks, box around the legend)
+
+NB. For composite charts, there is a limit of 8 datasets per component.
+The colors for 'dataset8' through 'dataset15' become the colors
+for 'dataset0' through 'dataset7' for the second component chart.
+
+=item 'grey_background'
+
+Puts a nice soft grey background on the actual data plot when
+set to 'true'.  Default is 'true'.
+
+=item 'spaced_bars'
+
+Leaves space between the groups of bars at each data point when set
+to 'true'.  This just makes it easier to read a bar chart.  Default
+is 'true'.
+
+=item 'imagemap'
+
+Lets Chart know you're going to ask for information about the placement
+of the data for use in creating an image map from the gif.  This information
+can be retrieved using the imagemap_dump() method.  NB. that the 
+imagemap_dump() method cannot be called until after the Chart has been
+generated (ie. using the gif() or cgi_gif() methods).
 
 =item 'sort'
 
-Tells Chart::* to sort the data before plotting it.  Can be assigned
+Tells Chart to sort the data before plotting it.  Can be assigned
 an order ('asc' or 'desc' for ascending and descending, respectively),
 in which case it sorts numerically.  Or it can also be assigned an
 array reference.  The array reference should contain 3 elements:  the
@@ -234,15 +265,62 @@ Turns off the default sort for pareto graphs.  Default is undef.
 
 =item 'cutoff'
 
-Only used for pareto graphs, this option determines where the 
+Only used for pareto charts, this option determines where the 
 cut-off point is.  It then lumps everything after the highest 'cutoff' 
-data points into an 'Other' entry on the graph.  Default
-is 5.
+data points into an 'Other' entry on the chart.  Default is 5.
 
 =item 'nocutoff'
 
 Turns off the default 'cutoff' feature of pareto graphs.  Defaut is 
 undef.
+
+=item 'composite_info'
+
+This option is only used for composite charts.  It contains the
+information about which types to use for the two component charts,
+and which datasets belonf to which component chart.  It should be
+a reference to an array of array references, containing information 
+like the following
+
+	$obj->set ('composite_info' => [ ['Bars', [1,2]],
+					 ['Lines', [3,4] ]);
+
+This example would set the two component charts to be a bar chart and
+a line chart.  It would use the first two data sets for the bar 
+chart (note that the numbering starts at 1, not zero like most of
+the other numbered things in Chart), and the second two data sets
+for the line chart.  The default is undef.
+
+NB. Chart::Composite can only do two component charts.
+
+=item 'min_val1', 'min_val2'
+
+Only for composite charts, these options specify the minimum y-value
+for the first and second components respectively.  Both default to
+undef.
+
+=item 'max_val1', 'max_val2'
+
+Only for composite charts, these options specify the maximum y-value
+for the first and second components respectively.  Both default to
+undef.
+
+=item 'ylabel2'
+
+The label for the right y-axis (the second component chart) on a composite
+chart.  Default is undef.
+
+=item 'yticks1', 'y_ticks2'
+
+The number of y ticks to use on the first and second y-axis on a composite
+chart.  Please note that if you just set the 'y_ticks' option, both axes 
+will use that number of y ticks.  Both default to undef.
+
+=item 'same_y_axes'
+
+Forces both component charts in a composite chart to use the same maximum 
+and minimum y-values if set to 'true'.  This helps to keep the composite 
+charts from being too confusing.  Default is undef.
 
 =back 
 
@@ -275,10 +353,10 @@ set.  In general, the @data array should look something like
 And no worries, I make my own internal copy of the data, so that it doesn't
 mess with yours.
 
-=item CGI and Chart::*
+=item CGI and Chart
 
 Okay, so you're probably thinking, "Do I always have to save these images
-to disk?  What if I want to use Chart::* to create dynamic images for my
+to disk?  What if I want to use Chart to create dynamic images for my
 web site?"  Well, here's the answer to that.
 
   $obj->cgi_gif ( \@data );
@@ -295,8 +373,8 @@ array should be set up the same way as for the normal gif method.
 You might ask, "But what if I just want to add a few points to the graph, 
 and then display it, without all those references to references?".  Well,
 friend, the solution is simple.  Borrowing the add_pt idea from Matt
-Kruse's Graph.pm, you simply make a few calls to the add_pt method, like
-so:
+Kruse's Graph module, you simply make a few calls to the add_pt method,
+like so:
 
     $obj->add_pt ('foo', 30, 25);
     $obj->add_pt ('bar', 16, 32);
@@ -311,10 +389,10 @@ method:
 These methods check to make sure that the points and datasets you are
 adding are the same size as the ones already there.  So, if you have
 two datasets currently stored, and try to add a data point with three
-different values, it will carp (from Carp.pm) an error message and
-return undef.  Similarly, if you try to add a dataset with 4 data points,
+different values, it will carp (per the Carp module) an error message.
+Similarly, if you try to add a dataset with 4 data points,
 and all the other datasets have 3 data points, it will carp an error
-message and return undef.
+message.
 
 Don't forget, when using this API, that I treat the first dataset as
 a series of x-tick labels.  So, in the above examples, the graph would
@@ -334,29 +412,37 @@ have been entered.
 If you want a copy of the data that has been added so far, make a call
 to the get_data method like so:
 
-    $dataref = $obj->get_data;
+    	$dataref = $obj->get_data;
 
 It returns (you guessed it!) a reference to an array of references to
 datasets.  So the x-tick labels would be stored as
 
-    @x_labels = @{$dataref->[0]};
+    	@x_labels = @{$dataref->[0]};
 
 =item Sending the image to a file
 
-Invoking the gif method causes the graph to be plotted and saved to 
-a file.  It takes the name of the output file as an argument.  For example,
+If you just want to print this chart to a file, all you have to do
+is pass the name of the file to the gif() method.
 
-  $obj->gif ("foo.gif");
+  	$obj->gif ("foo.gif");
 
-would plot the data , and the save the image to foo.gif.
+=item Sending the image to a filehandle
 
-=item CGI and Chart::*
+If you want to do something else with the image, you can also pass
+a filehandle (either a typeglob or a FileHandle object) to gif, and
+it will print directly to that.
+
+	$obj->gif ($filehandle);
+	$obj->gif (FILEHANDLE);
+
+
+=item CGI and Chart
 
 Okay, so you're probably thinking (again), "Do I always have to save these 
-images to disk?  What if I want to use Chart::* to create dynamic images for
+images to disk?  What if I want to use Chart to create dynamic images for
 my web site?"  Well, here's the answer to that.
 
-  $obj->cgi_gif ();
+  	$obj->cgi_gif ();
 
 The cgi_gif method will print the chart, along with the appropriate http
 header, to stdout, allowing you to call chart-generating scripts directly
@@ -364,22 +450,47 @@ from your html pages (ie. with a <img src=image.pl> HTML tag).
 
 =back
 
+=head2 Imagemap Support
 
+Chart can also return the pixel positioning information so that you can
+create image maps from the gifs Chart generates.  Simply set the 'imagemap'
+option to 'true' before you generate the gif, then call the imagemap_dump()
+method afterwards to retrieve the information.  You will be returned a
+data structure almost identical to the @data array described above to pass
+the data into Chart.
+
+	$imagemap_data = $obj->imagemap_dump ();
+
+Instead of single data values, you will be passed references to arrays
+of pixel information.  For Bars and StackedBars charts, the arrays will
+contain two x-y pairs (specifying the upper left and lower right corner
+of the bar), like so
+
+	( $x1, $y1, $x2, $y2 ) = @{ $imagemap_data->[$dataset][$datapoint] };
+
+For Lines, Points, and LinesPoints, the arrays will contain a single
+x-y pair (specifying the center of the point), like so
+
+	( $x, $y ) = @{ $imagemap_data->[$dataset][$datapoint] };
+
+A few caveats apply here.  First of all, GD treats the upper-left corner
+of the gif as the (0,0) point, so positive y values are measured from the
+top of the gif, not the bottom.  Second, these values will most likely
+contain long decimal values.  GD, of course, has to truncate these to 
+single pixel values.  Since I don't know how GD does it, I can't truncate
+it the same way he does.  In a worst-case scenario, this will result in
+an error of one pixel on your imagemap.  If this is really an issue, your
+only option is to either experiment with it, or to contact Lincoln Stein
+and ask him.  Third, please remember that the 0th dataset will be empty,
+since that's the place in the @data array for the data point labels.
 
 =head1 TO DO
-
-A bunch of things.  The most pressing being
 
 =over 4
 
 =item *
 
-Add in support for negative values.  (I consider this a bug)
-
-=item *
-
-Add more customization, such as fonts, colors, etc. for each element
-of the chart.
+Numeric x-axes.
 
 =item *
 
@@ -389,9 +500,9 @@ Add some 3-D graphs.
 
 =head1 BUGS
 
-This module can't graph negative values yet.  There are probably lots more, 
-since I consider this an alpha release.  Mail me with any bugs, comments, 
-suggestions, flames, death threats, etc. 
+Probably quite a few, since it's been completely rewritten.  As usual,
+please mail me with any bugs, patches, suggestions, comments, flames,
+death threats, etc.
 
 =head1 AUTHOR
 
@@ -399,6 +510,6 @@ David Bonner (dbonner@cs.bu.edu)
 
 =head1 COPYRIGHT
 
-Copyright(c) 1997 by David Bonner.  All rights reserved.  This program is
-free software; you can redistribute it and/or modify it under the same terms
-as Perl itself.
+Copyright(c) 1997-1998 by David Bonner.  All rights reserved.  This program 
+is free software; you can redistribute it and/or modify it under the same 
+terms as Perl itself.

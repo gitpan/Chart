@@ -1,4 +1,8 @@
+rewrite Pie.pm and Pareto.pm
 
-- negatives
-- option to place legend beneath chart
+add Area.pm and StackedArea.pm
+
+support for numerical x-axes
+
+3-D charts
 

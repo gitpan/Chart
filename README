@@ -1,12 +1,18 @@
------------------------------------------------------------------------
-Chart::* version 0.93
------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Chart version 0.99
+-------------------------------------------------------------------------
 
-	This is an alpha release of a general-purpose graphing module 
-using Lincoln Stein's GD.pm for graphics primitives.  It allows easy 
-generation of line, bar, point, point-and-line, stacked bar, pie, and 
-pareto graphs, and is designed to be easily modified/extended/built
-upon.
+	This is the first stable release of a general-purpose graphing
+module.  It uses Lincoln Stein's GD module for graphics primitives.  It
+allows easy generation of line, bar, point, point-and-line, stacked bar,
+and composite charts.
+	Please note that this is a complete rewrite of the previous
+version of Chart.  As such, and home grown hacks may be broken by using
+this new version.  Also, this new beta DOES NOT HAVE Pie and Pareto
+charts.  If you install this over the old version of Chart, you will
+need to erase Pie.pm and Pareto.pm from your site_lib directory.
+	Again, this is just a beta for 1.0, so it is probably buggier
+than version 0.94.  So use it at your own risk.  :)
 
 
 ----------
@@ -28,11 +34,23 @@ put samples of the different charts in the samples/ directory.
 PREREQUISITES
 -------------
 
-Lincoln Stein's GD.pm module
+Lincoln Stein's GD module
 
 -------
 CHANGES
 -------
+
+0.94 - 0.99:
+	Modified the 'title' option to correctly process newlines
+	Deprecated the 'subtitle' option, will remove it in next release
+	Changed the API for specifying colors
+	Added support for printing to file handles
+	Added Chart::Composite
+	Added 'spaced_bars' to make it easy to differentiate the bars
+	Added 'grey_background' to make plot background grey
+	Added support for negative values in the datasets
+	Added methods to remember and dump imagemap pixel information
+	Included rgb.txt with distribution for WinXX users
 
 0.93 - 0.94:
 	Moved the legend down to be flush with the chart
@@ -61,6 +79,6 @@ http://www.cs.bu.edu/staff/TA/dbonner
 COPYRIGHT
 ---------
 
-Copyright(c) 1997 David Bonner.  All rights reserved.  This program is
-free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.
+Copyright(c) 1997-1998 David Bonner.  All rights reserved.  This program 
+is free software; you can redistribute it and/or modify it under the 
+same terms as Perl itself.
