@@ -9,6 +9,7 @@ $g->add_dataset (8, 4, 3, 4, 6);
 $g->add_dataset (5, 7, 2, 7, 9);
 
 $g->set ('title' => 'Lines and Points Chart');
+$g->set ('legend' => 'bottom');
 
 $g->png ("samples/linespoints.png");
 

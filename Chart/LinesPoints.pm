@@ -9,6 +9,15 @@
 #                              #
 #  theft is treason, citizen   #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+# History:
+#---------
+# $RCSfile: LinesPoints.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
+# $Author: dassing $
+# $Log: LinesPoints.pm,v $
+# Revision 1.2  2002/05/31 13:18:02  dassing
+# Release 1.1
+#
+#=====================================================================
 
 package Chart::LinesPoints;
 
@@ -18,7 +27,7 @@ use Carp;
 use strict;
 
 @Chart::LinesPoints::ISA = qw(Chart::Base);
-$Chart::LinesPoints::VERSION = 1.00;
+$Chart::LinesPoints::VERSION = '1.0';
 
 
 my $DEBUG = 0;

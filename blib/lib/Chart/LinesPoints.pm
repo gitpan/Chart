@@ -1,33 +1,30 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Lines                   #
-#                                 #
-#  written by david bonner        #
-#  dbonner@cs.bu.edu              #
-#                                 #
-#  maintained by the Chart Group  #
-#  Chart@wettzell.ifag.de         #
-#                                 #
-#  theft is treason, citizen      #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::LinesPoints          #
+#                              #
+#  written by david bonner     #
+#  dbonner@cs.bu.edu           #
+#                              #
+#  maintained by Chart group   #
+#  Chart@wettzell.ifag.de      #
+#                              #
+#  theft is treason, citizen   #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 # History:
 #---------
-# $RCSfile: Lines.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
-# $Author: dassing $
-# $Log: Lines.pm,v $
-# Revision 1.2  2002/05/31 13:18:02  dassing
-# Release 1.1
-#
+# $RCSfile$ $Revision$ $Date$
+# $Author$
+# $Log$
 #=====================================================================
 
-package Chart::Lines;
+package Chart::LinesPoints;
 
 use Chart::Base;
 use GD;
 use Carp;
 use strict;
 
-@Chart::Lines::ISA = qw(Chart::Base);
-$Chart::Lines::VERSION = '1.0';
+@Chart::LinesPoints::ISA = qw(Chart::Base);
+$Chart::LinesPoints::VERSION = '1.0';
 
 
 my $DEBUG = 0;
@@ -51,7 +48,7 @@ sub _draw_data {
   my ($width, $height, $delta, $map);
   my ($i, $j, $color, $brush);
 
-  # init the imagemap data field if they asked for it
+  # init the imagemap data field if they want it
   if ($self->{'imagemap'} =~ /^true$/i) {
     $self->{'imagemap_data'} = [];
   }
@@ -81,12 +78,12 @@ sub _draw_data {
                              $misccolor);
   }
   
-  printf "Limit: y_max: %7.2f, y_min: %7.2f\n",$self->{'curr_y_max'},$self->{'curr_y_min'}  if $DEBUG;
   # draw the lines
+  printf "Limit: y_max: %7.2f, y_min: %7.2f\n",$self->{'curr_y_max'},$self->{'curr_y_min'}  if $DEBUG;
   for $i (1..$self->{'num_datasets'}) {
     # get the color for this dataset, and set the brush
     $color = $self->_color_role_to_index('dataset'.($i-1));
-    $brush = $self->_prepare_brush ($color);
+    $brush = $self->_prepare_brush ($color, 'line');
     $self->{'gd_obj'}->setBrush ($brush);
 
     # draw every line for this dataset
@@ -172,23 +169,40 @@ sub _draw_data {
            printf  "corrected draw %7.2f,%7.2f --> %7.2f,%7.2f\n",$x2,$y2, $x3,$y3 if $DEBUG;
         } 
 	$self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
-        
+      }
+    }
 
-	# store the imagemap data if they asked for it
+    # reset the brush for points
+    $brush = $self->_prepare_brush ($color, 'point');
+    $self->{'gd_obj'}->setBrush ($brush);
+
+    # draw every point for this dataset
+    for $j (0..$self->{'num_datapoints'}) {
+      # don't try to draw anything if there's no data
+      if (defined ($data->[$i][$j])) {
+        $x2 = $x1 + ($delta * $j);
+        $x3 = $x2;
+        $y2 = $y1 - (($data->[$i][$j] - $mod) * $map);
+        $y3 = $y2;
+
+        # draw the point
+        if ( $y2 >= $self->{'curr_y_min'} && $y2 <= $self->{'curr_y_max'} &&
+             $y3 >= $self->{'curr_y_min'} && $y3 <= $self->{'curr_y_max'} ) {
+           $self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
+        }
+	# remember the imagemap data if they wanted it
 	if ($self->{'imagemap'} =~ /^true$/i) {
-	  $self->{'imagemap_data'}->[$i][$j-1] = [ $x2, $y2 ];
-	  $self->{'imagemap_data'}->[$i][$j] = [ $x3, $y3 ];
+	  $self->{'imagemap_data'}->[$i][$j] = [ $x2, $y2 ];
 	}
       } else {
 	if ($self->{'imagemap'} =~ /^true$/i) {
-	  $self->{'imagemap_data'}->[$i][$j-1] = [ undef(), undef() ];
 	  $self->{'imagemap_data'}->[$i][$j] = [ undef(), undef() ];
         }
       }
     }
   }
       
-  # and finally box it off 
+  # and finaly box it off 
   $self->{'gd_obj'}->rectangle ($self->{'curr_x_min'},
   				$self->{'curr_y_min'},
 				$self->{'curr_x_max'},
@@ -203,11 +217,19 @@ sub _draw_data {
 sub _prepare_brush {
   my $self = shift;
   my $color = shift;
-  my $radius = $self->{'brush_size'}/2;
-  my (@rgb, $brush, $white, $newcolor);
+  my $type = shift;
+  my ($radius, @rgb, $brush, $white, $newcolor);
 
   # get the rgb values for the desired color
   @rgb = $self->{'gd_obj'}->rgb($color);
+
+  # get the appropriate brush size
+  if ($type eq 'line') {
+    $radius = $self->{'brush_size'}/2;
+  }
+  elsif ($type eq 'point') {
+    $radius = $self->{'pt_size'}/2;
+  }
 
   # create the new image
   $brush = GD::Image->new ($radius*2, $radius*2);
@@ -219,6 +241,9 @@ sub _prepare_brush {
 
   # draw the circle
   $brush->arc ($radius-1, $radius-1, $radius, $radius, 0, 360, $newcolor);
+
+  # fill it if we're using lines
+  $brush->fill ($radius-1, $radius-1, $newcolor);
 
   # set the new image as the main object's brush
   return $brush;

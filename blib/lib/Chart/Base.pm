@@ -10,12 +10,9 @@
 #  theft is treason, citizen     #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 # History:
-# $RCSfile: Base.pm,v $ $Revision: 1.3 $ $Date: 2002/05/31 13:18:02 $
+# $RCSfile: Base.pm,v $ $Revision: 1.2 $ $Date: 2002/05/29 16:13:20 $
 # $Author: dassing $
 # $Log: Base.pm,v $
-# Revision 1.3  2002/05/31 13:18:02  dassing
-# Release 1.1
-#
 # Revision 1.2  2002/05/29 16:13:20  dassing
 # Changes included by David Pottage
 #

@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 1.0.1
+Chart version 1.1
 ------------------------------------------------------------------------
 
 
@@ -27,6 +27,20 @@ Lincoln Stein's GD module version 1.20 or higher.
 -------
 CHANGES
 -------
+1.0.1 - 1.1: Changes done by David Pottage:
+        Plot scales can now have any magnitude. 
+        It does not matter if the data covers a range of 100000000000 units
+        or 0.00000000001 units, the scale will be correctly calculated.
+
+        Ticks on plot scales are now plotted on 'round' numbers. 
+        The number & spacing of ticks is chosen based on the data range.
+
+        False zero graphs are now explicitly supported, and will be 
+        generated if the data range merits it. 
+        The instance field 'include_zero' should be set to zero to suppress this.
+
+        Added: include_zero, min_y_ticks, max_y_ticks, integer_ticks_only
+
 1.0 - 1.0.1:
         Fixed _draw_bottom_legend in Base.pm
 
