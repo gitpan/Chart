@@ -1,15 +1,22 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Points                 #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::Points
+#
+#  written by david bonner
+#  dbonner@cs.bu.edu
+# 
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Points.pm,v $ $Revision: 1.4 $ $Date: 2003/02/14 14:22:05 $
+# $Author: dassing $
+# $Log: Points.pm,v $
+# Revision 1.4  2003/02/14 14:22:05  dassing
+# First setup to cvs
+#
+#====================================================================
 
 package Chart::Points;
 
@@ -19,7 +26,7 @@ use Carp;
 use strict;
 
 @Chart::Points::ISA = qw(Chart::Base);
-$Chart::Points::VERSION = '2.1';
+$Chart::Points::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -39,6 +46,7 @@ sub _draw_data {
   my ($x1, $x2, $x3, $y1, $y2, $y3, $mod);
   my ($width, $height, $delta, $map, $delta_num, $zero_offset);
   my ($i, $j, $color, $brush);
+  my $diff;
 
   # init the imagemap data field if they want it
   if ($self->{'imagemap'} =~ /^true$/i) {
@@ -49,12 +57,16 @@ sub _draw_data {
   # as the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta = $width / $self->{'num_datapoints'};
-  $map = $height / ($self->{'max_val'} - $self->{'min_val'});
+  $delta = $width / ( $self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
+  $diff = ($self->{'max_val'} - $self->{'min_val'});
+  $diff = 1 if $diff == 0;
+  $map = $height / $diff;
 
   #for a xy-plot, use this delta and maybe an offset for the zero-axes
   if ($self->{'xy_plot'} =~ /^true$/i ) {
-    $delta_num = $width / ($self->{'x_max_val'} - $self->{'x_min_val'});
+    $diff = ($self->{'x_max_val'} - $self->{'x_min_val'});
+    $diff = 1 if $diff == 0;
+    $delta_num = $width / $diff;
 
     if ($self->{'x_min_val'} <= 0 && $self->{'x_max_val'} >= 0) {
        $zero_offset = abs($self->{'x_min_val'}) * abs($delta_num);

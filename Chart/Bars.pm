@@ -1,15 +1,22 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Bars                   #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::Bars
+#
+#  written by david bonner
+#  dbonner@cs.bu.edu
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Bars.pm,v $ $Revision: 1.4 $ $Date: 2003/02/14 13:10:05 $
+# $Author: dassing $
+# $Log: Bars.pm,v $
+# Revision 1.4  2003/02/14 13:10:05  dassing
+# Circumvent division of zeros
+#
+#====================================================================
 
 package Chart::Bars;
 
@@ -19,7 +26,7 @@ use Carp;
 use strict;
 
 @Chart::Bars::ISA = qw(Chart::Base);
-$Chart::Bars::VERSION = '2.1';
+$Chart::Bars::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -46,17 +53,19 @@ sub _draw_data {
   }
 
   # find both delta values ($delta1 for stepping between different
-  # datapoint names, $delta2 for setpping between datasets for that
+  # datapoint names, $delta2 for stepping between datasets for that
   # point) and the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta1 = $width / $self->{'num_datapoints'};
-  $map = $height / ($self->{'max_val'} - $self->{'min_val'});
+  $delta1 = ( $self->{'num_datapoints'} > 0 ) ? $width / $self->{'num_datapoints'} : $width;
+
+  $map = ( ($self->{'max_val'} - $self->{'min_val'}) > 0 ) ? $height / ($self->{'max_val'} - $self->{'min_val'}) : $height;
   if ($self->{'spaced_bars'} =~ /^true$/i) {
-    $delta2 = $delta1 / ($self->{'num_datasets'} + 2);
+    #OLD: $delta2 = $delta1 / ($self->{'num_datasets'} + 2);
+    $delta2 = ( ($self->{'num_datasets'} + 2) > 0 ) ? $delta1 / ($self->{'num_datasets'} + 2) : $delta1;
   }
   else {
-    $delta2 = $delta1 / $self->{'num_datasets'};
+    $delta2 = ( $self->{'num_datasets'} > 0 ) ? $delta1 / $self->{'num_datasets'} : $delta1;
   }
 
   # get the base x-y values

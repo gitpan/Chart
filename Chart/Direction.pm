@@ -1,13 +1,21 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Direction              #
-#                                #
-#  written by Chart Group        #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::Direction
+#
+#  written by Chart-Group
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Direction.pm,v $ $Revision: 1.2 $ $Date: 2003/02/14 13:30:42 $
+# $Author: dassing $
+# $Log: Direction.pm,v $
+# Revision 1.2  2003/02/14 13:30:42  dassing
+# Circumvent division of zeros
+#
+#====================================================================
 
 package Chart::Direction;
 
@@ -18,7 +26,7 @@ use strict;
 use POSIX;
 
 @Chart::Direction::ISA = qw(Chart::Base);
-$Chart::Direction::VERSION = '2.1';
+$Chart::Direction::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -380,6 +388,7 @@ sub _draw_data {
   my $alpha = 1;
   my $last_x = undef;
   my $last_y = undef;
+  my $diff;
 
   # init the imagemap data field if they wanted it
   if ($self->{'imagemap'} =~ /^true$/i) {
@@ -397,7 +406,9 @@ sub _draw_data {
   $centerX = $self->{'centerX'};
   $centerY = $self->{'centerY'};
   $diameter = $self->{'diameter'};
-  $map = $diameter/2/($self->{'max_val'} - $self->{'min_val'});
+  $diff = $self->{'max_val'} - $self->{'min_val'};
+  $diff = 1 if $diff < 1;
+  $map = $diameter/2/$diff;
   
 
   $color = $self->_color_role_to_index('dataset0');

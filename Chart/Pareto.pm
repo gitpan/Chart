@@ -1,12 +1,21 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Pareto                 #
-#                                #
-#  written by Chart Group        #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::Pareto
+#
+#  written by Chart-Group
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Pareto.pm,v $ $Revision: 1.2 $ $Date: 2003/02/14 14:18:33 $
+# $Author: dassing $
+# $Log: Pareto.pm,v $
+# Revision 1.2  2003/02/14 14:18:33  dassing
+# First setup to cvs
+#
+#====================================================================
 
 package Chart::Pareto;
 
@@ -16,7 +25,7 @@ use Carp;
 use strict;
 
 @Chart::Pareto::ISA = qw(Chart::Base);
-$Chart::Pareto::VERSION = '2.1';
+$Chart::Pareto::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -146,6 +155,8 @@ sub _draw_data {
   my $curr_sum = 0;
   my $font = $self->{'legend_font'};
   my $pink = $self->{'gd_obj'}->colorAllocate(255,0,255);
+  my $diff;
+  
   # make sure we're using a real font
   unless ((ref ($font)) eq 'GD::Font') {
     croak "The subtitle font you specified isn\'t a GD Font object";
@@ -164,8 +175,10 @@ sub _draw_data {
   # point) and the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta1 = $width / $self->{'num_datapoints'};
-  $map = $height / ($self->{'max_val'} - $self->{'min_val'});
+  $delta1 = $width / ( $self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
+  $diff = ($self->{'max_val'} - $self->{'min_val'});
+  $diff = 1 if $diff == 0;
+  $map = $height / $diff;
   if ($self->{'spaced_bars'} =~ /^true$/i) {
     $delta2 = $delta1 / 3;
   }

@@ -1,16 +1,22 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::LinesPoints            #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
-
+#====================================================================
+#  Chart::LinesPoints
+#                                
+#  written by david bonner        
+#  dbonner@cs.bu.edu              
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: LinesPoints.pm,v $ $Revision: 1.4 $ $Date: 2003/02/14 14:10:36 $
+# $Author: dassing $
+# $Log: LinesPoints.pm,v $
+# Revision 1.4  2003/02/14 14:10:36  dassing
+# First setup to cvs
+#
+#====================================================================
 package Chart::LinesPoints;
 
 use Chart::Base 2.0;
@@ -19,7 +25,7 @@ use Carp;
 use strict;
 
 @Chart::LinesPoints::ISA = qw(Chart::Base);
-$Chart::LinesPoints::VERSION = '2.1';
+$Chart::LinesPoints::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -41,6 +47,8 @@ sub _draw_data {
   my ($i, $j, $color, $brush, $zero_offset, $delta_num);
   my $repair_top_flag = 0;
   my $repair_bottom_flag = 0;
+  my $diff;
+  
   # init the imagemap data field if they want it
   if ($self->{'imagemap'} =~ /^true$/i) {
     $self->{'imagemap_data'} = [];
@@ -50,8 +58,10 @@ sub _draw_data {
   # as the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta = $width / $self->{'num_datapoints'};
-  $map = $height / ($self->{'max_val'} - $self->{'min_val'});
+  $delta = $width / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
+  $diff = ($self->{'max_val'} - $self->{'min_val'});
+  $diff = 1 if $diff == 0;
+  $map = $height / $diff;
 
   # get the base x-y values
   if ($self->{'xy_plot'} =~ /^true$/i) {
@@ -78,6 +88,8 @@ sub _draw_data {
 
   #for a xy-plot, use this delta and maybe an offset for the zero-axes
   if ($self->{'xy_plot'} =~ /^true$/i ) {
+    $diff = ($self->{'x_max_val'} - $self->{'x_min_val'});
+    $diff = 1 if $diff == 0;
     $delta_num = $width / ($self->{'x_max_val'} - $self->{'x_min_val'});
 
     if ($self->{'x_min_val'} <= 0 && $self->{'x_max_val'} >= 0) {
@@ -271,9 +283,9 @@ sub _draw_data {
 
 ##  set the gdBrush object to trick GD into drawing fat lines
 sub _prepare_brush {
-  my $self = shift;
+  my $self  = shift;
   my $color = shift;
-  my $type = shift;
+  my $type  = shift;
   my ($radius, @rgb, $brush, $white, $newcolor);
 
   # get the rgb values for the desired color

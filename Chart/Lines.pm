@@ -1,15 +1,22 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Lines                  #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::Lines
+#                                
+#  written by david bonner        
+#  dbonner@cs.bu.edu              
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Lines.pm,v $ $Revision: 1.4 $ $Date: 2003/02/14 14:08:24 $
+# $Author: dassing $
+# $Log: Lines.pm,v $
+# Revision 1.4  2003/02/14 14:08:24  dassing
+# First setup to cvs
+#
+#====================================================================
 
 package Chart::Lines;
 
@@ -19,7 +26,7 @@ use Carp;
 use strict;
 
 @Chart::Lines::ISA = qw(Chart::Base);
-$Chart::Lines::VERSION = '2.1';
+$Chart::Lines::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -51,7 +58,7 @@ sub _draw_data {
   # as the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta = $width / $self->{'num_datapoints'};
+  $delta = $width / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
   $map = $height / ($self->{'max_val'} - $self->{'min_val'});
 
   #for a xy-plot, use this delta and maybe an offset for the zero-axes

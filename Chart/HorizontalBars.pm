@@ -1,14 +1,21 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::HorizontalBars         #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::HorizontalBars
+#
+#  written by Chart-Group
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: HorizontalBars.pm,v $ $Revision: 1.2 $ $Date: 2003/02/14 14:04:40 $
+# $Author: dassing $
+# $Log: HorizontalBars.pm,v $
+# Revision 1.2  2003/02/14 14:04:40  dassing
+# First setup
+#
+#====================================================================
 
 package Chart::HorizontalBars;
 
@@ -18,7 +25,7 @@ use Carp;
 use strict;
 
 @Chart::HorizontalBars::ISA = qw(Chart::Base);
-$Chart::HorizontalBars::VERSION = '2.1';
+$Chart::HorizontalBars::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -170,7 +177,7 @@ sub _draw_y_ticks {
     
     #get the delta values
     $height =  $self->{'curr_y_max'} - $self->{'curr_y_min'} ;
-    $delta = ($height) / ($self->{'num_datapoints'});
+    $delta = ($height) / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
     $y1 -= ($delta/2 );
 
     #look if skipping is desired
@@ -206,7 +213,7 @@ sub _draw_y_ticks {
 
     #get the delta values
     $height =  $self->{'curr_y_max'} - $self->{'curr_y_min'} ;
-    $delta = ($height) / ($self->{'num_datapoints'});
+    $delta = ($height) / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
     $y1 -= ($delta/2 );
 
     #look if skipping is desired
@@ -240,7 +247,7 @@ sub _draw_y_ticks {
 
     #get the delta values for positioning
     $height =  $self->{'curr_y_max'} - $self->{'curr_y_min'} ;
-    $delta = ($height) / ($self->{'num_datapoints'});
+    $delta = ($height) / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
     $y1 -= ($delta/2 );
 
     #then draw the left labels
@@ -276,7 +283,7 @@ sub _draw_y_ticks {
 
     #get the delta values for positioning
     $height =  $self->{'curr_y_max'} - $self->{'curr_y_min'} ;
-    $delta = ($height) / ($self->{'num_datapoints'});
+    $delta = ($height) / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
     $y1 -= ($delta/2 );
   
     if (!defined($self->{'skip_y_ticks'})) {
@@ -505,7 +512,7 @@ sub _draw_data {
   # point) and the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta1 = $height / $self->{'num_datapoints'};
+  $delta1 = $height / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
   $map = $width / ($self->{'max_val'} - $self->{'min_val'});
   if ($self->{'spaced_bars'} =~ /^true$/i) {
     $delta2 = $delta1 / ($self->{'num_datasets'} + 2);

@@ -1,14 +1,21 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::EorrorBars             #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::ErrorBars
+#
+#  written by Chart-Group
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: ErrorBars.pm,v $ $Revision: 1.2 $ $Date: 2003/02/14 13:32:48 $
+# $Author: dassing $
+# $Log: ErrorBars.pm,v $
+# Revision 1.2  2003/02/14 13:32:48  dassing
+# First setup
+#
+#====================================================================
 
 package Chart::ErrorBars;
 
@@ -18,7 +25,7 @@ use Carp;
 use strict;
 
 @Chart::ErrorBars::ISA = qw(Chart::Base);
-$Chart::ErrorBars::VERSION = '2.1';
+$Chart::ErrorBars::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -39,6 +46,8 @@ sub _draw_data {
   my ($width, $height, $delta, $map, $delta_num, $zero_offset, $flag);
   my ($i, $j, $color, $brush);
   my $dataset =0;
+  my $diff;
+  
   # init the imagemap data field if they want it
   if ($self->{'imagemap'} =~ /^true$/i) {
     $self->{'imagemap_data'} = [];
@@ -48,12 +57,16 @@ sub _draw_data {
   # as the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta = $width / $self->{'num_datapoints'};
-  $map = $height / ($self->{'max_val'} - $self->{'min_val'});
+  $delta = $width / ( $self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
+  $diff = $self->{'max_val'} - $self->{'min_val'};
+  $diff = 1 if $diff == 0;
+  $map = $height / $diff;
 
   #for a xy-plot, use this delta and maybe an offset for the zero-axes
   if ($self->{'xy_plot'} =~ /^true$/i ) {
-    $delta_num = $width / ($self->{'x_max_val'} - $self->{'x_min_val'});
+    $diff = $self->{'x_max_val'} - $self->{'x_min_val'};
+    $diff = 1 if $diff == 0;
+    $delta_num = $width / $diff;
 
     if ($self->{'x_min_val'} <= 0 && $self->{'x_max_val'} >= 0) {
        $zero_offset = abs($self->{'x_min_val'}) * abs($delta_num);

@@ -1,29 +1,36 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#                                #
-#  Chart::Mountain               #
-#                                #
-#  Inspired by Chart::Lines      #
-#  by davidb bonner              #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  Updated for                   #
-#  compatibility with            #
-#  changes to Chart::Base        #
-#  by peter clark                #
-#  ninjaz@webexpress.com         #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
-
+#====================================================================
+# 
+#  Chart::Mountain
+# 
+#  Inspired by Chart::Lines
+#  by davidb bonner 
+#  dbonner@cs.bu.edu
+# 
+#  Updated for 
+#  compatibility with 
+#  changes to Chart::Base
+#  by peter clark
+#  ninjaz@webexpress.com
+#
 # Copyright 1998, 1999 by James F. Miner.
 # All rights reserved. 
 # This program is free software; you can redistribute it 
 # and/or modify it under the same terms as Perl itself. 
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Mountain.pm,v $ $Revision: 1.4 $ $Date: 2003/02/14 14:16:23 $
+# $Author: dassing $
+# $Log: Mountain.pm,v $
+# Revision 1.4  2003/02/14 14:16:23  dassing
+# First setup to cvs
+#
+#
+#====================================================================
 
 package Chart::Mountain;
 
@@ -33,7 +40,7 @@ use Carp;
 use strict;
 
 @Chart::Mountain::ISA = qw ( Chart::Base );
-@Chart::Mountain::VERSION = '2.1';
+@Chart::Mountain::VERSION = '2.2';
 
 
 ##  Some Mountain chart details:
@@ -104,7 +111,7 @@ sub _draw_data {
     my @patterns = @{ $self->{'patterns'} || [] };
     
     # Calculate array of x pixel positions (@x).
-    my $x_step = ($self->{'curr_x_max'} - $self->{'curr_x_min'}) / $self->{'num_datapoints'};
+    my $x_step = ($self->{'curr_x_max'} - $self->{'curr_x_min'}) / ($self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1);
     my $x_min = $self->{'curr_x_min'} + $x_step / 2;
     my $x_max = $self->{'curr_x_max'} - $x_step / 2;
     my @x = map { $_ * $x_step + $x_min } 0..$self->{'num_datapoints'}-1;

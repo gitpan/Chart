@@ -1,15 +1,14 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Base                   #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#===================================================================
+#  Chart::Base 
+#
+#  written by david bonner 
+#  dbonner@cs.bu.edu
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#---------------------------------------------------------------------
 # History:
+# --------
 # $RCSfile: Base.pm,v $ $Revision: 1.6 $ $Date: 2003/01/14 13:38:37 $
 # $Author: dassing $
 # $Log: Base.pm,v $
@@ -28,7 +27,7 @@
 # Revision 1.2  2002/05/29 16:13:20  dassing
 # Changes included by David Pottage
 #
-##################################
+#=======================================================================
 
 package Chart::Base;
 
@@ -37,7 +36,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = '2.1';
+$Chart::Base::VERSION = '2.2';
 
 use vars qw(%named_colors);
 
@@ -713,7 +712,7 @@ sub _check_data {
 
   # make sure we don't end up dividing by zero if they ask for
   # just one y_tick
-  if ($self->{'y_ticks'} == 1) {
+  if ($self->{'y_ticks'} <= 1) {
     $self->{'y_ticks'} = 2;
     carp "The number of y_ticks displayed must be at least 2";
   }
@@ -1361,9 +1360,10 @@ sub _find_y_scale
 		$p_max = $self->_round2Tick($d_max, 1, 1);
 
 		$skip = $self->{skip_int_ticks};
+                $skip = 1 if $skip < 1;
 
 		$tickInterval = $skip;
-		$tickCount = ($p_max - $p_min ) /$skip +1;
+		$tickCount = ($p_max - $p_min ) / $skip + 1;
 
              	# Now sort out an array of tick labels.
 
@@ -2462,7 +2462,7 @@ sub _draw_x_ticks {
   $y1 = $self->{'curr_y_max'} - $h - $self->{'text_space'};
 
   # get the delta value, figure out how to draw the labels
-  $delta = $width / $self->{'num_datapoints'};
+  $delta = $width / ($self->{'num_datapoints'}> 0 ? $self->{'num_datapoints'} : 1);
   if ( ! defined($self->{'skip_x_ticks'}) ) {
      $self->{'skip_x_ticks'} = 1;
   }
@@ -2694,6 +2694,7 @@ sub _draw_y_ticks {
 	    - ($w * $self->{'y_tick_label_length'});
     $y1 = $self->{'curr_y_max'};
     $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+    $self->{'y_ticks'} = 2 if $self->{'y_ticks'} < 2;
     $delta = $height / ($self->{'y_ticks'} - 1);
 
     # update the curr_x_max value
@@ -2798,6 +2799,7 @@ sub _draw_y_ticks {
 
     # now draw the labels
     $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+    $self->{'y_ticks'} = 2 if $self->{'y_ticks'} < 2;
     $delta = $height / ($self->{'y_ticks'} - 1);
     for (0..$#labels) {
       $label = $self->{'y_tick_labels'}[$_];

@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.1
+Chart version 2.2
 ------------------------------------------------------------------------
 
 
@@ -27,13 +27,14 @@ Lincoln Stein's GD module version 1.20 or higher.
 -------
 CHANGES
 -------
+2.1 - 2.2: Composite.pm: imagemap_dump() repaired.
+
 1.1 - 2.1: Changes done by Markus Brandl:
 	new Modules added: ErrorBars.pm, HorizontalBars.pm, Pareto.pm, 
 	Pie.pm, Split.pm and Direction.pm
 
         Subdirectory "doc" contains a Acrobat Reader Documentation.pdf file.
-        The LaTeX sources are included in doc/LaTeX.
-        
+
 	Function add_datafile() added. It is now possible to add a complete
 	datafile.
 

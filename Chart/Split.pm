@@ -1,13 +1,21 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Split                  #
-#                                #
-#  written by Chart Group        #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::Split
+#
+#  written by Chart-Group
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Split.pm,v $ $Revision: 1.2 $ $Date: 2003/02/14 14:25:30 $
+# $Author: dassing $
+# $Log: Split.pm,v $
+# Revision 1.2  2003/02/14 14:25:30  dassing
+# First setup to cvs
+#
+#====================================================================
 
 package Chart::Split;
 
@@ -17,7 +25,7 @@ use Carp;
 use strict;
 
 @Chart::Split::ISA = qw(Chart::Base);
-$Chart::Split::VERSION = '2.1';
+$Chart::Split::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -46,7 +54,7 @@ sub _draw_x_number_ticks {
     $self->{'grid_data'}-> {'x'} = [];
 
     # find the width
-    $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
+    $width = $self->{'curr_x_max'} - $self->{'curr_x_min'}; $width = 1 if $width == 0;
 
     # make sure we got a real font
     unless ((ref $font) eq 'GD::Font') {
@@ -68,7 +76,7 @@ sub _draw_x_number_ticks {
 
 
     #look after devision by zero!
-    if ($ticks==0) {$ticks=1;}
+    if ( $ticks ==0 ) { $ticks=1; }
     
     #calculate the step between the ticks
     $step = $interval/$ticks;
@@ -94,6 +102,7 @@ sub _draw_x_number_ticks {
     
     #find the amount of lines
     $lines = int((($x_max-$start) / $interval)+0.99999999999);
+    $lines = 1 if $lines == 0;
     
     #find the length, of the label.
     $y_label_len = length($lines);
@@ -344,6 +353,7 @@ sub _draw_y_ticks {
     }
     #calculate the number of lines and the length
     $lines = int((($x_max-$start)/ $interval)+0.99999999999);
+    $lines = 1 if $lines == 0;
     $label_len = length($lines);
 
     #get the space between two lines
@@ -457,25 +467,25 @@ sub _draw_data {
     my $self = shift;
     my $data = $self->{'dataref'};
     my $misccolor = $self->_color_role_to_index('misc');
-    my $num_points = $self->{'num_datapoints'};
-    my $num_sets = $self->{'num_datasets'};
+    my $num_points = $self->{'num_datapoints'}; $num_points = 1 if $num_points == 0;
+    my $num_sets = $self->{'num_datasets'}; $num_sets = 1 if $num_sets == 0;
     my ($lines, $split, $width, $height, $delta_lines, $delta_sets, $map, $last_line );
     my ($akt_line, $akt_set, $akt_point, $color, $x_start, $y_start, $x, $y);
     my ($x_last, $y_last, $delta_point, $brush, $mod, $x_interval, $start);
     my $i =0;
-    my $interval = ($self->{'max_val'} - $self->{'min_val'});
+    my $interval = ($self->{'max_val'} - $self->{'min_val'}); $interval = 1 if $interval == 0;
     my $x_max = -0x80000000;
     
     # find the height and the width
-    $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
-    $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
+    $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};  $width  = 1 if $width == 0;
+    $height = $self->{'curr_y_max'} - $self->{'curr_y_min'}; $height = 1 if $height == 0;
 
     # init the imagemap data field if they asked for it
     if ($self->{'imagemap'} =~ /^true$/i) {
        $self->{'imagemap_data'} = [];
     }
     #get the base values
-    $x_interval = $self->{'interval'};
+    $x_interval = $self->{'interval'}; $x_interval = 1 if $x_interval == 0;
     $start = $self->{'start'};
 
     #find the biggest x value
@@ -486,7 +496,7 @@ sub _draw_data {
     }
     
     #calculate the number of lines
-    $lines = int((($x_max-$start)/ $x_interval)+0.99999999999);
+    $lines = int((($x_max-$start)/ $x_interval)+0.99999999999); $lines = 1 if $lines == 0;
 
     #find delta_lines for the space between the lines
     #and delta_sets for the space of the datasets of one line

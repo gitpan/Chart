@@ -1,15 +1,22 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Composite              #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#====================================================================
+#  Chart::Composite
+#
+#  written by david bonner
+#  dbonner@cs.bu.edu
+#
+#  maintained by the Chart Group
+#  Chart@wettzell.ifag.de
+#
+#---------------------------------------------------------------------
+# History:
+#----------
+# $RCSfile: Composite.pm,v $ $Revision: 1.4 $ $Date: 2003/02/14 13:25:30 $
+# $Author: dassing $
+# $Log: Composite.pm,v $
+# Revision 1.4  2003/02/14 13:25:30  dassing
+# Circumvent division of zeros
+#
+#====================================================================
 
 package Chart::Composite;
 
@@ -19,7 +26,7 @@ use Carp;
 use strict;
 
 @Chart::Composite::ISA = qw(Chart::Base);
-$Chart::Composite::VERSION = '2.1';
+$Chart::Composite::VERSION = '2.2';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -57,8 +64,9 @@ sub set {
 ##  had to override it to reassemble the @data array correctly
 sub imagemap_dump {
   my $self = shift;
-  my $ref = [];
   my ($i, $j);
+  my @map;
+  my $dataset_count = 0;
  
   # croak if they didn't ask me to remember the data, or if they're asking
   # for the data before I generate it
@@ -66,25 +74,41 @@ sub imagemap_dump {
     croak "You need to set the imagemap option to true, and then call the png method, before you can get the imagemap data";
   }
 
-  # make a copy for them, and reorder it
-  for $i (0..$#{$self->{'sub0'}->{'imagemap_data'}}) {
-    for $j (0..$#{$self->{'sub0'}->{'imagemap_data'}->[$i]}) {
-      $ref->[$self->{'composite_info'}->[0][1][$i]][$j] = 
-          [ @{ $self->{'sub0'}->{'imagemap_data'}->[$i][$j] } ];
+  #make a copy of the imagemap data
+  #this is the data of the first component
+  for $i (1..$#{$self->{'sub_0'}->{'imagemap_data'}}) {
+    for $j (0..$#{$self->{'sub_0'}->{'imagemap_data'}->[$i]}-1) {
+       $map[$i][$j] = \@{$self->{'sub_0'}->{'imagemap_data'}->[$i][$j]} ;
+    }
+    $dataset_count++;
+  }
+  #and add the data of the second component
+  for $i (1..$#{$self->{'sub_1'}->{'imagemap_data'}}) {
+    for $j (0..$#{$self->{'sub_1'}->{'imagemap_data'}->[$i]}-1) {
+      $map[$i+$dataset_count][$j] = \@{$self->{'sub_1'}->{'imagemap_data'}->[$i][$j]} ;
     }
   }
-  for $i (0..$#{$self->{'sub1'}->{'imagemap_data'}}) {
-    for $j (0..$#{$self->{'sub1'}->{'imagemap_data'}->[$i]}) {
-      $ref->[$self->{'composite_info'}->[1][1][$i]][$j] = 
-          [ @{ $self->{'sub1'}->{'imagemap_data'}->[$i][$j] } ];
-    }
-  }
+  
 
   # return their copy
-  return $ref;
+  return \@map;
+
 }
 
-
+sub __print_array {
+   my @a = @_;
+   my $i;
+   
+   my $li = $#a;
+   
+   $li++;
+   print STDERR "Anzahl der Elemente = $li\n"; $li--;
+   
+   for ($i=0; $i<=$li; $i++) {
+      print STDERR "\t$i\t$a[$i]\n";
+   }
+}
+   
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  private methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
@@ -825,7 +849,7 @@ sub _draw_x_ticks {
 
   # get the delta value, figure out how to draw the labels
   $width = $x2 - $x1;
-  $delta = $width / $self->{'num_datapoints'};
+  $delta = $width / ( $self->{'num_datapoints'} > 0 ? $self->{'num_datapoints'} : 1 );
   if ($delta <= ($self->{'x_tick_label_length'} * $w)) {
     unless ($self->{'x_ticks'} =~ /^vertical$/i) {
       $self->{'x_ticks'} = 'staggered';
@@ -904,7 +928,7 @@ sub _draw_x_ticks {
   }
   elsif ($self->{'x_ticks'} =~ /^vertical$/i) { # vertical ticks
     $y1 = $self->{'curr_y_max'} - $self->{'text_space'};
-    if ($self->{'skip_x_ticks'}) {
+    if ( defined($self->{'skip_x_ticks'}) && $self->{'skip_x_ticks'} > 1) {
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
         $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) - $h/2;
         $y2 = $y1 - (($self->{'x_tick_label_length'} 
