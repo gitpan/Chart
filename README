@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 1.1
+Chart version 2.0
 ------------------------------------------------------------------------
 
 
@@ -27,6 +27,42 @@ Lincoln Stein's GD module version 1.20 or higher.
 -------
 CHANGES
 -------
+1.1 - 2.0: Changes done by Markus Brandl:
+	new Modules added: ErrorBars.pm, HorizontalBars.pm, Pareto.pm, 
+	Pie.pm, Split.pm and Direction.pm
+
+        Subdirectory "doc" contains a Acrobat Reader Documentation.pdf file.
+        The LaTeX sources are included in doc/LaTeX.
+        
+	Function add_datafile() added. It is now possible to add a complete
+	datafile.
+
+        Added new Options: precision, xy_plot, min_x_ticks, max_x_ticks,
+	skip_y_ticks, skip_int_ticks, legend_label_value, y_axes,
+	scale, interval, start, interval_ticks, sort, same_error, point,
+	line, arrow, angle_interval, min_circles, max_circles
+	Also added: the 'title' and 'x_label' options in the colors option 
+
+	Documentation (Documentation.pdf) added.
+
+	_find_x_scale, _find_x_range and _draw_x_number_ticks added to make 
+	xy_plots possible.
+
+	_sort_data has now a body. 
+
+        Fixed integer ticks problem by adding the skip_int_ticks option
+	Fixed f_x_ticks and f_y_ticks problem in Composite
+	Fixed negative value problem in Bars
+	Fixed min_val and max_val problem in draw_data function of all modules:
+	Now, Chart plots the data only if the data is in the area of min_val and
+	max_val! The border of bars in Bars, HorizontalBars and StackedBars will
+	be plotted pink (not misccolor) if the data isn't in the min_val-max_val
+	interval.
+	Fixed custom_x_ticks problem in _draw_x_ticks
+	Some other bugfixes.
+	Updates in _find_y_scale, _round2tick, _calcTickInterval 
+	   
+
 1.0.1 - 1.1: Changes done by David Pottage:
         Plot scales can now have any magnitude. 
         It does not matter if the data covers a range of 100000000000 units

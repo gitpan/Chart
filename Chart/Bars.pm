@@ -1,23 +1,14 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Bars                   #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
-# History:
-#---------
-# $RCSfile: Bars.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
-# $Author: dassing $
-# $Log: Bars.pm,v $
-# Revision 1.2  2002/05/31 13:18:02  dassing
-# Release 1.1
-#
-#=====================================================================
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Bars                #
+#                             #
+#  written by david bonner    #
+#  dbonner@cs.bu.edu          #
+#                             #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
+#                             #
+#  theft is treason, citizen  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Bars;
 
@@ -27,9 +18,7 @@ use Carp;
 use strict;
 
 @Chart::Bars::ISA = qw(Chart::Base);
-$Chart::Bars::VERSION = '1.0';
-
-my $DEBUG = 0;
+$Chart::Bars::VERSION = '2.0';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -47,7 +36,7 @@ sub _draw_data {
   my $data = $self->{'dataref'};
   my $misccolor = $self->_color_role_to_index('misc');
   my ($x1, $x2, $x3, $y1, $y2, $y3);
-  my ($width, $height, $delta1, $delta2, $map, $mod);
+  my ($width, $height, $delta1, $delta2, $map, $mod, $cut, $pink);
   my ($i, $j, $color);
 
   # init the imagemap data field if they wanted it
@@ -107,12 +96,21 @@ sub _draw_data {
 	$x3 = $x2 + $delta2;
 	$y3 = $y1 - (($data->[$i][$j] - $mod) * $map);
 
-	# draw the bar
-        printf "Rectangle  %7.2f,%7.2f,%7.2f,%7.2f\n",$x2,$y3,$x3,$y2 if $DEBUG;
-        if ( $y3 < $self->{'curr_y_min'} ) {
-           $y3 = $self->{'curr_y_min'};
-           printf "corrected: %7.2f,%7.2f,%7.2f,%7.2f\n",$x2,$y3,$x3,$y2 if $DEBUG;
+        #cut the bars off, if needed
+        if ($data->[$i][$j] > $self->{'max_val'}) {
+           $y3 = $y1 - (($self->{'max_val'} - $mod ) * $map) ;
+           $cut = 1;
         }
+        elsif  ($data->[$i][$j] < $self->{'min_val'}) {
+           $y3 = $y1 - (($self->{'min_val'} - $mod ) * $map) ;
+           $cut = 1;
+        }
+        else {
+           #$y3 = $y1 + (($data->[$i][$j] - $mod) * $map);
+           $cut = 0;
+        }
+        
+	# draw the bar
 	## y2 and y3 are reversed in some cases because GD's fill
 	## algorithm is lame
 	if ($data->[$i][$j] > 0) {
@@ -128,9 +126,16 @@ sub _draw_data {
 	  }
 	}
 
-	# now outline it
-	$self->{'gd_obj'}->rectangle ($x2, $y3, $x3, $y2, $misccolor);
-      } else {
+        # now outline it. outline red if the bar had been cut off
+        unless ($cut){
+	  $self->{'gd_obj'}->rectangle ($x2, $y3, $x3, $y2, $misccolor);
+        }
+        else {
+          $pink = $self->{'gd_obj'}->colorAllocate(255,0,255);
+          $self->{'gd_obj'}->rectangle ($x2, $y3, $x3, $y2, $pink);
+        }
+
+       } else {
 	  if ($self->{'imagemap'} =~ /^true$/i) {
             $self->{'imagemap_data'}->[$i][$j] = [undef(), undef(), undef(), undef()];
           }

@@ -209,7 +209,7 @@ $einheit = "% rH";
 	$graphic -> set ('x_ticks' => 'vertical' );
 	$graphic -> set ('skip_x_ticks' => 30);
 
-	$graphic -> set ('grey_background' => 'true' );		
+	$graphic -> set ('grey_background' => 'false' );		
 	$graphic -> set ('graph_border' => 18 );
 	$graphic -> set ('title' => $titel_name );
 	$graphic -> set ('sub_title' => "over Time");

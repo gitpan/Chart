@@ -4,20 +4,11 @@
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
 #                             #
-#  maintained by Chart Group  #
-#  Chart@wettzell.ifag.de     #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
 #                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
-# History:
-#---------
-# $RCSfile: Points.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
-# $Author: dassing $
-# $Log: Points.pm,v $
-# Revision 1.2  2002/05/31 13:18:02  dassing
-# Release 1.1
-#
-#=====================================================================
 
 package Chart::Points;
 
@@ -27,7 +18,7 @@ use Carp;
 use strict;
 
 @Chart::Points::ISA = qw(Chart::Base);
-$Chart::Points::VERSION = '1.0';
+$Chart::Points::VERSION = 2.0;
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -45,7 +36,7 @@ sub _draw_data {
   my $data = $self->{'dataref'};
   my $misccolor = $self->_color_role_to_index('misc');
   my ($x1, $x2, $x3, $y1, $y2, $y3, $mod);
-  my ($width, $height, $delta, $map);
+  my ($width, $height, $delta, $map, $delta_num, $zero_offset);
   my ($i, $j, $color, $brush);
 
   # init the imagemap data field if they want it
@@ -60,8 +51,28 @@ sub _draw_data {
   $delta = $width / $self->{'num_datapoints'};
   $map = $height / ($self->{'max_val'} - $self->{'min_val'});
 
+  #for a xy-plot, use this delta and maybe an offset for the zero-axes
+  if ($self->{'xy_plot'} =~ /^true$/i ) {
+    $delta_num = $width / ($self->{'x_max_val'} - $self->{'x_min_val'});
+
+    if ($self->{'x_min_val'} <= 0 && $self->{'x_max_val'} >= 0) {
+       $zero_offset = abs($self->{'x_min_val'}) * abs($delta_num);
+    }
+    elsif ($self->{'x_min_val'} > 0 || $self->{'x_max_val'} < 0) {
+       $zero_offset =  -$self->{'x_min_val'} * $delta_num;
+    }
+    else {
+       $zero_offset = 0;
+    }
+  }
+  
   # get the base x-y values
-  $x1 = $self->{'curr_x_min'} + ($delta / 2);
+  if ($self->{'xy_plot'} =~ /^false$/i ) {
+    $x1 = $self->{'curr_x_min'} + ($delta / 2);
+  }
+  else {
+    $x1 = $self->{'curr_x_min'};
+  }
   if ($self->{'min_val'} >= 0) {
     $y1 = $self->{'curr_y_max'};
     $mod = $self->{'min_val'};
@@ -89,16 +100,22 @@ sub _draw_data {
     for $j (0..$self->{'num_datapoints'}) {
       # don't try to draw anything if there's no data
       if (defined ($data->[$i][$j])) {
-	$x2 = $x1 + ($delta * $j);
-	$x3 = $x2;
+        if ($self->{'xy_plot'} =~ /^true$/i ) {
+           $x2 = $x1 + $delta_num * $data->[0][$j] + $zero_offset;
+           $x3 = $x2 ;
+        }
+        else {
+           $x2 = $x1 + ($delta * $j);
+           $x3 = $x2;
+        }
 	$y2 = $y1 - (($data->[$i][$j] - $mod) * $map);
 	$y3 = $y2;
 
-	# draw the point
-        if ( $y2 >= $self->{'curr_y_min'} && $y2 <= $self->{'curr_y_max'} &&
-             $y3 >= $self->{'curr_y_min'} && $y3 <= $self->{'curr_y_max'} ) {
-	   $self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
+	# draw the point only if it is within the chart borders
+        if ($data->[$i][$j] <= $self->{'max_val'} && $data->[$i][$j] >= $self->{'min_val'}) {
+          $self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
         }
+
 	# store the imagemap data if they asked for it
 	if ($self->{'imagemap'} =~ /^true$/i) {
 	  $self->{'imagemap_data'}->[$i][$j] = [ $x2, $y2 ];

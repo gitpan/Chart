@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}Description}{2}
+\contentsline {section}{\numberline {2}Chart::Base}{5}
+\contentsline {section}{\numberline {3}Chart::Bars}{13}
+\contentsline {section}{\numberline {4}Chart::Composite}{15}
+\contentsline {section}{\numberline {5}Chart::Direction}{17}
+\contentsline {section}{\numberline {6}Chart::ErrorBars}{19}
+\contentsline {section}{\numberline {7}Chart::HorizontalBars}{21}
+\contentsline {section}{\numberline {8}Chart::Lines}{23}
+\contentsline {section}{\numberline {9}Chart::LinesPoints}{25}
+\contentsline {section}{\numberline {10}Chart::Mountain}{28}
+\contentsline {section}{\numberline {11}Chart::Pareto}{30}
+\contentsline {section}{\numberline {12}Chart::Pie}{32}
+\contentsline {section}{\numberline {13}Chart::Points}{34}
+\contentsline {section}{\numberline {14}Chart::Split}{36}
+\contentsline {section}{\numberline {15}Chart::StackedBars}{39}

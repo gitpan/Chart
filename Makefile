@@ -12,7 +12,7 @@
 
 #	NAME => q[Chart]
 #	PREREQ_PM => { GD=>q[1.2] }
-#	VERSION => q[1.1]
+#	VERSION => q[2.0]
 #	dist => { COMPRESS=>q[gzip], SUFFIX=>q[gz] }
 
 # --- MakeMaker post_initialize section:
@@ -48,9 +48,9 @@ AR_STATIC_ARGS = cr
 NAME = Chart
 DISTNAME = Chart
 NAME_SYM = Chart
-VERSION = 1.1
-VERSION_SYM = 1_1
-XS_VERSION = 1.1
+VERSION = 2.0
+VERSION_SYM = 2_0
+XS_VERSION = 2.0
 INST_BIN = blib/bin
 INST_EXE = blib/script
 INST_LIB = blib/lib
@@ -152,26 +152,44 @@ TO_INST_PM = Chart.pod \
 	Chart/Bars.pm \
 	Chart/Base.pm \
 	Chart/Composite.pm \
+	Chart/Direction.pm \
+	Chart/ErrorBars.pm \
+	Chart/HorizontalBars.pm \
 	Chart/Lines.pm \
 	Chart/LinesPoints.pm \
 	Chart/Mountain.pm \
+	Chart/Pareto.pm \
+	Chart/Pie.pm \
 	Chart/Points.pm \
+	Chart/Split.pm \
 	Chart/StackedBars.pm
 
-PM_TO_BLIB = Chart/Bars.pm \
+PM_TO_BLIB = Chart/HorizontalBars.pm \
+	$(INST_LIBDIR)/Chart/HorizontalBars.pm \
+	Chart/Split.pm \
+	$(INST_LIBDIR)/Chart/Split.pm \
+	Chart/Bars.pm \
 	$(INST_LIBDIR)/Chart/Bars.pm \
 	Chart/Mountain.pm \
 	$(INST_LIBDIR)/Chart/Mountain.pm \
-	Chart/LinesPoints.pm \
-	$(INST_LIBDIR)/Chart/LinesPoints.pm \
 	Chart/Composite.pm \
 	$(INST_LIBDIR)/Chart/Composite.pm \
+	Chart/ErrorBars.pm \
+	$(INST_LIBDIR)/Chart/ErrorBars.pm \
+	Chart/LinesPoints.pm \
+	$(INST_LIBDIR)/Chart/LinesPoints.pm \
+	Chart/Pareto.pm \
+	$(INST_LIBDIR)/Chart/Pareto.pm \
+	Chart/Pie.pm \
+	$(INST_LIBDIR)/Chart/Pie.pm \
 	Chart/StackedBars.pm \
 	$(INST_LIBDIR)/Chart/StackedBars.pm \
 	Chart/Points.pm \
 	$(INST_LIBDIR)/Chart/Points.pm \
 	Chart/Lines.pm \
 	$(INST_LIBDIR)/Chart/Lines.pm \
+	Chart/Direction.pm \
+	$(INST_LIBDIR)/Chart/Direction.pm \
 	Chart/Base.pm \
 	$(INST_LIBDIR)/Chart/Base.pm \
 	Chart.pod \
@@ -433,7 +451,7 @@ clean ::
 # Delete temporary files (via clean) and also delete installed files
 realclean purge ::  clean
 	rm -rf $(INST_AUTODIR) $(INST_ARCHAUTODIR)
-	rm -f $(INST_LIBDIR)/Chart/Bars.pm $(INST_LIBDIR)/Chart/Mountain.pm $(INST_LIBDIR)/Chart/LinesPoints.pm $(INST_LIBDIR)/Chart/Composite.pm $(INST_LIBDIR)/Chart/StackedBars.pm $(INST_LIBDIR)/Chart/Points.pm $(INST_LIBDIR)/Chart/Lines.pm $(INST_LIBDIR)/Chart/Base.pm $(INST_LIBDIR)/Chart.pod
+	rm -f $(INST_LIBDIR)/Chart/HorizontalBars.pm $(INST_LIBDIR)/Chart/Split.pm $(INST_LIBDIR)/Chart/Bars.pm $(INST_LIBDIR)/Chart/Mountain.pm $(INST_LIBDIR)/Chart/Composite.pm $(INST_LIBDIR)/Chart/ErrorBars.pm $(INST_LIBDIR)/Chart/LinesPoints.pm $(INST_LIBDIR)/Chart/Pareto.pm $(INST_LIBDIR)/Chart/Pie.pm $(INST_LIBDIR)/Chart/StackedBars.pm $(INST_LIBDIR)/Chart/Points.pm $(INST_LIBDIR)/Chart/Lines.pm $(INST_LIBDIR)/Chart/Direction.pm $(INST_LIBDIR)/Chart/Base.pm $(INST_LIBDIR)/Chart.pod
 	rm -rf Makefile Makefile.old
 
 
@@ -672,7 +690,7 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd:
-	@$(PERL) -e "print qq{<SOFTPKG NAME=\"Chart\" VERSION=\"1,1,0,0\">\n}. qq{\t<TITLE>Chart</TITLE>\n}. qq{\t<ABSTRACT></ABSTRACT>\n}. qq{\t<AUTHOR></AUTHOR>\n}. qq{\t<IMPLEMENTATION>\n}. qq{\t\t<DEPENDENCY NAME=\"GD\" VERSION=\"1,2,0,0\" />\n}. qq{\t\t<OS NAME=\"$(OSNAME)\" />\n}. qq{\t\t<ARCHITECTURE NAME=\"alpha-dec_osf\" />\n}. qq{\t\t<CODEBASE HREF=\"\" />\n}. qq{\t</IMPLEMENTATION>\n}. qq{</SOFTPKG>\n}" > Chart.ppd
+	@$(PERL) -e "print qq{<SOFTPKG NAME=\"Chart\" VERSION=\"2,0,0,0\">\n}. qq{\t<TITLE>Chart</TITLE>\n}. qq{\t<ABSTRACT></ABSTRACT>\n}. qq{\t<AUTHOR></AUTHOR>\n}. qq{\t<IMPLEMENTATION>\n}. qq{\t\t<DEPENDENCY NAME=\"GD\" VERSION=\"1,2,0,0\" />\n}. qq{\t\t<OS NAME=\"$(OSNAME)\" />\n}. qq{\t\t<ARCHITECTURE NAME=\"alpha-dec_osf\" />\n}. qq{\t\t<CODEBASE HREF=\"\" />\n}. qq{\t</IMPLEMENTATION>\n}. qq{</SOFTPKG>\n}" > Chart.ppd
 
 # --- MakeMaker pm_to_blib section:
 

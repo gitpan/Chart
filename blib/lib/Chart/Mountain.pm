@@ -18,28 +18,17 @@
 # All rights reserved. 
 # This program is free software; you can redistribute it 
 # and/or modify it under the same terms as Perl itself. 
-#
-# History:
-#---------
-# $RCSfile: Mountain.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
-# $Author: dassing $
-# $Log: Mountain.pm,v $
-# Revision 1.2  2002/05/31 13:18:02  dassing
-# Release 1.1
-#
-#=====================================================================
 
 package Chart::Mountain;
 
-use Chart::Base 1.0;
+use Chart::Base 2.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Mountain::ISA = qw ( Chart::Base );
-@Chart::Mountain::VERSION = '1.0';
+@Chart::Mountain::VERSION = 2.0;
 
-my $DEBUG = 0;
 
 ##  Some Mountain chart details:
 #
@@ -113,12 +102,13 @@ sub _draw_data {
     my $x_min = $self->{'curr_x_min'} + $x_step / 2;
     my $x_max = $self->{'curr_x_max'} - $x_step / 2;
     my @x = map { $_ * $x_step + $x_min } 0..$self->{'num_datapoints'}-1;
-    
+    my ($t_x_min, $t_x_max, $t_y_min, $t_y_max, $abs_x_max, $abs_y_max);
+    my $repair_top_flag = 0;
     # Calculate array of y pixel positions for upper boundary each dataset (@y).
     
     my $map = ($self->{'max_val'})
- 		? ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / $self->{'max_val'}
-                : ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / 10;
+		? ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / $self->{'max_val'}
+		: ($self->{'curr_y_max'} - $self->{'curr_y_min'}) / 10;
 
     my $y_max = $self->{'curr_y_max'}; # max pixel point (lower y values)
     
@@ -127,12 +117,13 @@ sub _draw_data {
 	my $sum = 0;
 	for my $i (reverse 1..$#{$data}) { # bottom to top of chart
 	    my $datum = $data->[$i][$j];
-	    if ( defined $datum && $datum >= 0 ) {
+
+            #set the repair flag, if the datum is out of teh borders of the chart
+            if ($datum > $self->{'max_val'}) { $repair_top_flag = 1;}
+            
+            if ( defined $datum && $datum >= 0 ) {
 		$sum += $datum;
 		$y[$i-1][$j] = $y_max - $map * $sum;
-                if ( $y[$i-1][$j] < $self->{'curr_y_min'} ) {
-                   $y[$i-1][$j] = $self->{'curr_y_min'};
-                }
 	    }
 	    else { # missing value, force all to undefined
 		foreach my $k (1..$#{$data}) { $y[$k-1][$j] = undef }
@@ -195,6 +186,51 @@ sub _draw_data {
 	$self->_color_role_to_index('misc')
     );
 
+    #get the width and the heigth of the complete picture
+   ($abs_x_max, $abs_y_max) = $self->{'gd_obj'}->getBounds();
+
+    #repair the chart, if the lines are out of the borders of the chart
+    if ($repair_top_flag) {
+
+      #overwrite the ugly mistakes
+      $self->{'gd_obj'}->filledRectangle ($self->{'curr_x_min'}, 0,
+				$self->{'curr_x_max'}, $self->{'curr_y_min'}-1,
+				$self->_color_role_to_index('background'));
+
+      #save the actual x and y values
+      $t_x_min = $self->{'curr_x_min'};
+      $t_x_max = $self->{'curr_x_max'};
+      $t_y_min = $self->{'curr_y_min'};
+      $t_y_max = $self->{'curr_y_max'};
+
+
+      #get back to the point, where everything began
+      $self->{'curr_x_min'} = 0;
+      $self->{'curr_y_min'} = 0;
+      $self->{'curr_x_max'} = $abs_x_max;
+      $self->{'curr_y_max'} = $abs_y_max;
+
+      #draw the title again
+      if ($self->{'title'}) {
+        $self->_draw_title
+      }
+
+      #draw the sub title again
+      if ($self->{'sub_title'}) {
+        $self->_draw_sub_title
+      }
+
+      #draw the top legend again
+      if ($self->{'legend'} =~ /^top$/i) {
+         $self->_draw_top_legend;
+      }
+
+      #reset the actual values
+      $self->{'curr_x_min'} = $t_x_min;
+      $self->{'curr_x_max'} = $t_x_max;
+      $self->{'curr_y_min'} = $t_y_min;
+      $self->{'curr_y_max'} = $t_y_max;
+      }
 }    
 
 

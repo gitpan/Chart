@@ -1,23 +1,14 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::StackedBars            #
-#                                #
-#  written by david bonner       #
-#  dbonner@cs.bu.edu             #
-#                                #
-#  maintained by the Chart Group #
-#  Chart@wettzell.ifag.de        #
-#                                #
-#  theft is treason, citizen     #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
-# History:
-#---------
-# $RCSfile: StackedBars.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
-# $Author: dassing $
-# $Log: StackedBars.pm,v $
-# Revision 1.2  2002/05/31 13:18:02  dassing
-# Release 1.1
-#
-#=====================================================================
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::StackedBars         #
+#                             #
+#  written by david bonner    #
+#  dbonner@cs.bu.edu          #
+#                             #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
+#                             #
+#  theft is treason, citizen  #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::StackedBars;
 
@@ -27,10 +18,8 @@ use Carp;
 use strict;
 
 @Chart::StackedBars::ISA = qw(Chart::Base);
-$Chart::StackedBars::VERSION = '1.0';
+$Chart::StackedBars::VERSION = '2.0';
 
-
-my $DEBUG = 0;
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<#
@@ -270,8 +259,8 @@ sub _draw_data {
   my $data = [];
   my $misccolor = $self->_color_role_to_index('misc');
   my ($width, $height, $delta, $map, $mod);
-  my ($x1, $y1, $x2, $y2, $x3, $y3, $i, $j, $color);
-
+  my ($x1, $y1, $x2, $y2, $x3, $y3, $i, $j, $color, $cut);
+  my $pink = $self->{'gd_obj'}->colorAllocate(255,0,255);
   # init the imagemap data field if they want it
   if ($self->{'imagemap'} =~ /^true$/i) {
     $self->{'imagemap_data'} = [];
@@ -334,12 +323,20 @@ sub _draw_data {
       }
       $y3 = $y1 - (($data->[$j][$i] - $mod) * $map);
 
-      # draw the bar
-      printf "Rectangle  %7.2f,%7.2f,%7.2f,%7.2f\n",$x2,$y3,$x3,$y2 if $DEBUG;
-      if ( $y3 < $self->{'curr_y_min'} ) {
-        $y3 = $self->{'curr_y_min'};
-        printf "corrected: %7.2f,%7.2f,%7.2f,%7.2f\n",$x2,$y3,$x3,$y2 if $DEBUG;
+      #cut the bars off, if needed
+      if ($data->[$j][$i] > $self->{'max_val'}) {
+           $y3 = $y1 - (($self->{'max_val'} - $mod ) * $map) ;
+           $cut = 1;
       }
+      elsif  ($data->[$j][$i] < $self->{'min_val'}) {
+           $y3 = $y1 - (($self->{'min_val'} - $mod ) * $map) ;
+           $cut = 1;
+      }
+      else {
+           $cut = 0;
+      }
+      
+      # draw the bar
       ## y2 and y3 are reversed in some cases because GD's fill
       ## algorithm is lame
       if ($data->[$j][$i] > 0) {
@@ -355,8 +352,14 @@ sub _draw_data {
 	}
       }
 
-      # now outline it
-      $self->{'gd_obj'}->rectangle ($x2, $y2, $x3, $y3, $misccolor);
+      # now outline it. outline red if the bar had been cut off
+      unless ($cut){
+	  $self->{'gd_obj'}->rectangle ($x2, $y2, $x3, $y3, $misccolor);
+      }
+      else {
+          $self->{'gd_obj'}->rectangle ($x2, $y2, $x3, $y3, $misccolor);
+          $self->{'gd_obj'}->rectangle ($x2, $y1, $x3, $y3, $pink);
+      }
 
       # now bootstrap the y values
       $y2 = $y3;

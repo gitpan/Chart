@@ -4,20 +4,12 @@
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
 #                             #
-#  maintained by Chart Group  #
-#  Chart@wettzell.ifag.de     #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
 #                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
-# History:
-#---------
-# $RCSfile: Composite.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
-# $Author: dassing $
-# $Log: Composite.pm,v $
-# Revision 1.2  2002/05/31 13:18:02  dassing
-# Release 1.1
-#
-#=====================================================================
+
 package Chart::Composite;
 
 use Chart::Base;
@@ -26,10 +18,7 @@ use Carp;
 use strict;
 
 @Chart::Composite::ISA = qw(Chart::Base);
-$Chart::Composite::VERSION = '1.0';
-
-
-my $DEBUG = 0;
+$Chart::Composite::VERSION = 2.0;
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -69,13 +58,18 @@ sub imagemap_dump {
   my $self = shift;
   my $ref = [];
   my ($i, $j);
- 
+  my $data =[];
+  my ( $x, $y);
   # croak if they didn't ask me to remember the data, or if they're asking
   # for the data before I generate it
   unless (($self->{'imagemap'} =~ /^true$/i) && $self->{'imagemap_data'}) {
     croak "You need to set the imagemap option to true, and then call the png method, before you can get the imagemap data";
   }
 
+  $data=$self->{'sub0'}->imagemap_dump();
+
+  ($x, $y)= @{$data->[1][0]};
+  print $y;
   # make a copy for them, and reorder it
   for $i (0..$#{$self->{'sub0'}->{'imagemap_data'}}) {
     for $j (0..$#{$self->{'sub0'}->{'imagemap_data'}->[$i]}) {
@@ -847,22 +841,23 @@ sub _draw_x_ticks {
     if ($self->{'skip_x_ticks'}) {
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
         $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) 
-	      - ($w*length($data->[0][$_* $self->{'skip_x_ticks'}])) / 2; 
+	      - ($w*length( $self->{'f_x_tick'}->($data->[0][$_* $self->{'skip_x_ticks'}]))) / 2;
         $self->{'gd_obj'}->string($font, $x2, $y1, 
-	                          $data->[0][$_*$self->{'skip_x_ticks'}], 
+	                          $self->{'f_x_tick'}->($data->[0][$_*$self->{'skip_x_ticks'}]),
 				  $textcolor);
       }
     }
     elsif ($self->{'custom_x_ticks'}) {
       for (@{$self->{'custom_x_ticks'}}) {
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2; 
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length( $self->{'f_x_tick'}->($data->[0][$_]))) / 2;
+        $self->{'gd_obj'}->string($font, $x2, $y1,
+                                  $self->{'f_x_tick'}->($data->[0][$_]), $textcolor);
       }
     }
     else {
       for (0..$self->{'num_datapoints'}-1) {
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2; 
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($self->{'f_x_tick'}->($data->[0][$_]))) / 2;
+        $self->{'gd_obj'}->string($font, $x2, $y1, $self->{'f_x_tick'}->($data->[0][$_]), $textcolor);
       }
     }
   }
@@ -871,12 +866,12 @@ sub _draw_x_ticks {
       $stag = 0;
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
         $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) 
-	        - ($w*length($data->[0][$_*$self->{'skip_x_ticks'}])) / 2;
+	        - ($w*length( $self->{'f_x_tick'}->($data->[0][$_*$self->{'skip_x_ticks'}]))) / 2;
         if (($stag % 2) == 1) {
           $y1 -= $self->{'text_space'} + $h;
         }
         $self->{'gd_obj'}->string($font, $x2, $y1, 
-                                  $data->[0][$_*$self->{'skip_x_ticks'}], 
+                                  $self->{'f_x_tick'}->($data->[0][$_*$self->{'skip_x_ticks'}]),
                                   $textcolor);
         if (($stag % 2) == 1) {
           $y1 += $self->{'text_space'} + $h;
@@ -887,11 +882,11 @@ sub _draw_x_ticks {
     elsif ($self->{'custom_x_ticks'}) {
       $stag = 0;
       for (sort (@{$self->{'custom_x_ticks'}})) {
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length( $self->{'f_x_tick'}->($data->[0][$_]))) / 2;
         if (($stag % 2) == 1) {
           $y1 -= $self->{'text_space'} + $h;
         }
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $self->{'gd_obj'}->string($font, $x2, $y1,  $self->{'f_x_tick'}->($data->[0][$_]), $textcolor);
         if (($stag % 2) == 1) {
           $y1 += $self->{'text_space'} + $h;
         }
@@ -900,11 +895,11 @@ sub _draw_x_ticks {
     }
     else {
       for (0..$self->{'num_datapoints'}-1) {
-        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($data->[0][$_])) / 2;
+        $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length( $self->{'f_x_tick'}->($data->[0][$_]))) / 2;
         if (($_ % 2) == 1) {
           $y1 -= $self->{'text_space'} + $h;
         }
-        $self->{'gd_obj'}->string($font, $x2, $y1, $data->[0][$_], $textcolor);
+        $self->{'gd_obj'}->string($font, $x2, $y1,  $self->{'f_x_tick'}->($data->[0][$_]), $textcolor);
         if (($_ % 2) == 1) {
           $y1 += $self->{'text_space'} + $h;
         }
@@ -917,28 +912,28 @@ sub _draw_x_ticks {
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
         $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) - $h/2;
         $y2 = $y1 - (($self->{'x_tick_label_length'} 
-	              - length($data->[0][$_*$self->{'skip_x_ticks'}])) * $w);
+	              - length( $self->{'f_x_tick'}->($data->[0][$_*$self->{'skip_x_ticks'}]))) * $w);
         $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
-	                            $data->[0][$_*$self->{'skip_x_ticks'}], 
+                                    $self->{'f_x_tick'}->($data->[0][$_*$self->{'skip_x_ticks'}]),
 				    $textcolor);
       }
     }
     elsif ($self->{'custom_x_ticks'}) {
       for (@{$self->{'custom_x_ticks'}}) {
         $x2 = $x1 + ($delta/2) + ($delta*$_) - $h/2;
-        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($data->[0][$_])) 
+        $y2 = $y1 - (($self->{'x_tick_label_length'} - length( $self->{'f_x_tick'}->($data->[0][$_])))
                       * $w);
         $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
-	                            $data->[0][$_], $textcolor);
+                                    $self->{'f_x_tick'}->($data->[0][$_]), $textcolor);
       }
     }
     else {
       for (0..$self->{'num_datapoints'}-1) {
         $x2 = $x1 + ($delta/2) + ($delta*$_) - $h/2;
-        $y2 = $y1 - (($self->{'x_tick_label_length'} - length($data->[0][$_])) 
+        $y2 = $y1 - (($self->{'x_tick_label_length'} - length( $self->{'f_x_tick'}->($data->[0][$_])))
                       * $w);
         $self->{'gd_obj'}->stringUp($font, $x2, $y2, 
-	                            $data->[0][$_], $textcolor);
+	                             $self->{'f_x_tick'}->($data->[0][$_]), $textcolor);
       }
     }
   }
@@ -1046,6 +1041,12 @@ sub _draw_data {
   # do a final bounds update
   $self->_boundary_update ($self, $self->{'sub_0'});
   $self->_boundary_update ($self, $self->{'sub_1'});
+  
+
+  # init the imagemap data field if they wanted it
+  if ($self->{'imagemap'} =~ /^true$/i) {
+    $self->{'imagemap_data'} = [];
+  }
 
   # now let the component modules go to work
   $self->{'sub_0'}->_draw_data;

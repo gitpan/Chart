@@ -1,0 +1,44 @@
+\section{Chart::StackedBars}
+\herv{Name:} Chart::StackedBars\\ \\
+\herv{File:} StackedBars.pm\\ \\
+\herv{Requires:}Chart::Base, GD, Carp, FileHandle\\ \\
+\herv{Description:} \fett{StackedBars} is a \fett{subclass} of Chart::Base.\\
+The class StackedBars creates a chart with stacked bars.\\
+\\
+\herv{Example:}
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.6]{stackedbars.png}
+	\end{center}
+	\caption{Chart with stacked bars}
+	\label{fig:stackedbars}
+\end{figure}
+\begin{verbatim}
+use Chart::StackedBars;
+
+$g = Chart::StackedBars->new;
+
+$g->add_dataset ('foo', 'bar', 'junk', 'taco', 'karp');
+$g->add_dataset (3, 4, 9, 10, 11);
+$g->add_dataset (8, 6, 1, 12, 1);
+$g->add_dataset (5, 7, 2, 13, 4);
+
+$g->set ('title' => 'Stacked Bar Chart');
+$g->set('y_grid_lines' => 'true');
+$g->set('legend' => 'bottom');
+
+$g->png ("Grafiken/stackedbars.png");
+\end{verbatim}
+\herv{Constructor:} An instance of a stacked bars object can be created with the constructor new():\\
+\fett{\$obj = Chart::StackedBars->new();}\\
+\fett{\$obj = Chart::StackedBars->new(\kursiv{width}, \kursiv{height});}\\
+\\
+If \fett{new} has no arguments, the constructor returns an image with the size 300x400 pixels. If new has two arguments \kursiv{width} and \kursiv{height}, it returns an image with the desired size. \\ 
+\\ 
+\herv{Methods:}All universally valid methods, see page \pageref{methods}: Chart::Base. \\
+\\
+\herv{Attributes/Options:} All universally valid options, see page \pageref{options}. Also available, these special options:
+\begin{description}
+\item['y\_axes'] Tells chart where to place the y-axis. Valid values are 'left', 'right' and 'both'. Defaults to 'left'.
+\item['spaced\_bars']Leaves space between the groups of bars at each data point when set to 'true'.  This just makes it easier to read a bar chart.  Default is 'true'.
+\end{description}

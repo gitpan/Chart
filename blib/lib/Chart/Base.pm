@@ -10,9 +10,12 @@
 #  theft is treason, citizen     #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 # History:
-# $RCSfile: Base.pm,v $ $Revision: 1.4 $ $Date: 2002/06/06 07:38:25 $
+# $RCSfile: Base.pm,v $ $Revision: 1.5 $ $Date: 2002/06/19 12:36:58 $
 # $Author: dassing $
 # $Log: Base.pm,v $
+# Revision 1.5  2002/06/19 12:36:58  dassing
+# Correcting some undefines
+#
 # Revision 1.4  2002/06/06 07:38:25  dassing
 # Updates in Function _find_y_scale by David Pottage
 #
@@ -31,7 +34,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = '1.2';
+$Chart::Base::VERSION = '2.0';
 
 use vars qw(%named_colors);
 
@@ -68,7 +71,21 @@ sub set {
   
   # set the options
   for (keys %opts) {
+
     $self->{$_} = $opts{$_};
+    
+    # if someone wants to change the grid_lines color, we should set all
+    # the colors of the grid_lines
+    if ($_ =~ /^colors$/ ) {
+      my %hash = %{$opts{$_}};
+      foreach my $key (sort keys %hash){
+          if ($key =~ /^grid_lines$/) {
+            $self->{'colors'}{'y_grid_lines'} = $hash{'grid_lines'};
+            $self->{'colors'}{'x_grid_lines'} = $hash{'grid_lines'};
+            $self->{'colors'}{'y2_grid_lines'} = $hash{'grid_lines'};
+         }
+      }
+    }
   }
 
   # now return
@@ -114,6 +131,45 @@ sub add_dataset {
   return 1;
 }
 
+# it's also possible to add a complete datafile
+sub add_datafile  {
+   my $self = shift;
+   my $filename = shift;
+   my $format = shift;
+   my ($File, @array);
+   
+   # do some ugly checking to see if they gave me
+   # a filehandle or a file name
+   if ((ref \$filename) eq 'SCALAR') {
+    # they gave me a file name
+    open ($File, $filename) or die "Can't open the datafile: $filename.\n";
+   }
+   elsif ((ref \$filename) =~ /^(?:REF|GLOB)$/) {
+    # either a FileHandle object or a regular file handle
+    $File = $filename;
+   }
+   else {
+    carp "I'm not sure what kind of datafile you gave me,\n",
+          "but it wasn't a filename or a filehandle.\n";
+   }
+
+   #add the data
+   while(<$File>) {
+      @array = split;
+      if ( @array != ( )) {
+        if ($format =~ m/^pt$/i) {
+          $self->add_pt(@array);
+        }
+        elsif ($format =~ m/^set$/i) {
+          $self->add_dataset(@array);
+        }
+        else {
+          carp "Tell me what kind of file you gave me: 'pt' or 'set'\n";
+        }
+      }
+   }
+   close ($File);
+}
 
 ##  even more Graph API
 sub clear_data {
@@ -187,6 +243,7 @@ sub png {
   # now write it to the file handle, and don't forget
   # to be nice to the poor ppl using nt
   binmode $fh;
+
   print $fh $self->{'gd_obj'}->png();
   
   # now exit
@@ -453,6 +510,9 @@ sub _init {
   $self->{'y_ticks'} = 6;
   $self->{'min_y_ticks'} = 6;
   $self->{'max_y_ticks'} = 100;
+  $self->{'x_number_ticks'} = 1;
+  $self->{'min_x_ticks'} = 6;
+  $self->{'max_x_ticks'} = 100;
 
   # make the ticks 4 pixels long
   $self->{'tick_len'} = 4;
@@ -506,6 +566,71 @@ sub _init {
   $self->{no_cache} = 'false';
 
   $self->{typeStyle} = 'default';
+
+  # default value for skip_y_ticks for the labels
+  $self->{skip_y_ticks} = 1;
+
+  # default value for skip_int_ticks only for integer_ticks_only
+  $self->{skip_int_ticks} = 1;
+
+  # default value for precision
+  $self->{precision} = 3;	
+
+  # default value for legend label values in pie charts
+  $self->{legend_label_values} = 'value';
+  
+  # default value for the labels in a pie chart
+  $self->{label_values} = 'percent';
+  
+  # default position for the y-axes
+  $self->{y_axes} = 'left';
+  
+  # copies of the current values at the x-ticks function
+  $self->{temp_x_min} = 0;
+  $self->{temp_x_max} = 0;
+  $self->{temp_y_min} = 0;
+  $self->{temp_y_max} = 0;
+
+  # Instance for summe
+  $self->{sum} = 0;
+  
+  # Don't sort the data unless they ask
+  $self->{'sort'} = 'false';
+  
+  # The Interval for drawing the x-axes in the split module
+  $self->{'interval'} = undef;
+  
+  # The start value for the split chart
+  $self->{'start'} = undef;
+  
+  # How many ticks do i have to draw at the x-axes in one interval of a split-plot?
+  $self->{'interval_ticks'} = 6;
+  
+  # Draw the Lines in the split-chart normal
+  $self->{'scale'} = 1;
+  
+  # Make a x-y plot
+  $self->{'xy_plot'} = 'false';
+  
+  # min and max for xy plot
+  $self->{'x_min_val'} =1;
+  $self->{'x_max_val'} =1;
+  
+  # use the same error value in ErrorBars
+  $self->{'same_error'} = 'false';
+  
+
+  # Set the minimum and maximum number of circles to draw in a direction chart
+  $self->{'min_circles'} = 4;
+  $self->{'max_circles'} = 100;
+  
+  #set the style of a direction diagramm
+  $self->{'point'} = 'true';
+  $self->{'line'} = 'false';
+  $self->{'arrow'} = 'false';
+  
+  #The number of angel axes in a direction Chart
+  $self->{'angle_interval'} = 30;
 
   # used function to transform x- and y-tick labels to strings
   $self->{f_x_tick} = \&_default_f_tick;
@@ -603,20 +728,29 @@ sub _check_data {
 
   # find good min and max y-values for the plot
   $self->_find_y_scale;
+  
+
 
   # find the longest x-tick label
   $length = 0;
   for (@{$self->{'dataref'}->[0]}) {
-    next if !defined($_);
-    if (length($self->{f_x_tick}->($_)) > $length) {
-      $length = length ($self->{f_x_tick}->($_));
-    }
+        next if !defined($_);
+        if (length($self->{f_x_tick}->($_)) > $length) {
+           $length = length ($self->{f_x_tick}->($_));
+        }
   }
   if ( $length <= 0 ) { $length = 1; }    # make sure $length is positive and greater 0
 
   # now store it in the object
   $self->{'x_tick_label_length'} = $length;
 
+  # find x-scale, if a x-y plot is wanted
+  # makes only sense for some charts
+  if ( $self->{'xy_plot'} =~ /^true$/i && ($self->isa('Chart::Lines') || $self->isa('Chart::Points')
+       || $self->isa('Chart::LinesPoints') || $self->isa('Chart::Split') || $self->isa('Chart::ErrorBars')) ) {
+     $self->_find_x_scale;
+  }
+  
   return 1;
 }
 
@@ -649,7 +783,7 @@ sub _draw {
 
   # sort the data if they want to (mainly here to make sure
   # pareto charts get sorted)
-  $self->_sort_data() if $self->{'sort'};
+  $self->_sort_data() if ($self->{'sort'} =~ /^true$/i);
 
   # start drawing the data (most methods in this will be
   # overridden by the derived classes)
@@ -960,9 +1094,16 @@ sub _color_role_to_index {
 sub _draw_title {
   my $self = shift;
   my $font = $self->{'title_font'};
-  my $color = $self->_color_role_to_index('text');
+  my $color;
   my ($h, $w, @lines, $x, $y);
 
+  #get the right color
+  if (defined $self->{'colors'}{'title'} ) {
+      $color = $self->_color_role_to_index('title') ;
+  }
+  else {
+      $color = $self->_color_role_to_index('text') ;
+  }
   # make sure we're actually using a real font
   unless ((ref $font) eq 'GD::Font') {
     croak "The title font you specified isn\'t a GD Font object";
@@ -1029,12 +1170,118 @@ sub _draw_sub_title {
 }
 
 
-##  sort the data nicely (mostly for the pareto charts)
+##  sort the data nicely (mostly for the pareto charts and xy-plots)
 sub _sort_data {
+   my $self = shift;
+   my $data_ref = $self->{'dataref'};
+   my @data = @{$self->{'dataref'}};
+   my @sort_index;
 
+   #sort the data with slices
+   @sort_index = sort { $data[0][$a] <=> $data[0][$b] } (0..scalar(@{$data[1]})-1);
+   for (1..$#data) {
+       @{$self->{'dataref'}->[$_]} = @{$self->{'dataref'}->[$_]}[@sort_index];
+   }
+   @{$data_ref->[0]} = sort {$a <=> $b} @{$data_ref->[0]};
+
+   #finally return
+   return 1;
 }
 
+#For a xy-plot do the same for the x values, as _find_y_scale does for the y values!
+sub _find_x_scale {
+    my $self = shift;
+    my @data = @{$self->{'dataref'}};
+    my ($i, $j);
+    my ($d_min, $d_max);
+    my ($p_min, $p_max, $f_min, $f_max);
+    my ($tickInterval, $tickCount, $skip);
+    my @tickLabels;
+    my $maxtickLabelLen = 0;
+    
+    #look, if we have numbers
+    for $i (0..($self->{'num_datasets'})) {
+        for $j (0..($self->{'num_datapoints'}-1)) {
+                #the following regular Expression matches all possible numbers, including scientific numbers!!
+                if ($data[$i][$j] !~ m/^[+-]?((\.\d+)|(\d+\.?\d*))([eE][+-]?\d+)?[fFdD]?$/ ) {
+                   croak "<$data[$i][$j]> You should give me numbers for drawing a xy plot!\n";
+                }
+        }
+    }
+    
+    #find the dataset min and max
+    ($d_min, $d_max) = $self->_find_x_range();
 
+   # Force the inclusion of zero if the user has requested it.
+   if( $self->{'include_zero'} =~ m!^true$!i )    {
+       if( ($d_min * $d_max) > 0 ) {	# If both are non zero and of the same sign.
+         if( $d_min > 0 ) {	# If the whole scale is positive.
+             $d_min = 0;
+         }
+         else	{			# The scale is entirely negative.
+    		$d_max = 0;
+         }
+      }
+   }
+
+   # Calculate the width of the dataset. (posibly modified by the user)
+   my $d_width = $d_max - $d_min;
+
+   # If the width of the range is zero, forcibly widen it
+   # (to avoid division by zero errors elsewhere in the code).
+   if( 0 == $d_width )  {
+       $d_min--;
+       $d_max++;
+       $d_width = 2;
+   }
+
+   # Descale the range by converting the dataset width into
+   # a floating point exponent & mantisa pair.
+   my( $rangeExponent, $rangeMantisa ) = $self->_sepFP( $d_width );
+   my $rangeMuliplier = 10 ** $rangeExponent;
+
+   # Find what tick
+   # to use & how many ticks to plot,
+   # round the plot min & max to suatable round numbers.
+   ($tickInterval, $tickCount, $p_min, $p_max)
+    = $self->_calcXTickInterval($d_min/$rangeMuliplier, $d_max/$rangeMuliplier,
+				$f_min, $f_max,
+				$self->{'min_x_ticks'}, $self->{'max_x_ticks'});
+   # Restore the tickInterval etc to the correct scale
+   $_ *= $rangeMuliplier foreach($tickInterval, $p_min, $p_max);
+
+   #get teh precision for the labels
+   my $precision = $self->{'precision'};
+
+   # Now sort out an array of tick labels.
+   for( my $labelNum = $p_min; $labelNum<=$p_max; $labelNum+=$tickInterval ) {
+	my $labelText;
+
+        if( defined $self->{f_y_tick} )  {
+           # Is _default_f_tick function used?
+           if ( $self->{f_y_tick} == \&_default_f_tick) {
+                  $labelText = sprintf("%.".$precision."f", $labelNum);
+           }
+           else {
+                  $labelText = $self->{f_y_tick}->($labelNum);
+           }
+        }
+        else {
+           $labelText = sprintf("%.".$precision."f", $labelNum);
+       }
+
+       push @tickLabels, $labelText;
+       $maxtickLabelLen = length $labelText if $maxtickLabelLen < length $labelText;
+   }
+
+   # Store the calculated data.
+   $self->{'x_min_val'} = $p_min;
+   $self->{'x_max_val'} = $p_max;
+   $self->{'x_tick_labels'} = \@tickLabels;
+   $self->{'x_tick_label_length'} = $maxtickLabelLen;
+   $self->{'x_number_ticks'} = $tickCount;
+   return 1;
+}
 ##  find good values for the minimum and maximum y-value on the chart
 # New version, re-written by David Pottage of Tao Group.
 # This code is *AS IS* and comes with *NO WARRANTY*
@@ -1052,6 +1299,7 @@ sub _sort_data {
 # 
 # y_tick_labels_length:	The length to allow for B tick labels. (How long is
 #						the longest?)	
+
 sub _find_y_scale
 {
 	my $self = shift;
@@ -1059,13 +1307,13 @@ sub _find_y_scale
 	# Predeclare vars.
 	my ($d_min, $d_max);		# Dataset min & max.
 	my ($p_min, $p_max);		# Plot min & max.
-	my ($tickInterval, $tickCount);
+	my ($tickInterval, $tickCount, $skip);
 	my @tickLabels;				# List of labels for each tick.
 	my $maxtickLabelLen = 0;	# The length of the longest tick label.
 	
 	# Find the datatset minimum and maximum.
 	($d_min, $d_max) = $self->_find_y_range();
-	
+
 	# Force the inclusion of zero if the user has requested it.
 	if( $self->{'include_zero'} =~ m!^true$!i )
 	{
@@ -1091,78 +1339,125 @@ sub _find_y_scale
         }
 	if( $self->{'integer_ticks_only'} =~ m!^true$!i )
 	{
+                # Allow the dataset range to be overidden by the user.
+	        # f_min/max are booleans which indicate that the min & max should not be modified.
+	        my $f_min = defined $self->{'min_val'};
+	        $d_min = $self->{'min_val'} if $f_min;
+
+	        my $f_max = defined $self->{'max_val'};
+	        $d_max = $self->{'max_val'} if $f_max;
+
+	        # Assert against the min is larger than the max.
+	        if( $d_min > $d_max )
+	        {
+	         croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
+	        }
 		# The user asked for integer ticks, force the limits to integers.
 		# & work out the range directly.
-		$p_min = _round2Tick($d_min, 1, -1);
-		$p_max = _round2Tick($d_max, 1, 1);
+		$p_min = $self->_round2Tick($d_min, 1, -1);
+		$p_max = $self->_round2Tick($d_max, 1, 1);
+
+		$skip = $self->{skip_int_ticks};
+
+		$tickInterval = $skip;
+		$tickCount = ($p_max - $p_min ) /$skip +1;
+
+             	# Now sort out an array of tick labels.
+
+		for( my $labelNum = $p_min; $labelNum<=$p_max; $labelNum+=$tickInterval )
+		{
+			my $labelText;
 		
-		$tickInterval = 1;
-		$tickCount = $p_max - $p_min +1;
+			if( defined $self->{f_y_tick} )
+			{	
+                        	# Is _default_f_tick function used?
+                        	if ( $self->{f_y_tick} == \&_default_f_tick) {
+			   	$labelText = sprintf("%d", $labelNum);
+                        	}
+				else {
+					$labelText = $self->{f_y_tick}->($labelNum);
+                        	}
+			}
+			
+			else
+			{
+				$labelText = sprintf("%d", $labelNum);
+			}	
+			
+		#print "labelText = $labelText\n";
+		push @tickLabels, $labelText;
+		$maxtickLabelLen = length $labelText if $maxtickLabelLen < length $labelText;
+		}
+	
 	}
 	else
 	{
-		# Allow the dataset range to be overidden by the user.
-		# f_min/max are booleans which indicate that the min & max should not be modified.
-		my $f_min = defined $self->{'min_val'};
-		$d_min = $self->{'min_val'} if $f_min;
+	    # Allow the dataset range to be overidden by the user.
+	    # f_min/max are booleans which indicate that the min & max should not be modified.
+	    my $f_min = defined $self->{'min_val'};
+	    $d_min = $self->{'min_val'} if $f_min;
+
+	    my $f_max = defined $self->{'max_val'};
+	    $d_max = $self->{'max_val'} if $f_max;
+
+	    # Assert against the min is larger than the max.
+	    if( $d_min > $d_max )
+	    {
+	     croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
+	     }
+
+	     # Calculate the width of the dataset. (posibly modified by the user)
+	     my $d_width = $d_max - $d_min;
 		
-		my $f_max = defined $self->{'max_val'};
-		$d_max = $self->{'max_val'} if $f_max;
+	     # If the width of the range is zero, forcibly widen it
+	     # (to avoid division by zero errors elsewhere in the code).
+	     if( 0 == $d_width )
+	         {
+		$d_min--;
+		$d_max++;
+		$d_width = 2;
+	          }
 		
-		# Assert against the min is larger than the max.
-		if( $d_min > $d_max )
-		{
-		    croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
-		}
+             # Descale the range by converting the dataset width into
+             # a floating point exponent & mantisa pair.
+             my( $rangeExponent, $rangeMantisa ) = $self->_sepFP( $d_width );
+	     my $rangeMuliplier = 10 ** $rangeExponent;
 		
-		# Calculate the width of the dataset. (posibly modified by the user)
-		my $d_width = $d_max - $d_min;
-		
-		# If the width of the range is zero, forcibly widen it
-		# (to avoid division by zero errors elsewhere in the code).
-		if( 0 == $d_width )
-		{
-			$d_min--;
-			$d_max++;
-			$d_width = 2;
-		}
-		
-		# Descale the range by converting the dataset width into
-		# a floating point exponent & mantisa pair.
-		my( $rangeExponent, $rangeMantisa ) = _sepFP( $d_width );
-		my $rangeMuliplier = 10 ** $rangeExponent;
-		
-		# Find what tick interval to use & how many ticks to plot,
-		# round the plot min & max to suatable round numbers.
-		($tickInterval, $tickCount, $p_min, $p_max)
-			= _calcTickInterval($d_min/$rangeMuliplier, $d_max/$rangeMuliplier,
-								$f_min, $f_max,
-								$self->{'min_y_ticks'}, $self->{'max_y_ticks'});
-		# Restore the tickInterval etc to the correct scale
-		$_ *= $rangeMuliplier foreach($tickInterval, $p_min, $p_max);
-	}
+	     # Find what tick
+	     # to use & how many ticks to plot,
+	     # round the plot min & max to suatable round numbers.
+	     ($tickInterval, $tickCount, $p_min, $p_max)
+		= $self->_calcTickInterval($d_min/$rangeMuliplier, $d_max/$rangeMuliplier,
+				$f_min, $f_max,
+				$self->{'min_y_ticks'}, $self->{'max_y_ticks'});
+	     # Restore the tickInterval etc to the correct scale
+	     $_ *= $rangeMuliplier foreach($tickInterval, $p_min, $p_max);
 	
-	# Now sort out an array of tick labels.
-	for( my $labelNum = $p_min; $labelNum<=$p_max; $labelNum+=$tickInterval )
-	{
+	     #get teh precision for the labels
+	     my $precision = $self->{'precision'};
+
+	     # Now sort out an array of tick labels.
+	     for( my $labelNum = $p_min; $labelNum<=$p_max; $labelNum+=$tickInterval )
+	     {
 		my $labelText;
 		
 		if( defined $self->{f_y_tick} )
 		{
                         # Is _default_f_tick function used?
                         if ( $self->{f_y_tick} == \&_default_f_tick) {
-			   $labelText = sprintf("%.3f", $labelNum);
+			   $labelText = sprintf("%.".$precision."f", $labelNum);
                         } else {
 			   $labelText = $self->{f_y_tick}->($labelNum);
                         }
 		}
 		else
 		{
-			$labelText = sprintf("%.3f", $labelNum);
+			$labelText = sprintf("%.".$precision."f", $labelNum);
 		}
 		#print "labelText = $labelText\n";
 		push @tickLabels, $labelText;
 		$maxtickLabelLen = length $labelText if $maxtickLabelLen < length $labelText;
+	     }
 	}
 	
 	# Store the calculated data.
@@ -1178,11 +1473,11 @@ sub _find_y_scale
 
 
 
-# Calculates the tick interval in normalised units.
+# Calculates the tick  in normalised units.
 # Result will need multiplying by the multipler to get the true tick interval.
 # written by David Pottage of Tao Group.
 sub _calcTickInterval
-{
+{       my $self = shift;
 	my(
 		$min, $max,		# The dataset min & max.
 		$minF, $maxF,	# Indicates if those min/max are fixed.
@@ -1213,7 +1508,7 @@ sub _calcTickInterval
 			my $divisor = $baseMul * $tryMul;
 			
 			# Count the number of ticks.
-			my ($tickCount, $pMin, $pMax) = _countTicks($min, $max, 1/$divisor);
+			my ($tickCount, $pMin, $pMax) = $self->_countTicks($min, $max, 1/$divisor);
 			
 			# Look a the number of ticks.
 			if( $maxTicks < $tickCount )
@@ -1222,7 +1517,7 @@ sub _calcTickInterval
 				$divisor = pop @divisorList;
                                 # just for security:
                                 if ( !defined($divisor) || $divisor == 0 ) { $divisor = 1; } 
-				($tickCount, $pMin, $pMax) = _countTicks($min, $max, 1/$divisor);
+				($tickCount, $pMin, $pMax) = $self->_countTicks($min, $max, 1/$divisor);
 				print "\nChart::Base : Caution: Tick limit of $maxTicks exceeded. Backing of to an interval of ".1/$divisor." which plots $tickCount ticks\n";
 				return(1/$divisor, $tickCount, $pMin, $pMax);
 			}
@@ -1248,16 +1543,84 @@ sub _calcTickInterval
 	
 	die "can't happen!";
 }
+sub _calcXTickInterval
+{       my $self = shift;
+	my(
+		$min, $max,		# The dataset min & max.
+		$minF, $maxF,	# Indicates if those min/max are fixed.
+		$minTicks, $maxTicks,	# The minimum & maximum number of ticks.
+	) = @_;
+
+	# Verify the supplied 'min_y_ticks' & 'max_y_ticks' are sensible.
+	if( $minTicks < 2 )
+	{
+		print STDERR "Chart::Base : Incorrect value for 'min_y_ticks', too small.\n";
+		$minTicks = 2;
+	}
+
+	if( $maxTicks < 5*$minTicks  )
+	{
+		print STDERR "Chart::Base : Incorrect value for 'max_y_ticks', to small.\n";
+		$maxTicks = 5*$minTicks;
+	}
+
+	my $width = $max - $min;
+	my @divisorList;
+
+	for( my $baseMul = 1; ; $baseMul *= 10 )
+	{
+		TRY: foreach my $tryMul (1, 2, 5)
+		{
+			# Calc a fresh, smaller tick interval.
+			my $divisor = $baseMul * $tryMul;
+
+			# Count the number of ticks.
+			my ($tickCount, $pMin, $pMax) = $self->_countTicks($min, $max, 1/$divisor);
+
+			# Look a the number of ticks.
+			if( $maxTicks < $tickCount )
+			{
+				# If it is to high, Backtrack.
+				$divisor = pop @divisorList;
+                                # just for security:
+                                if ( !defined($divisor) || $divisor == 0 ) { $divisor = 1; }
+				($tickCount, $pMin, $pMax) = $self->_countTicks($min, $max, 1/$divisor);
+				print "\nChart::Base : Caution: Tick limit of $maxTicks exceeded. Backing of to an interval of ".1/$divisor." which plots $tickCount ticks\n";
+				return(1/$divisor, $tickCount, $pMin, $pMax);
+			}
+			elsif( $minTicks > $tickCount )
+			{
+				# If it is to low, try again.
+				next TRY;
+			}
+			else
+			{
+				# Store the divisor for possible later backtracking.
+				push @divisorList, $divisor;
+
+				# if the min or max is fixed, check they will fit in the interval.
+				next TRY if( $minF && ( int ($min*$divisor) != ($min*$divisor) ) );
+				next TRY if( $maxF && ( int ($max*$divisor) != ($max*$divisor) ) );
+
+				# If everything passes the tests, return.
+				return(1/$divisor, $tickCount, $pMin, $pMax)
+			}
+		}
+	}
+
+	die "can't happen!";
+}
 
 # Works out how many ticks would be displayed at that interval
 # e.g min=2, max=5, interval=1, result is 4 ticks.
 # written by David Pottage of Tao Group.
 sub _countTicks
 {
+        my $self = shift;
 	my( $min, $max, $interval) = @_;
 	
-	my $minR = _round2Tick( $min, $interval, -1);
-	my $maxR = _round2Tick( $max, $interval, 1);
+	my $minR = $self->_round2Tick( $min, $interval, -1);
+	my $maxR = $self->_round2Tick( $max, $interval, 1);
 	
 	my $tickCount = ( $maxR/$interval ) - ( $minR/$interval ) +1;
 	
@@ -1269,6 +1632,7 @@ sub _countTicks
 # written by David Pottage of Tao Group.
 sub _round2Tick
 {
+        my $self = shift;
 	my($input, $interval, $roundUP) = @_;
 	return $input if $interval == 0;
 	die unless 1 == $roundUP*$roundUP;
@@ -1287,6 +1651,7 @@ sub _round2Tick
 # written by David Pottage of Tao Group.
 sub _sepFP
 {
+        my $self = shift;
 	my($num) = @_;
 	return(0,0) if $num == 0;
 	
@@ -1322,6 +1687,25 @@ sub _find_y_range {
   ($min, $max);
 }
 
+sub _find_x_range {
+  my $self = shift;
+  my $data = $self->{'dataref'};
+
+  my $max = undef;
+  my $min = undef;
+
+    for my $datum ( @{$data->[0]} ) {
+      if ( defined $datum ) {
+        if ( defined $max ) {
+          if ( $datum > $max ) { $max = $datum }
+          elsif ( $datum < $min ) { $min = $datum }
+        }
+        else { $min = $max = $datum }
+      }
+    }
+
+ return ($min, $max);
+}
 ## main sub that controls all the plotting of the actual chart
 sub _plot {
   my $self = shift;
@@ -1342,10 +1726,14 @@ sub _plot {
 
   # draw the ticks and tick labels
   $self->_draw_ticks;
-
+  
   # give the plot a grey background if they want it
   $self->_grey_background if ($self->{'grey_background'} =~ /^true$/i);
-
+  
+  #draw the ticks again if grey_background has ruined it in a Direction Chart.
+  if ($self->{'grey_background'} =~ /^true$/i && $self->isa("Chart::Direction")) {
+    $self->_draw_ticks;
+  }
   $self->_draw_grid_lines if ($self->{'grid_lines'} =~ /^true$/i);
   $self->_draw_x_grid_lines if ($self->{'x_grid_lines'} =~ /^true$/i);
   $self->_draw_y_grid_lines if ($self->{'y_grid_lines'} =~ /^true$/i);
@@ -1417,7 +1805,7 @@ sub _draw_bottom_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
   my ($x1, $y1, $x2, $x3, $y2, $empty_width, $max_label_width, $cols, $rows, $color, $brush);
-  my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h);
+  my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h, $axes_space);
   my $font = $self->{'legend_font'};
 
   # make sure we're using a real font
@@ -1429,10 +1817,23 @@ sub _draw_bottom_legend {
   ($h, $w) = ($font->height, $font->width);
 
   # find the base x values
-  $x1 = $self->{'curr_x_min'} + $self->{'graph_border'}
-          + ($self->{'y_tick_label_length'} * $self->{'tick_label_font'}->width)
-	  + $self->{'tick_len'} + (3 * $self->{'text_space'});
+  $axes_space = ($self->{'y_tick_label_length'} * $self->{'tick_label_font'}->width)
+	        + $self->{'tick_len'} + (3 * $self->{'text_space'});
+  $x1 = $self->{'curr_x_min'} + $self->{'graph_border'};
   $x2 = $self->{'curr_x_max'} - $self->{'graph_border'};
+
+  if ($self->{'y_axes'} =~ /^right$/i) {
+     $x2 -= $axes_space;
+  }
+  elsif ($self->{'y_axes'} =~ /^both$/i) {
+     $x2 -= $axes_space;
+     $x1 += $axes_space;
+  }
+  else {
+     $x1 += $axes_space;
+  }
+
+
   if ($self->{'y_label'}) {
     $x1 += $self->{'label_font'}->height + 2 * $self->{'text_space'};
   }
@@ -1595,7 +1996,7 @@ sub _draw_top_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
   my ($x1, $y1, $x2, $x3, $y2, $empty_width, $max_label_width, $cols, $rows, $color, $brush);
-  my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h);
+  my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h, $axes_space);
   my $font = $self->{'legend_font'};
 
   # make sure we're using a real font
@@ -1606,16 +2007,21 @@ sub _draw_top_legend {
   # get the size of the font
   ($h, $w) = ($font->height, $font->width);
 
-  # get some base x coordinates
-  $x1 = $self->{'curr_x_min'} + $self->{'graph_border'}
-          + $self->{'y_tick_label_length'} * $self->{'tick_label_font'}->width
-	  + $self->{'tick_len'} + (3 * $self->{'text_space'});
+  # find the base x values
+  $axes_space = ($self->{'y_tick_label_length'} * $self->{'tick_label_font'}->width)
+	        + $self->{'tick_len'} + (3 * $self->{'text_space'});
+  $x1 = $self->{'curr_x_min'} + $self->{'graph_border'};
   $x2 = $self->{'curr_x_max'} - $self->{'graph_border'};
-  if ($self->{'y_label'}) {
-    $x1 += $self->{'label_font'}->height + 2 * $self->{'text_space'};
+
+  if ($self->{'y_axes'} =~ /^right$/i) {
+     $x2 -= $axes_space;
   }
-  if ($self->{'y_label2'}) {
-    $x2 -= $self->{'label_font'}->height + 2 * $self->{'text_space'};
+  elsif ($self->{'y_axes'} =~ /^both$/i) {
+     $x2 -= $axes_space;
+     $x1 += $axes_space;
+  }
+  else {
+     $x1 += $axes_space;
   }
 
   # figure out how wide the columns can be, and how many will fit
@@ -1773,9 +2179,18 @@ sub _draw_x_label {
   my $self = shift;
   my $label = $self->{'x_label'};
   my $font = $self->{'label_font'};
-  my $color = $self->_color_role_to_index('text');
+  my $color;
   my ($h, $w, $x, $y);
 
+  #get the right color
+  if (defined $self->{'colors'}->{'x_label'}) {
+    $color = $self->_color_role_to_index('x_label');
+
+  }
+  else {
+    $color = $self->_color_role_to_index('text');
+  }
+  
   # make sure it's a real GD Font object
   unless ((ref ($font)) eq 'GD::Font') {
     croak "The x-axis label font you specified isn\'t a GD Font object";
@@ -1855,16 +2270,134 @@ sub _draw_y_label {
 sub _draw_ticks {
   my $self = shift;
 
-  # draw the x ticks
-  $self->_draw_x_ticks;
+  #if the user wants an xy_plot, calculate the x-ticks too
+  if ( $self->{'xy_plot'} =~ /^true$/i && ($self->isa('Chart::Lines') || $self->isa('Chart::Points')
+       || $self->isa('Chart::LinesPoints') || $self->isa('Chart::Split') || $self->isa('Chart::ErrorBars')) ) {
+     $self->_draw_x_number_ticks;
+  }
+  else { # draw the x ticks with strings
+     $self->_draw_x_ticks;
+  }
 
   # now the y ticks
-  $self->_draw_y_ticks;
+  $self->_draw_y_ticks($self->{'y_axes'});
 
   # then return
   return 1;
 }
 
+sub _draw_x_number_ticks {
+ my $self = shift;
+ my $data = $self->{'dataref'};
+ my $font = $self->{'tick_label_font'};
+ my $textcolor = $self->_color_role_to_index('text');
+ my $misccolor = $self->_color_role_to_index('misc');
+ my ($h, $w, $x1, $y1, ,$y2, $x2, $delta, $width, $label);
+ my @labels = @{$self->{'x_tick_labels'}};
+
+ $self->{'grid_data'}->{'x'} = [];
+
+ #make sure we have a real font
+ unless ((ref $font) eq 'GD::Font') {
+  croak "The tick label font you specified isn't a GD font object";
+ }
+
+ #get height and width of the font
+ ($h, $w) = ($font->height, $font->width);
+
+ #store actual borders, for a possible later repair
+ $self->{'temp_x_min'} = $self->{'curr_x_min'};
+ $self->{'temp_x_max'} = $self->{'curr_x_max'};
+ $self->{'temp_y_max'} = $self->{'curr_y_max'};
+ $self->{'temp_y_min'} = $self->{'curr_y_min'};
+ 
+ #get the right x-value and width
+  #The one and only way to get the RIGHT x value and the width
+  if ($self->{'y_axes'} =~ /^right$/i) {
+    $x1 = $self->{'curr_x_min'}  ;
+    $width = $self->{'curr_x_max'} - $x1- ($w * $self->{'y_tick_label_length'})
+             - 3 * $self->{'text_space'} - $self->{'tick_len'};
+  }
+  elsif ($self->{'y_axes'} =~ /^both$/i) {
+    $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
+         + 3 * $self->{'text_space'} + $self->{'tick_len'};
+    $width = $self->{'curr_x_max'} - $x1- ($w * $self->{'y_tick_label_length'})
+            - (3 * $self->{'text_space'}) - $self->{'tick_len'};
+  }
+  else {
+    $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
+         + 3 * $self->{'text_space'} + $self->{'tick_len'};
+    $width = $self->{'curr_x_max'} - $x1;
+  }
+
+ #get the delta value
+ $delta = $width / ($self->{'x_number_ticks'}-1 ) ;
+
+ #draw the labels
+ $y2 =$y1;
+
+ if ($self->{'x_ticks'} =~ /^normal/i ) {  #just normal ticks
+   #get the point for updating later
+   $y1 = $self->{'curr_y_max'} - 2*$self->{'text_space'} -$h - $self->{'tick_len'};
+   #get the start point
+   $y2 = $y1  + $self->{'tick_len'} + $self->{'text_space'};
+   for (0..$#labels){
+     $label = $self->{f_x_tick}->($self->{'x_tick_labels'}[$_]);
+     $x2 = $x1 + ($delta * $_) - (0.5 *$w* length( $label)) ;
+     $self->{'gd_obj'}->string($font, $x2, $y2 , $label , $textcolor);
+   }
+ }
+ elsif ($self->{'x_ticks'} =~ /^staggered/i ) {  #staggered ticks
+   #get the point for updating later
+   $y1 = $self->{'curr_y_max'} - 3*$self->{'text_space'} - 2*$h - $self->{'tick_len'};
+
+   for (0..$#labels) {
+   $label = $self->{f_x_tick}->($self->{'x_tick_labels'}[$_]);
+     $x2 = $x1 + ($delta * $_) - ($w* length( $label)/2);
+     unless ($_%2) {
+      $y2 = $y1  + $self->{'text_space'} + $self->{'tick_len'};
+       $self->{'gd_obj'}->string($font, $x2, $y2 , $label, $textcolor);
+     }
+     else {
+     $y2 = $y1  + $h + 2*$self->{'text_space'} + $self->{'tick_len'};
+       $self->{'gd_obj'}->string($font, $x2, $y2 , $label, $textcolor);
+     }
+   }
+ }
+ elsif ($self->{'x_ticks'} =~ /^vertical/i ) {  #vertical ticks
+   #get the point for updating later
+   $y1 = $self->{'curr_y_max'} - 2*$self->{'text_space'} -$w* $self->{'x_tick_label_length'} - $self->{'tick_len'};
+    for (0..$#labels){
+     $label = $self->{f_x_tick}->($self->{'x_tick_labels'}[$_]);
+
+     #get the start point
+     $y2 = $y1  + $self->{'tick_len'} + $w* length($label) + $self->{'text_space'};
+     $x2 = $x1 + ($delta * $_) - ($h /2);
+     $self->{'gd_obj'}->stringUp($font, $x2, $y2 , $label , $textcolor);
+   }
+
+ }
+
+ else {
+  carp "I don't understand the type of x-ticks you specified";
+ }
+ #update the curr y max value
+ $self->{'curr_y_max'} = $y1;
+
+ #draw the ticks
+ $y1 =$self->{'curr_y_max'};
+ $y2 =$self->{'curr_y_max'} + $self->{'tick_len'};
+ for(0..$#labels ) {
+   $x2 = $x1 + ($delta * $_);
+   $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+     if (($self->{'grid_lines'} =~ /^true$/i) or ($self->{'x_grid_lines'} =~ /^true$/i)) {
+        $self->{'grid_data'}->{'x'}->[$_] = $x2;
+     }
+ }
+
+  return 1;
+}
+  
 
 ## draw the x-ticks and their labels
 sub _draw_x_ticks {
@@ -1873,7 +2406,7 @@ sub _draw_x_ticks {
   my $font = $self->{'tick_label_font'};
   my $textcolor = $self->_color_role_to_index('text');
   my $misccolor = $self->_color_role_to_index('misc');
-
+  my $label;
   my ($h, $w);
   my ($x1, $x2, $y1, $y2);
   my ($width, $delta);
@@ -1888,7 +2421,14 @@ sub _draw_x_ticks {
 
   # get the height and width of the font
   ($h, $w) = ($font->height, $font->width);
-
+  
+  # maybe, we need the actual x and y values later for drawing the x-ticks again
+  # in the draw function in the lines modul. So copy them.
+  $self->{'temp_x_min'} = $self->{'curr_x_min'};
+  $self->{'temp_x_max'} = $self->{'curr_x_max'};
+  $self->{'temp_y_min'} = $self->{'curr_y_min'};
+  $self->{'temp_y_max'} = $self->{'curr_y_max'};
+    
   # allow for the amount of space the y-ticks will push the
   # axes over to the right
 ## _draw_y_ticks allows 3 * text_space, not 1 * ;  this caused mismatch between
@@ -1896,12 +2436,29 @@ sub _draw_x_ticks {
 #   $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
 #          + $self->{'text_space'} + $self->{'tick_len'};
 ## And, what about the right-tick space??  Only affects Composite, I guess....
-  $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
+
+  #The one and only way to get the RIGHT x value and the width
+  if ($self->{'y_axes'} =~ /^right$/i) {
+    $x1 = $self->{'curr_x_min'}  ;
+    $width = $self->{'curr_x_max'} - $x1- ($w * $self->{'y_tick_label_length'})
+             - 3 * $self->{'text_space'} - $self->{'tick_len'};
+  }
+  elsif ($self->{'y_axes'} =~ /^both$/i) {
+    $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
          + 3 * $self->{'text_space'} + $self->{'tick_len'};
+    $width = $self->{'curr_x_max'} - $x1- ($w * $self->{'y_tick_label_length'})
+            - 3 * $self->{'text_space'} - $self->{'tick_len'};
+  }
+  else {
+    $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
+         + 3 * $self->{'text_space'} + $self->{'tick_len'};
+    $width = $self->{'curr_x_max'} - $x1;
+  }
+
+  #the same for the y value, but not so tricky
   $y1 = $self->{'curr_y_max'} - $h - $self->{'text_space'};
 
   # get the delta value, figure out how to draw the labels
-  $width = $self->{'curr_x_max'} - $x1;
   $delta = $width / $self->{'num_datapoints'};
   if ( ! defined($self->{'skip_x_ticks'}) ) {
      $self->{'skip_x_ticks'} = 1;
@@ -1914,36 +2471,38 @@ sub _draw_x_ticks {
 
   # now draw the labels 
   if ($self->{'x_ticks'} =~ /^normal$/i) { # normal ticks
-    if ($self->{'skip_x_ticks'}) { # draw only every nth tick and label
+    if ($self->{'skip_x_ticks'} >1) { # draw only every nth tick and label
       for (0..int (($self->{'num_datapoints'} - 1) / $self->{'skip_x_ticks'})) {
         if ( defined($data->[0][$_*$self->{'skip_x_ticks'}]) ) {
+           $label = $self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]);
            $x2 = $x1 + ($delta / 2) + ($delta * ($_ * $self->{'skip_x_ticks'})) 
-	         - ($w*length($self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]))) / 2;
-           $self->{'gd_obj'}->string($font, $x2, $y1, 
-	                          $self->{f_x_tick}->($data->[0][$_*$self->{'skip_x_ticks'}]), 
-				  $textcolor);
+	         - ($w*length($label) )/ 2;
+           $self->{'gd_obj'}->string($font, $x2, $y1, $label, $textcolor);
         }
       }     
     }
     elsif ($self->{'custom_x_ticks'}) { # draw only the ticks they wanted
-      for (@{$self->{'custom_x_ticks'}}) {
-          if ( defined($_) ) {
-             $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($self->{f_x_tick}->($data->[0][$_]))) / 2;
-             $self->{'gd_obj'}->string($font, $x2, $y1, $self->{f_x_tick}->($data->[0][$_]), $textcolor);
+     for (@{$self->{'custom_x_ticks'}}) {
+         if ( defined($_) ) {
+             $label = $self->{f_x_tick}->($data->[0][$_]);
+             $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($label)) / 2;
+             $self->{'gd_obj'}->string($font, $x2, $y1, $label, $textcolor);
          }
-      }
+     }
     }
     else {
       for (0..$self->{'num_datapoints'}-1) {
         if ( defined($_) ) {
-          $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($self->{f_x_tick}->($data->[0][$_]))) / 2;
-          $self->{'gd_obj'}->string($font, $x2, $y1, $self->{f_x_tick}->($data->[0][$_]), $textcolor);
+          $label = $self->{f_x_tick}->($data->[0][$_]);
+          $x2 = $x1 + ($delta/2) + ($delta*$_) - ($w*length($label)) / 2;
+          $self->{'gd_obj'}->string($font, $x2, $y1, $label, $textcolor);
         }
       }
     }
   }
+
   elsif ($self->{'x_ticks'} =~ /^staggered$/i) { # staggered ticks
-    if ($self->{'skip_x_ticks'}) {
+    if ($self->{'skip_x_ticks'}>1) {
       $stag = 0;
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
         if ( defined($data->[0][$_*$self->{'skip_x_ticks'}]) ) {
@@ -1995,7 +2554,7 @@ sub _draw_x_ticks {
   }
   elsif ($self->{'x_ticks'} =~ /^vertical$/i) { # vertical ticks
     $y1 = $self->{'curr_y_max'} - $self->{'text_space'};
-    if ($self->{'skip_x_ticks'}) {
+    if ($self->{'skip_x_ticks'} > 1) {
       for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
         if ( defined($_) ) {
           $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'})) - $h/2;
@@ -2049,7 +2608,7 @@ sub _draw_x_ticks {
   # now plot the ticks
   $y1 = $self->{'curr_y_max'};
   $y2 = $self->{'curr_y_max'} - $self->{'tick_len'};
-  if ($self->{'skip_x_ticks'}) {
+  if ($self->{'skip_x_ticks'} > 1) {
     for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
       $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'}));
       $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
@@ -2096,7 +2655,7 @@ sub _draw_y_ticks {
   my @labels = @{$self->{'y_tick_labels'}};
   my ($w, $h);
   my ($x1, $x2, $y1, $y2);
-  my ($height, $delta);
+  my ($height, $delta, $label);
   my ($s, $f);
   
   $self->{grid_data}->{'y'} = [];
@@ -2117,7 +2676,7 @@ sub _draw_y_ticks {
   }
   elsif ($self->{'max_val'} <= 0) {
     $s = 0;
-    $f = $#labels - 1;
+    $f = $#labels ;                        # -1 entfernt
   }
   else {
     $s = 0;
@@ -2142,7 +2701,7 @@ sub _draw_y_ticks {
     for ($s..$f) {
       $y2 = $y1 - ($delta * $_);
       $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
-      if ($self->{grid_lines} =~ /^true$/i
+      if ($self->{'grid_lines'} =~ /^true$/i
 	or $self->{'y2_grid_lines'} =~ /^true$/i) {
         $self->{'grid_data'}->{'y2'}->[$_] = $y2;
       }
@@ -2155,7 +2714,7 @@ sub _draw_y_ticks {
     # now draw the labels
     for (0..$#labels) {
       $y2 = $y1 - ($delta * $_);
-      $self->{'gd_obj'}->string($font, $x1, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
+      $self->{'gd_obj'}->string($font, $x1, $y2, $self->{'y_tick_labels'}[$_], $textcolor);
     }
   }
   elsif ($side eq 'both') { # put the ticks on the both sides
@@ -2169,10 +2728,11 @@ sub _draw_y_ticks {
     $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
     $delta = $height / ($self->{'y_ticks'} - 1);
     for (0..$#labels) {
+      $label = $self->{'y_tick_labels'}[$_];
       $y2 = $y1 - ($delta * $_);
       $x2 = $x1 + ($w * $self->{'y_tick_label_length'}) 
-              - ($w * length($self->{f_y_tick}->($labels[$_])));
-      $self->{'gd_obj'}->string($font, $x2, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
+              - ($w * length($label));
+      $self->{'gd_obj'}->string($font, $x2, $y2, $label, $textcolor);
     }
 
     # and update the current x-min value
@@ -2225,7 +2785,7 @@ sub _draw_y_ticks {
     # now draw the labels
     for (0..$#labels) {
       $y2 = $y1 - ($delta * $_);
-      $self->{'gd_obj'}->string($font, $x1, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
+      $self->{'gd_obj'}->string($font, $x1, $y2, $self->{'y_tick_labels'}[$_], $textcolor);
     }   
   }
   else { # just the left side
@@ -2237,10 +2797,11 @@ sub _draw_y_ticks {
     $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
     $delta = $height / ($self->{'y_ticks'} - 1);
     for (0..$#labels) {
+      $label = $self->{'y_tick_labels'}[$_];
       $y2 = $y1 - ($delta * $_);
       $x2 = $x1 + ($w * $self->{'y_tick_label_length'}) 
-              - ($w * length($self->{f_y_tick}->($labels[$_])));
-      $self->{'gd_obj'}->string($font, $x2, $y2, $self->{f_y_tick}->($labels[$_]), $textcolor);
+              - ($w * length($label));
+      $self->{'gd_obj'}->string($font, $x2, $y2, $label, $textcolor);
     }
 
     # and update the current x-min value
@@ -2276,10 +2837,10 @@ sub _grey_background {
   # draw it
   $self->{'gd_obj'}->filledRectangle ($self->{'curr_x_min'},
                                       $self->{'curr_y_min'},
-				      $self->{'curr_x_max'},
+                                       $self->{'curr_x_max'},
 				      $self->{'curr_y_max'},
 				      $self->_color_role_to_index('grey_background'));
-
+#print " $self->{'curr_x_min'} ";
   # now return
   return 1;
 }
@@ -2295,7 +2856,8 @@ sub _draw_grid_lines {
 
 sub _draw_x_grid_lines {
   my $self = shift;
-  my $gridcolor = $self->_color_role_to_index('x_grid_lines');
+  my $grid_role = shift || 'x_grid_lines';
+  my $gridcolor = $self->_color_role_to_index($grid_role);
   my ($x, $y, $i);
 
   foreach $x (@{ $self->{grid_data}->{'x'} }) {
@@ -2308,28 +2870,48 @@ sub _draw_x_grid_lines {
 
 sub _draw_y_grid_lines {
   my $self = shift;
-  my $gridcolor = $self->_color_role_to_index('y_grid_lines');
+  my $grid_role = shift || 'y_grid_lines';
+  my $gridcolor = $self->_color_role_to_index($grid_role);
   my ($x, $y, $i);
 
-  # loop for y values is a little different. This is to discard the first 
-  # and last values we were given - the top/bottom of the chart area.
-  for ($i = 1; $i < $#{ $self->{grid_data}->{'y'} }; $i++) {
+  #Look if I'm an HorizontalBars object
+  if ($self->isa('Chart::HorizontalBars')) {
+      for ($i = 0; $i < ($#{ $self->{grid_data}->{'y'} } ) +1 ; $i++) {
+        $y = $self->{grid_data}->{'y'}->[$i];
+        $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
+      }
+  }
+  else {
+   # loop for y values is a little different. This is to discard the first
+   # and last values we were given - the top/bottom of the chart area.
+   for ($i = 1; $i < ($#{ $self->{grid_data}->{'y'} } )  ; $i++) {
     $y = $self->{grid_data}->{'y'}->[$i];
     $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
+   }
   }
   return 1;
 }
 
 sub _draw_y2_grid_lines {
   my $self = shift;
-  my $gridcolor = $self->_color_role_to_index('y2_grid_lines');
+  my $grid_role = shift || 'y2_grid_lines';
+  my $gridcolor = $self->_color_role_to_index($grid_role);
   my ($x, $y, $i);
 
+  #Look if I'm an HorizontalBars object
+  if ($self->isa('Chart::HorizontalBars')) {
+      for ($i = 0; $i < ($#{ $self->{grid_data}->{'y'} } ) +1 ; $i++) {
+        $y = $self->{grid_data}->{'y'}->[$i];
+        $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
+      }
+  }
+  else {
   # loop for y2 values is a little different. This is to discard the first 
   # and last values we were given - the top/bottom of the chart area.
-  for ($i = 1; $i < $#{ $self->{grid_data}->{'y2'} }; $i++) {
-    $y = $self->{grid_data}->{'y2'}->[$i];
-    $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
+   for ($i = 1; $i < $#{ $self->{grid_data}->{'y2'} }; $i++) {
+     $y = $self->{grid_data}->{'y2'}->[$i];
+     $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
+   }
   }
   return 1;
 }
@@ -2506,3 +3088,4 @@ sub _default_f_tick {
 
 ## be a good module and return positive
 1;
+

@@ -1,27 +1,5 @@
-
-pie charts, pareto charts
-label values at points and bars?
-
-On the fly generation of PNG or JPEG images
-
-Errors detected:
-1. Playing with the background color and x or y grid
-lines I realized that the setting of 'grid_lines'
-color does not functions. 
-2. I can change separately x grid lines or y grid
-lines yet. The problem is that when you change either
-color then the background color disappiers (becomes
-white).
-3. The title of the graph appeared with the bottom of
-the letters erased. I was tying to fix with
-graph_border setting but did not work.
-4. It seems that the "" in the title does not work but the sub_title option
-is working (also the documentation is saying that is deprecated).
-
-
-
 Long term:
-control charts
-3-D charts?
-x-ticks numerical, not just labels
-	- spaces the data points out correctly along x-axis?
+----------
+3-D charts
+
+

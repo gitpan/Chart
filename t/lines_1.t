@@ -19,6 +19,7 @@ $g->set ('y_label' => 'y label 1');
 $g->set ('y_label2' => 'y label 2');
 $g->set ('y_grid_lines' => 'true');
 $g->set ('legend' => 'bottom');
+$g->set (custom_x_ticks => [1,2]);
 
 $g->png ("samples/lines_1.png");
 
