@@ -14,7 +14,6 @@ use Carp;
 use strict;
 
 @Chart::Pareto::ISA = qw ( Chart::Base );
-$Chart::Pareto::VERSION = $Chart::Base::VERSION;
 
 #==================#
 #  public methods  #
@@ -121,7 +120,7 @@ sub draw_ticks {
     my $str_max = 0;
     my $stag = 0;
     my ($y_step, $y_diff, $x_step, $val, $str_len);
-    my ($x_min, $x_max, $y, $map, $y_per_step);
+    my ($x_min, $x_max, @dec, $y, $map, $y_per_step);
 
     #===========================#
     #  draw the y value labels  #  
@@ -135,7 +134,9 @@ sub draw_ticks {
 	       / $obj->{'y_ticks'});
 
     for (0..$obj->{'y_ticks'}) {
-	$val = int (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+	$val = (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+        @dec = split /\./, $val;
+        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
 	$str_len = length($val);
 	
 	if ($str_len > $str_max) {
@@ -145,7 +146,9 @@ sub draw_ticks {
 
     
     for (0..$obj->{'y_ticks'}) {
-	$val = int (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+	$val = (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+        @dec = split /\./, $val;
+        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
 	$str_len = length($val);
 	$obj->{'im'}->string (gdSmallFont,
 			      $obj->{'x_min'} + ($str_max - $str_len) * $w,
@@ -313,6 +316,7 @@ sub draw_data {
     my $black = $obj->get_color ('black');
     my ($x_step, $offset, $ref, @data, $color, @per, $per);
     my ($w, $h) = (gdSmallFont->width, gdSmallFont->height);
+    my $j;
 
     $obj->find_range ($dataref);
     $obj->draw_ticks ($dataref);
@@ -332,7 +336,7 @@ sub draw_data {
 	$x_step = ($obj->{'x_max'} - $obj->{'x_min'}) / ($obj->{'cutoff'} + 1);
     }
 
-    for my $j (0..$#data) {
+    for $j (0..$#data) {
 	$obj->{'im'}->filledRectangle ($obj->{'x_min'} + $x_step * $j,
 				       $data[$j],
 				       $obj->{'x_min'} + $x_step * ($j+1),

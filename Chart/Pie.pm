@@ -14,7 +14,6 @@ use Carp;
 use strict;
 
 @Chart::Pie::ISA = qw ( Chart::Base );
-$Chart::Pie::VERSION = $Chart::Base::VERSION;
 
 #==================#
 #  public methods  #

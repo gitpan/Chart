@@ -14,7 +14,6 @@ use Carp;
 use strict;
 
 @Chart::StackedBars::ISA = qw ( Chart::Base );
-$Chart::StackedBars::VERSION = $Chart::Base::VERSION;
 
 #==================#
 #  public methods  #
@@ -49,11 +48,12 @@ sub draw_ticks {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my $black = $obj->get_color ('black');
+    my $grey = $obj->get_color ('grey');
     my ($h, $w) = (gdSmallFont->height, gdSmallFont->width);
     my $str_max = 0;
     my $stag = 0;
     my ($y_step, $y_diff, $x_step, $val, $str_len);
-    my ($x_min, $x_max);
+    my ($x_min, $x_max, @dec);
     my @ticks;
     
     #===============================#
@@ -77,7 +77,9 @@ sub draw_ticks {
 	       / $obj->{'y_ticks'});
 
     for (0..$obj->{'y_ticks'}) {
-	$val = int (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+	$val = (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+        @dec = split /\./, $val;
+        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
 	$str_len = length($val);
 	
 	if ($str_len > $str_max) {
@@ -87,7 +89,9 @@ sub draw_ticks {
 
     
     for (0..$obj->{'y_ticks'}) {
-	$val = int (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+	$val = (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+        @dec = split /\./, $val;
+        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
 	$str_len = length($val);
 	$obj->{'im'}->string (gdSmallFont,
 			      $obj->{'x_min'} + ($str_max - $str_len) * $w,
@@ -188,6 +192,13 @@ sub draw_ticks {
 			        + 2 * $obj->{'text_space'},
 			    $obj->{'y_min'} + $y_step * $_,
 			    $black);
+        if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+            $obj->{'im'}->line ($obj->{'x_min'} + 2 * $obj->{'text_space'},
+                                $obj->{'y_min'} + $y_step * $_,
+                                $obj->{'x_max'},
+                                $obj->{'y_min'} + $y_step * $_,
+                                $grey);
+        }
     }
     
     if (@ticks) {  #custom ticks
@@ -197,6 +208,13 @@ sub draw_ticks {
 				$x_min + $x_step * $_,
 				$obj->{'y_max'} - $obj->{'tick_len'},
 				$black);
+            if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+                $obj->{'im'}->line ($x_min + ($x_step * $_),
+                                    $obj->{'y_max'} - $obj->{'tick_len'},
+                                    $x_min + $x_step * $_,
+                                    $obj->{'y_min'},
+                                    $grey);
+            }
 	}
     }
     elsif ($obj->{'skip_x_ticks'}) {  #every n ticks
@@ -207,6 +225,13 @@ sub draw_ticks {
 				    $x_min + $x_step * $_,
 				    $obj->{'y_max'} - $obj->{'tick_len'},
 				    $black);
+                if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+                    $obj->{'im'}->line ($x_min + ($x_step * $_),
+                                        $obj->{'y_max'} - $obj->{'tick_len'},
+                                        $x_min + $x_step * $_,
+                                        $obj->{'y_min'},
+                                        $grey);
+                }
 	    }
 	}
     }
@@ -217,6 +242,13 @@ sub draw_ticks {
 				$x_min + $x_step * $_,
 				$obj->{'y_max'} - $obj->{'tick_len'},
 				$black);
+            if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+                $obj->{'im'}->line ($x_min + ($x_step * $_),
+                                    $obj->{'y_max'} - $obj->{'tick_len'},
+                                    $x_min + $x_step * $_,
+                                    $obj->{'y_min'},
+                                    $grey);
+            }
 	}
     }
     
@@ -251,12 +283,12 @@ sub draw_data {
 					   $data[$j],
 					   $obj->{'x_min'} + $x_step * ($j+1),
 					   $obj->{'y_max'},
-					   $color);
+					   $color) if defined ($data[$j]);
 	    $obj->{'im'}->rectangle ($obj->{'x_min'} + $x_step * $j,
 				     $data[$j],
 				     $obj->{'x_min'} + $x_step * ($j+1),
 				     $obj->{'y_max'},
-				     $black);
+				     $black) if defined ($data[$j]);
 	}
     }
     
@@ -266,15 +298,17 @@ sub draw_data {
 sub data_map {
     my $obj = shift;
     my $dataref = $obj->{'data'};
-    my ($ref, $map, $i);
+    my ($ref, $map, $i, $j);
     
     $map = ($obj->{'max_val'})
                 ? ($obj->{'y_max'} - $obj->{'y_min'}) / $obj->{'max_val'}
                 : ($obj->{'y_max'} - $obj->{'y_min'}) / 10;
 
     for $i (1..$#{$dataref}) {
-	for my $j (0..$#{$dataref->[$i]}) {
-	    $ref->[$i-1][$j] = $obj->{'y_max'} - $map * $dataref->[$i][$j];
+	for $j (0..$#{$dataref->[$i]}) {
+	    $ref->[$i-1][$j] = (defined ($dataref->[$i][$j]))
+	    			? $obj->{'y_max'} - $map * $dataref->[$i][$j]
+				: undef;
 	}
     }
 

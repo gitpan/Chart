@@ -1,5 +1,3 @@
-#!/usr/local/bin/perl
-
 use Chart::Lines;
 
 print "1..1\n";

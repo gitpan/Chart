@@ -14,7 +14,6 @@ use Carp;
 use strict;
 
 @Chart::LinesPoints::ISA = qw ( Chart::Base );
-$Chart::LinesPoints::VERSION = $Chart::Base::VERSION;
 
 #==================#
 #  public methods  #
@@ -49,10 +48,11 @@ sub draw_ticks {
     my $obj = shift;
     my $dataref = $obj->{'data'};
     my $black = $obj->get_color ('black');
+    my $grey = $obj->get_color ('grey');
     my ($y_step, $y_diff, $x_step, $val, $str_len);
     my ($h, $w) = (gdSmallFont->height, gdSmallFont->width);
     my $str_max = 0;
-    my ($x_min, $x_max);
+    my ($x_min, $x_max, @dec);
     my $stag = 0;
     my @ticks;
     
@@ -77,7 +77,9 @@ sub draw_ticks {
 	       / $obj->{'y_ticks'});
 
     for (0..$obj->{'y_ticks'}) {
-	$val = int (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+	$val = (($obj->{'max_val'} / $obj->{'y_ticks'}) * $_);
+        @dec = split /\./, $val;
+        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
 	$str_len = length($val);
 	
 	if ($str_len > $str_max) {
@@ -88,6 +90,8 @@ sub draw_ticks {
     
     for (0..$obj->{'y_ticks'}) {
 	$val = ($obj->{'max_val'} / $obj->{'y_ticks'}) * $_;
+        @dec = split /\./, $val;
+        if ($dec[1] && length($dec[1]) > 3) { $val = sprintf ("%.3f", $val) }
 	$str_len = length($val);
 	$obj->{'im'}->string (gdSmallFont,
 			      $obj->{'x_min'} + ($str_max - $str_len) * $w 
@@ -197,6 +201,13 @@ sub draw_ticks {
 				$x_min + $x_step * $_,
 				$obj->{'y_max'} + $obj->{'tick_len'},
 				$black);
+            if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+                $obj->{'im'}->line ($x_min + $x_step * $_,
+                                    $obj->{'y_max'},
+                                    $x_min + $x_step * $_,
+                                    $obj->{'y_min'},
+                                    $grey);
+            }
 	}
     }
     elsif ($obj->{'skip_x_ticks'}) {  #every n ticks
@@ -207,6 +218,13 @@ sub draw_ticks {
 				    $x_min + $x_step * $_,
 				    $obj->{'y_max'} + $obj->{'tick_len'},
 				    $black);
+                if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+                    $obj->{'im'}->line ($x_min + $x_step * $_,
+                                        $obj->{'y_max'},
+                                        $x_min + $x_step * $_,
+                                        $obj->{'y_min'},
+                                        $grey);
+                }
 	    }
 	}
     }
@@ -217,6 +235,13 @@ sub draw_ticks {
 				$x_min + $x_step * $_,
 				$obj->{'y_max'} + $obj->{'tick_len'},
 				$black);
+            if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+                $obj->{'im'}->line ($x_min + $x_step * $_,
+                                    $obj->{'y_max'},
+                                    $x_min + $x_step * $_,
+                                    $obj->{'y_min'},
+                                    $grey);
+            }
 	}
     }
 
@@ -226,6 +251,13 @@ sub draw_ticks {
 			    $obj->{'x_min'} - $obj->{'tick_len'},
 			    $obj->{'y_min'} + $y_step * $_,
 			    $black);
+        if ($obj->{'grid_lines'} && $obj->{'grid_lines'} eq 'true') {
+            $obj->{'im'}->line ($obj->{'x_min'},
+                                $obj->{'y_min'} + $y_step * $_,
+                                $obj->{'x_max'},
+                                $obj->{'y_min'} + $y_step * $_,
+                                $grey);
+        }
     }
 }
 
@@ -252,14 +284,16 @@ sub draw_data {
 				$data[$_-1],
 				$_ * $x_step + $x_min,
 				$data[$_],
-				$color) unless ($_ == 0);
+				$color) if (($_ != 0) 
+						&& (defined ($data[$_]))
+						&& (defined ($data[$_-1])));
 	    $obj->{'im'}->filledRectangle (($_) * $x_step + $x_min
                                            - ($obj->{'pt_size'} / 2),
                                            $data[$_] - ($obj->{'pt_size'} / 2),
                                            ($_) * $x_step + $x_min
                                            + ($obj->{'pt_size'} / 2),
                                            $data[$_] + ($obj->{'pt_size'} / 2),
-                                           $color);
+                                           $color) if defined ($data[$_]);
 	}
     }
 
@@ -277,7 +311,9 @@ sub data_map {
 
     for $i (1..$#{$dataref}) {
 	for $j (0..$#{$dataref->[$i]}) {
-	    $ref->[$i-1][$j] = $obj->{'y_max'} - $map * $dataref->[$i][$j];
+	    $ref->[$i-1][$j] = (defined ($dataref->[$i][$j]))
+	    			? $obj->{'y_max'} - $map * $dataref->[$i][$j]
+				: undef;
 	}
     }
 

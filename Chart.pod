@@ -83,6 +83,11 @@ The following are all of the currently supported options:
 
 =over 4
 
+=item 'transparent'
+
+Makes the background of the image transparent if set to 'true'.  Useful
+for making web page images.  Default is 'false'.
+
 =item 'gif_border'
 
 Sets the number of pixels used as a border between the graph
@@ -143,6 +148,11 @@ are taken from the array of data point labels.
 
 Sets the length of the x- and y-ticks in pixels.  Default is 4. 
 
+=item 'grid_lines'
+
+Adds light grey grid lines in the back of the chart if set to 'true'.
+Default is undef.
+
 =item 'stagger_x_labels'
 
 Staggers the x-tick labels vertically to make them readable if set 
@@ -186,6 +196,17 @@ be drawn.  It should be assigned a reference to an array of desired
 ticks.  Just remember that I'm counting from the 0th element of the
 array.  (ie., if 'custom_x_ticks' is assigned [0,3,4], then the 0th,
 3rd, and 4th x-ticks will be displayed)
+
+=item 'colors'
+
+This option allows you to specify colors for the different datasets.
+It should be assigned a reference to an array of array references.
+Setting an entry to undef lets Chart::* pick the color for you.  So,
+
+    $obj->set ('colors' => [undef, [0,0,0], [255,0,0]]);
+
+would let Chart::* pick the color for the first dataset, set the second
+to black, and the third to red.  Default is undef.
 
 =item 'sort'
 
@@ -252,7 +273,7 @@ set.  In general, the @data array should look something like
   @data = ( \@x_tick_labels, \@dataset1, ... , \@dataset_n );
 
 And no worries, I make my own internal copy of the data, so that it doesn't
-touch yours.
+mess with yours.
 
 =item CGI and Chart::*
 

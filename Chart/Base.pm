@@ -13,7 +13,6 @@ use Carp;
 use GD;
 use strict;
 
-$Chart::Base::VERSION = 0.93;
 
 #==================#
 #  public methods  #
@@ -34,7 +33,7 @@ sub set {
     my %hash = @_;
 
     for (keys (%hash)) {
-	$obj->{$_} = $hash{$_};
+	    $obj->{$_} = $hash{$_};
     }
 }
 
@@ -191,28 +190,31 @@ sub my_init {
 
 sub set_colors {
     my $self = shift;
-    
+
     $self->{'im'}->colorAllocate (250, 250, 250);
     $self->{'im'}->colorAllocate (0, 0, 0);
-    $self->{'im'}->colorAllocate (240, 0, 0);
-    $self->{'im'}->colorAllocate (25, 140, 25);
-    $self->{'im'}->colorAllocate (150, 150, 255);
-    $self->{'im'}->colorAllocate (200,0,200);
-    $self->{'im'}->colorAllocate (218,165,32);
+    $self->{'im'}->colorAllocate (225, 0, 0);
+    $self->{'im'}->colorAllocate (0, 225, 0);
+    $self->{'im'}->colorAllocate (0, 0, 225);
+    $self->{'im'}->colorAllocate (200, 0, 200);
+    $self->{'im'}->colorAllocate (0, 200, 200);
+    $self->{'im'}->colorAllocate (225, 225, 0);
+    $self->{'im'}->colorAllocate (250, 170, 85);
+    $self->{'im'}->colorAllocate (200,200,200);
 }
 
 sub copy_data {
     my $obj = shift;
     my $their_ref = shift;
     my $my_ref = [];
-    my $i;
+    my ($i, $j);
 
     if ($obj->{'data'}) {
 	return -1;
     }
     else {
 	for $i (0..$#{$their_ref}) {
-	    for my $j (0..$#{$their_ref->[$i]}) {
+	    for $j (0..$#{$their_ref->[$i]}) {
 		$my_ref->[$i][$j] = $their_ref->[$i][$j];
 	    }
 	}
@@ -225,6 +227,7 @@ sub my_plot {
     my $obj = shift;
     my $dataref = $obj->{'data'};
 
+    if ($obj->{'colors'}) { $obj->set_user_colors }
     if ($obj->{'transparent'} && $obj->{'transparent'} eq 'true') { 
 	my $white = $obj->get_color ('white');
 	$obj->{'im'}->transparent ($white);
@@ -257,15 +260,15 @@ sub check_data {
     my $ref = $obj->{'data'};
     my $mismatch;
 
-    CHECK: for (0..$#{$ref}-1) {
-	       if ($#{$ref->[$_]} != $#{$ref->[$_+1]}) {
+    CHECK: for (1..$#{$ref}) {
+	       if ($#{$ref->[$_]} > $#{$ref->[0]}) {
 		   $mismatch = 1;
 		   last CHECK;
 	       }
     }
 
     if ($mismatch) {
-	croak ("Data sets not of equal length");
+	croak ("One or more data sets longer than set of data point labels");
     }
 }
     
@@ -325,7 +328,7 @@ sub draw_labels {
 sub draw_legend {
     my $obj = shift;
     my $dataref = $obj->{'data'};
-    my (@labels, $legend_w, $legend_h, $color, $dash);
+    my (@labels, $legend_w, $legend_h, $color, $dash, $ymin);
     my ($w, $h) = (gdSmallFont->width, gdSmallFont->height);
     my $black = $obj->get_color ('black');
     my $max_len = 0;
@@ -357,16 +360,18 @@ sub draw_legend {
     #  draw legend  #
     #===============#
 
+    $ymin = $obj->{'y_min'} + $obj->{'graph_border'};
+
     if (!($obj->{'dashed_lines'})) {
 	$legend_h = ($#labels + 1) * ($h + 2 * $obj->{'text_space'});
 	$legend_w = ($max_len * $w) + 3 * $obj->{'text_space'};
 	$obj->{'x_max'} -= $legend_w + 2 * $obj->{'text_space'};
 	
 	$obj->{'im'}->rectangle ($obj->{'x_max'} + 2 * $obj->{'text_space'},
-				 $obj->{'y_min'},
+				 $ymin,
 				 $obj->{'x_max'} + 2 * $obj->{'text_space'} 
 			             + $legend_w,
-				 $obj->{'y_min'} + $legend_h,
+				 $ymin + $legend_h,
 				 $black);
 	
 	for (0..$#labels) {
@@ -374,7 +379,7 @@ sub draw_legend {
 	    
 	    $obj->{'im'}->string (gdSmallFont,
 				  $obj->{'x_max'} + 7,
-				  $obj->{'y_min'} + $obj->{'text_space'} 
+				  $ymin + $obj->{'text_space'} 
 			              + $_ * ($h + 2 * $obj->{'text_space'}),
 				  $labels[$_],
 				  $color);
@@ -386,10 +391,10 @@ sub draw_legend {
 	$obj->{'x_max'} -= $legend_w + 2 * $obj->{'text_space'} + 22;
 	
 	$obj->{'im'}->rectangle ($obj->{'x_max'} + 2 * $obj->{'text_space'},
-				 $obj->{'y_min'},
+				 $ymin,
 				 $obj->{'x_max'} + 2 * $obj->{'text_space'} 
 			             + $legend_w,
-				 $obj->{'y_min'} + $legend_h,
+				 $ymin + $legend_h,
 				 $black);
 	
 	$dash = $obj->{'dashed_lines'};
@@ -400,7 +405,7 @@ sub draw_legend {
 	    
 	    $obj->{'im'}->string (gdSmallFont,
 				  $obj->{'x_max'} + 29,
-				  $obj->{'y_min'} + $obj->{'text_space'} 
+				  $ymin + $obj->{'text_space'} 
 				      + $_ * ($h + 2 * $obj->{'text_space'}),
 				  $labels[$_],
 				  $color);
@@ -412,10 +417,10 @@ sub draw_legend {
 	    $color = $obj->data_color($_);
 	    
 	    $obj->{'im'}->line ($obj->{'x_max'} + 7,
-				$obj->{'y_min'} + $obj->{'text_space'} + $h/2
+				$ymin + $obj->{'text_space'} + $h/2
 				    + $_ * ($h + 2 * $obj->{'text_space'}),
 				$obj->{'x_max'} + 27,
-				$obj->{'y_min'} + $obj->{'text_space'} + $h/2
+				$ymin + $obj->{'text_space'} + $h/2
 				    + $_ * ($h + 2 * $obj->{'text_space'}),
 				$color);
 	}
@@ -481,9 +486,20 @@ sub draw_axes {
     my $obj = shift;
     my $black = $obj->get_color ('black');
     
-    $obj->{'im'}->rectangle ($obj->{'x_min'}, $obj->{'y_max'},
-			     $obj->{'x_max'}, $obj->{'y_min'},
+    $obj->{'im'}->rectangle ($obj->{'x_min'}, $obj->{'y_min'},
+			     $obj->{'x_max'}, $obj->{'y_max'},
 			     $black);
+}
+
+sub set_user_colors {
+    my $obj = shift;
+    my @rgbs = @{$obj->{'colors'}};
+
+    for (@rgbs) {
+	if ($_) {
+	    $obj->{'im'}->colorAllocate (@{$_});
+	}
+    }
 }
 
 sub get_color {
@@ -491,11 +507,14 @@ sub get_color {
     my $color = shift;
     my %colors = ('white' => [250,250,250],
 		  'black' => [0,0,0],
-		  'red' => [240,0,0],
-		  'green' => [25,140,25],
-		  'blue' => [150,150,255],
+		  'red' => [225,0,0],
+		  'green' => [0,225,0],
+		  'blue' => [0,0,225],
 		  'purple' => [200,0,200],
-		  'goldenrod' => [218,165,32]);
+		  'light_blue' => [0,200,200],
+		  'yellow' => [225,225,0],
+		  'orange' => [250,170,85],
+		  'grey' => [200,200,200]);
     my @rgb = (defined($colors{$color})) ? @{$colors{$color}} : (0,0,0);
 
     return $obj->{'im'}->colorClosest(@rgb);
@@ -508,10 +527,14 @@ sub data_color {
 		  1 => 'blue',
 		  2 => 'green',
 		  3 => 'purple',
-		  4 => 'goldenrod');
+		  4 => 'orange',
+		  5 => 'light_blue',
+		  6 => 'yellow');
     my ($col,%dots);
 
-    $col = $obj->get_color ($colors{$num});
+    $col = ($obj->{'colors'}->[$num]) 
+    		? $obj->{'im'}->colorClosest (@{$obj->{'colors'}->[$num]})
+		: $obj->get_color ($colors{$num});
 
     %dots = (4 => [$col],
              0 => [$col,$col,gdTransparent],
@@ -520,7 +543,8 @@ sub data_color {
 	     3 => [$col,$col,$col,$col,gdTransparent,gdTransparent]);
 
     if ($obj->{'dashed_lines'} && $obj->{'dashed_lines'} ne '') {
-        $obj->{'im'}->setStyle (@{$dots{$num}});
+        $obj->{'im'}->setStyle ((@{$dots{$num}}) 
+	              ? @{$dots{$num}} : ($col,gdTransparent));
 	return gdStyled;
     }
     else {

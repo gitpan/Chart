@@ -34,6 +34,16 @@ Lincoln Stein's GD.pm module
 CHANGES
 -------
 
+0.93 - 0.94:
+	Moved the legend down to be flush with the chart
+	Fixed the long decimal y-tick label problem
+	Fixed (for the last time, hopefully) the pre-5.004 compilation problem
+	Fixed handling of undefined data points
+	Added more colors for the default data colors
+	Added the transparent gif option
+	Added the option for user-specified colors
+	Added the grid_lines option
+
 0.92 - 0.93: 
 	Fixed the sort problem
 	Fixed the y-axis label centering problem
