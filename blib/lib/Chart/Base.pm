@@ -10,9 +10,12 @@
 #  theft is treason, citizen     #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 # History:
-# $RCSfile: Base.pm,v $ $Revision: 1.2 $ $Date: 2002/05/29 16:13:20 $
+# $RCSfile: Base.pm,v $ $Revision: 1.3 $ $Date: 2002/05/31 13:18:02 $
 # $Author: dassing $
 # $Log: Base.pm,v $
+# Revision 1.3  2002/05/31 13:18:02  dassing
+# Release 1.1
+#
 # Revision 1.2  2002/05/29 16:13:20  dassing
 # Changes included by David Pottage
 #
@@ -25,7 +28,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = '1.1';
+$Chart::Base::VERSION = '1.2';
 
 use vars qw(%named_colors);
 
@@ -1026,6 +1029,7 @@ sub _sort_data {
 
 }
 
+
 ##  find good values for the minimum and maximum y-value on the chart
 # New version, re-written by David Pottage of Tao Group.
 # This code is *AS IS* and comes with *NO WARRANTY*
@@ -1049,7 +1053,6 @@ sub _find_y_scale
 	
 	# Predeclare vars.
 	my ($d_min, $d_max);		# Dataset min & max.
-	my $d_width;				# Dataset width.
 	my ($p_min, $p_max);		# Plot min & max.
 	my ($tickInterval, $tickCount);
 	my @tickLabels;				# List of labels for each tick.
@@ -1057,7 +1060,6 @@ sub _find_y_scale
 	
 	# Find the datatset minimum and maximum.
 	($d_min, $d_max) = $self->_find_y_range();
-	
 	
 	# Force the inclusion of zero if the user has requested it.
 	if( $self->{'include_zero'} =~ m!^true$!i )
@@ -1075,18 +1077,6 @@ sub _find_y_scale
 		}
 	}
 	
-	# Calculate the width of the dataset.
-	$d_width = $d_max - $d_min;
-	
-	# If the width of the range is zero, forcibly widen it
-	# (to avoid division by zero errors elsewhere in the code).
-	if( 0 == $d_width )
-	{
-		$d_min--;
-		$d_max++;
-		$d_width = 2;
-	}
-
         if ( $self->{'integer_ticks_only'} =~ /^\d$/ ) {
            if ( $self->{'integer_ticks_only'} == 1 ) {
               $self->{'integer_ticks_only'} = 'true';
@@ -1094,7 +1084,6 @@ sub _find_y_scale
               $self->{'integer_ticks_only'} = 'false';
            }
         }
-           	
 	if( $self->{'integer_ticks_only'} =~ m!^true$!i )
 	{
 		# The user asked for integer ticks, force the limits to integers.
@@ -1107,26 +1096,43 @@ sub _find_y_scale
 	}
 	else
 	{
-                # Allow the dataset range to be overridden by the user.
-                # f_min/f_max are booleans which indicate the min & max sould not be modified.
-                my $f_min = defined $self->{'min_val'};
-                $d_min = $self->{'min_val'} if $f_min;
-                
-                my $f_max = defined $self->{'max_val'};
-                $d_max = $self->{'max_val'} if $f_max;
-                
+		# Allow the dataset range to be overidden by the user.
+		# f_min/max are booleans which indicate that the min & max should not be modified.
+		my $f_min = defined $self->{'min_val'};
+		$d_min = $self->{'min_val'} if $f_min;
+		
+		my $f_max = defined $self->{'max_val'};
+		$d_max = $self->{'max_val'} if $f_max;
+		
+		# Assert against the min is larger than the max.
+		if( $d_min > $d_max )
+		{
+		    croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
+		}
+		
+		# Calculate the width of the dataset. (posibly modified by the user)
+		my $d_width = $d_max - $d_min;
+		
+		# If the width of the range is zero, forcibly widen it
+		# (to avoid division by zero errors elsewhere in the code).
+		if( 0 == $d_width )
+		{
+			$d_min--;
+			$d_max++;
+			$d_width = 2;
+		}
+		
 		# Descale the range by converting the dataset width into
 		# a floating point exponent & mantisa pair.
 		my( $rangeExponent, $rangeMantisa ) = _sepFP( $d_width );
 		my $rangeMuliplier = 10 ** $rangeExponent;
-
+		
 		# Find what tick interval to use & how many ticks to plot,
-		# round the plot min & max to suitable round numbers.
+		# round the plot min & max to suatable round numbers.
 		($tickInterval, $tickCount, $p_min, $p_max)
 			= _calcTickInterval($d_min/$rangeMuliplier, $d_max/$rangeMuliplier,
 								$f_min, $f_max,
 								$self->{'min_y_ticks'}, $self->{'max_y_ticks'});
-
 		# Restore the tickInterval etc to the correct scale
 		$_ *= $rangeMuliplier foreach($tickInterval, $p_min, $p_max);
 	}
@@ -1138,13 +1144,18 @@ sub _find_y_scale
 		
 		if( defined $self->{f_y_tick} )
 		{
-			$labelText = $self->{f_y_tick}->($labelNum);
+                        # Is _default_f_tick function used?
+                        if ( $self->{f_y_tick} = \&_default_f_tick) {
+			   $labelText = sprintf("%.3f", $labelNum);
+                        } else {
+			   $labelText = $self->{f_y_tick}->($labelNum);
+                        }
 		}
 		else
 		{
 			$labelText = sprintf("%.3f", $labelNum);
 		}
-		
+		#print "labelText = $labelText\n";
 		push @tickLabels, $labelText;
 		$maxtickLabelLen = length $labelText if $maxtickLabelLen < length $labelText;
 	}
@@ -1159,6 +1170,8 @@ sub _find_y_scale
 	# and return.
 	return 1;
 }
+
+
 
 # Calculates the tick interval in normalised units.
 # Result will need multiplying by the multipler to get the true tick interval.
@@ -1202,6 +1215,8 @@ sub _calcTickInterval
 			{
 				# If it is to high, Backtrack.
 				$divisor = pop @divisorList;
+                                # just for security:
+                                if ( !defined($divisor) || $divisor == 0 ) { $divisor = 1; } 
 				($tickCount, $pMin, $pMax) = _countTicks($min, $max, 1/$divisor);
 				print "\nChart::Base : Caution: Tick limit of $maxTicks exceeded. Backing of to an interval of ".1/$divisor." which plots $tickCount ticks\n";
 				return(1/$divisor, $tickCount, $pMin, $pMax);
@@ -1220,7 +1235,7 @@ sub _calcTickInterval
 				next TRY if( $minF && ( int ($min*$divisor) != ($min*$divisor) ) );
 				next TRY if( $maxF && ( int ($max*$divisor) != ($max*$divisor) ) );
 				
-				# If everything passes the tests, retrun.
+				# If everything passes the tests, return.
 				return(1/$divisor, $tickCount, $pMin, $pMax)
 			}
 		}

@@ -11,9 +11,12 @@
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 # History:
 #---------
-# $RCSfile$ $Revision$ $Date$
-# $Author$
-# $Log$
+# $RCSfile: Bars.pm,v $ $Revision: 1.2 $ $Date: 2002/05/31 13:18:02 $
+# $Author: dassing $
+# $Log: Bars.pm,v $
+# Revision 1.2  2002/05/31 13:18:02  dassing
+# Release 1.1
+#
 #=====================================================================
 
 package Chart::Bars;
