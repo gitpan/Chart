@@ -3,6 +3,10 @@
 #                             #
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
+#                             #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
+#                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
@@ -50,7 +54,7 @@ sub set {
   }
 
   # now return
-  return;
+  return 1;
 }
 
 
@@ -62,15 +66,16 @@ sub add_pt {
   # error check the data (carp, don't croak)
   if ($self->{'dataref'} && ($#{$self->{'dataref'}} != $#data)) {
     carp "New point to be added has an incorrect number of data sets";
+    return 0;
   }
 
   # copy it into the dataref
   for (0..$#data) {
-    push @{$self->{'dataref'}}, $data[$_];
+    push @{$self->{'dataref'}->[$_]}, $data[$_];
   }
   
   # now return
-  return;
+  return 1;
 }
 
 
@@ -88,7 +93,7 @@ sub add_dataset {
   push @{$self->{'dataref'}}, [ @data ];
   
   # now return
-  return;
+  return 1;
 }
 
 
@@ -100,7 +105,7 @@ sub clear_data {
   $self->{'dataref'} = undef;
 
   # now return
-  return;
+  return 1;
 }
 
 
@@ -162,7 +167,7 @@ sub gif {
   print $fh $self->{'gd_obj'}->gif();
 
   # now exit
-  return;
+  return 1;
 }
 
 
@@ -171,7 +176,6 @@ sub gif {
 ##  draw the chart and plot the data
 sub cgi_gif {
   my $self = shift;
-  my $file = shift;
   my $dataref = shift;
 
   # make sure the object has its copy of the data
@@ -192,7 +196,7 @@ sub cgi_gif {
   print STDOUT $self->{'gd_obj'}->gif();
 
   # now exit
-  return;
+  return 1;
 }
 
 
@@ -257,7 +261,7 @@ sub _init {
   $self->{'label_font'} = gdMediumBoldFont;
   $self->{'tick_label_font'} = gdSmallFont;
 
-  # put the legend on the right of the chart
+  # put the legend on the bottom of the chart
   $self->{'legend'} = 'right';
 
   # default to an empty list of labels
@@ -278,7 +282,7 @@ sub _init {
   # let the points in Chart::Points and Chart::LinesPoints be 18 pixels wide
   $self->{'pt_size'} = 18;
 
-  # use the new spaced bars
+  # use the old non-spaced bars
   $self->{'spaced_bars'} = 'true';
 
   # use the new grey background for the plots
@@ -302,8 +306,14 @@ sub _init {
   # don't waste time/memory by storing imagemap info unless they ask
   $self->{'imagemap'} = 'false';
 
+  # default for grid_lines is off
+  $self->{grid_lines} = 'false';
+  $self->{x_grid_lines} = 'false';
+  $self->{y_grid_lines} = 'false';
+  $self->{y2_grid_lines} = 'false';
+
   # and return
-  return;
+  return 1;
 }
 
 
@@ -316,7 +326,7 @@ sub _copy_data {
   # look to see if they used the other api
   if ($self->{'dataref'}) {
     # we've already got a copy, thanks
-    return;
+    return 1;
   }
   else {
     # get an array reference
@@ -370,7 +380,7 @@ sub _check_data {
   # now store it in the object
   $self->{'x_tick_label_length'} = $length;
 
-  return;
+  return 1;
 }
 
 
@@ -409,7 +419,7 @@ sub _draw {
   $self->_plot();
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -449,12 +459,54 @@ sub _set_user_colors {
     @rgb = @{$self->{'colors'}{'text'}};
     $color_table->{'text'} = $self->{'gd_obj'}->colorAllocate(@rgb);
   }
-    
+
+  # and how about y_labels?
+  if (($self->{'colors'}{'y_label'}) &&
+      (scalar(@{$self->{'colors'}{'y_label'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'y_label'}};
+    $color_table->{'y_label'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+ 
+  if (($self->{'colors'}{'y_label2'}) &&
+      (scalar(@{$self->{'colors'}{'y_label2'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'y_label2'}};
+    $color_table->{'y_label2'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
+  # set user-specified "default" grid_lines color 
+  if (($self->{'colors'}{'grid_lines'}) &&
+      (scalar(@{$self->{'colors'}{'grid_lines'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'grid_lines'}};
+    $color_table->{'grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
+  # x_grid_lines color
+  if (($self->{'colors'}{'x_grid_lines'}) &&
+      (scalar(@{$self->{'colors'}{'x_grid_lines'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'x_grid_lines'}};
+    $color_table->{'x_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
+  # y_grid_lines color
+  if (($self->{'colors'}{'y_grid_lines'}) &&
+      (scalar(@{$self->{'colors'}{'y_grid_lines'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'y_grid_lines'}};
+    $color_table->{'y_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
+  # y2_grid_lines color
+  if (($self->{'colors'}{'y2_grid_lines'}) &&
+      (scalar(@{$self->{'colors'}{'y2_grid_lines'}}) == 3)) {
+    @rgb = @{$self->{'colors'}{'y2_grid_lines'}};
+    $color_table->{'y2_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  }
+
   # okay, now go for the data sets
   for (keys(%{$self->{'colors'}})) {
-    if (($_ =~ /^dataset/i) && (scalar(@{$self->{'colors'}{$_}}) == 3)) {
-      @rgb = @{$self->{'colors'}{$_}};
-      $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
+    if (($self->{'colors'}{$_} =~ /^dataset/i) &&
+        (scalar(@{$self->{'colors'}{$_}}) == 3)) {
+      @rgb = @{$self->{'colors'}{'dataset'.$_}};
+      $color_table->{'dataset'.$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
     }
   }
 
@@ -462,7 +514,7 @@ sub _set_user_colors {
   $self->{'color_table'} = $color_table;
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -533,11 +585,34 @@ sub _set_colors {
     $color_table->{'text'} = $color_table->{'black'};
   }
 
+  unless ($color_table->{'y_label'}) {
+    $color_table->{'y_label'} = $color_table->{'black'};
+  }
+  unless ($color_table->{'y_label2'}) {
+    $color_table->{'y_label2'} = $color_table->{'black'};
+  }
+
+  unless ($color_table->{'grid_lines'}) {
+    $color_table->{'grid_lines'} = $color_table->{'black'};
+  }
+
+  unless ($color_table->{'x_grid_lines'}) {
+    $color_table->{'x_grid_lines'} = $color_table->{'grid_lines'};
+  }
+
+  unless ($color_table->{'y_grid_lines'}) {
+    $color_table->{'y_grid_lines'} = $color_table->{'grid_lines'};
+  }
+
+  unless ($color_table->{'y2_grid_lines'}) {
+    $color_table->{'y2_grid_lines'} = $color_table->{'grid_lines'};
+  }
+
   # put the color table back in the object
   $self->{'color_table'} = $color_table;
   
   # and return
-  return; 
+  return 1; 
 }
 
 
@@ -578,7 +653,7 @@ sub _draw_title {
   $self->{'curr_y_min'} += 2 * $self->{'text_space'} + $h;
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -607,7 +682,7 @@ sub _draw_sub_title {
   $self->{'gd_obj'}->string ($font, $x, $y, $text, $color);
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -638,7 +713,10 @@ sub _find_y_scale {
 	$max = $data->[$i][$j];
       }
       if ($data->[$i][$j] < $min) {
-	$min = $data->[$i][$j];
+        # skip undefined values, for these are 'no data' values
+        if (defined($data->[$i][$j])) {
+          $min = $data->[$i][$j];
+        }
       }
     }
   }
@@ -723,7 +801,7 @@ sub _find_y_scale {
   $self->{'y_tick_label_length'} = $length;
  
   # and return
-  return;
+  return 1;
 }
 
 
@@ -751,11 +829,16 @@ sub _plot {
   # give the plot a grey background if they want it
   $self->_grey_background if ($self->{'grey_background'} =~ /^true$/i);
 
+  $self->_draw_grid_lines if ($self->{'grid_lines'} =~ /^true$/i);
+  $self->_draw_x_grid_lines if ($self->{'x_grid_lines'} =~ /^true$/i);
+  $self->_draw_y_grid_lines if ($self->{'y_grid_lines'} =~ /^true$/i);
+  $self->_draw_y2_grid_lines if ($self->{'y2_grid_lines'} =~ /^true$/i);
+
   # plot the data
   $self->_draw_data;
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -805,7 +888,7 @@ sub _draw_legend {
   }
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -901,7 +984,7 @@ sub _draw_bottom_legend {
 			      + (2 * $self->{'legend_space'}); 
 
   # now return
-  return;
+  return 1;
 }
 
 
@@ -967,7 +1050,7 @@ sub _draw_right_legend {
   $self->{'curr_x_max'} -= $width;
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -1063,7 +1146,7 @@ sub _draw_top_legend {
 			      + 2 * $self->{'legend_space'}; 
 
   # now return
-  return;
+  return 1;
 }
 
 
@@ -1129,7 +1212,7 @@ sub _draw_left_legend {
   $self->{'curr_x_min'} += $width;
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -1161,7 +1244,7 @@ sub _draw_x_label {
   $self->{'curr_y_max'} -= $h + 2 * $self->{'text_space'};
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -1170,15 +1253,16 @@ sub _draw_y_label {
   my $self = shift;
   my $side = shift;
   my $font = $self->{'label_font'};
-  my $color = $self->{'color_table'}{'text'};
-  my ($label, $h, $w, $x, $y);
+  my ($label, $h, $w, $x, $y, $color);
 
   # get the label
   if ($side eq 'left') {
     $label = $self->{'y_label'};
+    $color = $self->{'color_table'}{'y_label'};
   }
   elsif ($side eq 'right') {
     $label = $self->{'y_label2'};
+    $color = $self->{'color_table'}{'y_label2'};
   }
 
   # make sure it's a real GD Font object
@@ -1211,7 +1295,7 @@ sub _draw_y_label {
   }
 
   # now return
-  return;
+  return 1;
 }
 
 
@@ -1226,7 +1310,7 @@ sub _draw_ticks {
   $self->_draw_y_ticks;
 
   # then return
-  return;
+  return 1;
 }
 
 
@@ -1237,10 +1321,13 @@ sub _draw_x_ticks {
   my $font = $self->{'tick_label_font'};
   my $textcolor = $self->{'color_table'}{'text'};
   my $misccolor = $self->{'color_table'}{'misc'};
+
   my ($h, $w);
   my ($x1, $x2, $y1, $y2);
   my ($width, $delta);
   my ($stag);
+
+  $self->{'grid_data'}->{'x'} = [];
 
   # make sure we got a real font
   unless ((ref $font) eq 'GD::Font') {
@@ -1253,7 +1340,7 @@ sub _draw_x_ticks {
   # allow for the amount of space the y-ticks will push the
   # axes over to the right
   $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
-         + (3 * $self->{'text_space'}) + $self->{'tick_len'};
+         + $self->{'text_space'} + $self->{'tick_len'};
   $y1 = $self->{'curr_y_max'} - $h - $self->{'text_space'};
 
   # get the delta value, figure out how to draw the labels
@@ -1388,18 +1475,30 @@ sub _draw_x_ticks {
     for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
       $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'}));
       $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+      if ($self->{'grid_lines'} =~ /^true$/i 
+	or $self->{'x_grid_lines'} =~ /^true$/i) {
+	$self->{'grid_data'}->{'x'}->[$_] = $x2;
+      }
     }
   }
   elsif ($self->{'custom_x_ticks'}) {
     for (@{$self->{'custom_x_ticks'}}) {
       $x2 = $x1 + ($delta/2) + ($delta*$_);
       $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+      if ($self->{'grid_lines'} =~ /^true$/i
+	or $self->{'x_grid_lines'} =~ /^true$/i) {
+	$self->{'grid_data'}->{'x'}->[$_] = $x2;
+      }
     }
   }
   else {
     for (0..$self->{'num_datapoints'}-1) {
       $x2 = $x1 + ($delta/2) + ($delta*$_);
       $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+      if ($self->{'grid_lines'} =~ /^true$/i
+        or $self->{'x_grid_lines'} =~ /^true$/i) {
+	$self->{'grid_data'}->{'x'}->[$_] = $x2;
+      }
     }
   }
 
@@ -1422,6 +1521,8 @@ sub _draw_y_ticks {
   my ($height, $delta);
   my ($s, $f);
   
+  $self->{grid_data}->{'y'} = [];
+  $self->{grid_data}->{'y2'} = [];
 
   # make sure we got a real font
   unless ((ref $font) eq 'GD::Font') {
@@ -1463,6 +1564,10 @@ sub _draw_y_ticks {
     for ($s..$f) {
       $y2 = $y1 - ($delta * $_);
       $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+      if ($self->{grid_lines} =~ /^true$/i
+	or $self->{'y2_grid_lines'} =~ /^true$/i) {
+        $self->{'grid_data'}->{'y2'}->[$_] = $y2;
+      }
     }
   
     # update the current x-min value
@@ -1503,6 +1608,10 @@ sub _draw_y_ticks {
     for ($s..$f) {
       $y2 = $y1 - ($delta * $_);
       $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+      if ($self->{grid_lines} =~ /^true$/i
+	or $self->{'y_grid_lines'} =~ /^true$/i) {
+        $self->{'grid_data'}->{'y'}->[$_] = $y2;
+      }
     }
   
     # update the current x-min value
@@ -1525,6 +1634,10 @@ sub _draw_y_ticks {
     for ($s..$f) {
       $y2 = $y1 - ($delta * $_);
       $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+      if ($self->{grid_lines} =~ /^true$/i
+	or $self->{'y2_grid_lines'} =~ /^true$/i) {
+        $self->{'grid_data'}->{'y2'}->[$_] = $y2;
+      }
     }
   
     # update the current x-min value
@@ -1563,6 +1676,10 @@ sub _draw_y_ticks {
     for ($s..$f) {
       $y2 = $y1 - ($delta * $_);
       $self->{'gd_obj'}->line($x1, $y2, $x2, $y2, $misccolor);
+      if ($self->{'grid_lines'} =~ /^true$/i 
+	or $self->{'y_grid_lines'} =~ /^true$/i) {
+        $self->{'grid_data'}->{'y'}->[$_] = $y2;
+      }
     }
   
     # update the current x-min value
@@ -1570,7 +1687,7 @@ sub _draw_y_ticks {
   }
 
   # and return
-  return;
+  return 1;
 }
 
 
@@ -1586,9 +1703,56 @@ sub _grey_background {
 				      $self->{'color_table'}{'grey'});
 
   # now return
-  return;
+  return 1;
 }
 
+# draw grid_lines 
+sub _draw_grid_lines {
+  my $self = shift;
+  $self->_draw_x_grid_lines();
+  $self->_draw_y_grid_lines();
+  $self->_draw_y2_grid_lines();
+  return 1;
+}
+
+sub _draw_x_grid_lines {
+  my $self = shift;
+  my $gridcolor = $self->{'color_table'}{'x_grid_lines'};
+  my ($x, $y, $i);
+
+  foreach $x (@{ $self->{grid_data}->{'x'} }) {
+    $self->{gd_obj}->line(($x, $self->{'curr_y_min'} + 1), $x, ($self->{'curr_y_max'} - 1), $gridcolor);
+  }
+  return 1;
+}
+
+sub _draw_y_grid_lines {
+  my $self = shift;
+  my $gridcolor = $self->{'color_table'}{'y_grid_lines'};
+  my ($x, $y, $i);
+
+  # loop for y values is a little different. This is to discard the first 
+  # and last values we were given - the top/bottom of the chart area.
+  for ($i = 1; $i < $#{ $self->{grid_data}->{'y'} }; $i++) {
+    $y = $self->{grid_data}->{'y'}->[$i];
+    $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
+  }
+  return 1;
+}
+
+sub _draw_y2_grid_lines {
+  my $self = shift;
+  my $gridcolor = $self->{'color_table'}{'y2_grid_lines'};
+  my ($x, $y, $i);
+
+  # loop for y2 values is a little different. This is to discard the first 
+  # and last values we were given - the top/bottom of the chart area.
+  for ($i = 1; $i < $#{ $self->{grid_data}->{'y2'} }; $i++) {
+    $y = $self->{grid_data}->{'y2'}->[$i];
+    $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
+  }
+  return 1;
+}
 
 ## be a good module and return positive
 1;

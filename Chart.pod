@@ -37,22 +37,22 @@ Chart - a series of charting modules
 =head1 DESCRIPTION
 
 This module is an attempt to build a general purpose graphing module
-that is easily modified and expanded.  I borrowed most of the API from
-Martien Verbruggen's GIFgraph module.  I liked most of GIFgraph, but I
-thought it was to difficult to modify, and it was missing a few things
-that I needed, most notably legends.  So I decided to write a new
-module from scratch, and I've designed it from the bottom up to be
-easy to modify.  Like GIFgraph, Chart uses Lincoln Stein's GD module
-for all of its graphics primitives calls.
+that is easily modified and expanded.  I borrowed most of the API
+from Martien Verbruggen's GIFgraph module.  I liked most of GIFgraph,
+but I thought it was to difficult to modify, and it was missing a few
+things that I needed, most notably legends.  So I decided to write
+a new module from scratch, and I've designed it from the bottom up
+to be easy to modify.  Like GIFgraph, Chart uses Lincoln Stein's GD 
+module for all of its graphics primitives calls.
 
 =head2 use-ing Chart
 
-Okay, so you caught me.  There's really no Chart::type module.  All of
-the different chart types (Points, Lines, Bars, LinesPoint,
-StackedBars, and Composite so far) are classes by themselves, each
-inheriting a bunch of methods from the Chart::Base class.  Simply
-replace the word type with the type of chart you want and you're on
-your way.  For example,
+Okay, so you caught me.  There's really no Chart::type module.
+All of the different chart types (Points, Lines, Bars, LinesPoints, Pie,
+Composite, StackedBars, and Pareto so far) are classes by themselves, each
+inheriting a bunch of methods from the Chart::Base class.  Simply replace
+the word type with the type of chart you want and you're on your way.  
+For example,
   
   use Chart::Lines;
 
@@ -60,16 +60,16 @@ would invoke the lines module.
 
 =head2 Getting an object
 
-The new method can either be called without arguments, in which case
-it returns an object with the default image size (400x300 pixels), or
-you can specify the width and height of the image.  Just remember to
-replace type with the type of graph you want.  For example,
+The new method can either be called without arguments, in which
+case it returns an object with the default image size (400x300 pixels),
+or you can specify the width and height of the image.  Just remember
+to replace type with the type of graph you want.  For example,
 
   $obj = Chart::Bars (600,400);
 
-would return a Chart::Bars object containing a 600x400 pixel image.
-New also initializes most of the default variables, which you can
-subsequently change with the set method.
+would return a Chart::Bars object containing a 600x400 pixel
+image.  New also initializes most of the default variables, which you 
+can subsequently change with the set method.
 
 =head2 Setting different options
 
@@ -89,13 +89,13 @@ The following are all of the currently supported options:
 
 =item 'transparent'
 
-Makes the background of the image transparent if set to 'true'.
-Useful for making web page images.  Default is 'false'.
+Makes the background of the image transparent if set to 'true'.  Useful
+for making web page images.  Default is 'false'.
 
 =item 'gif_border'
 
-Sets the number of pixels used as a border between the graph and the
-edges of the gif.  Defaults to 10.
+Sets the number of pixels used as a border between the graph
+and the edges of the gif.  Defaults to 10.
 
 =item 'graph_border'
 
@@ -123,16 +123,16 @@ be taken out of the next release.
 Tells Chart what to use for the x-axis label.  If empty, no label
 is drawn.  Default is empty.
 
-=item 'y_label'
+=item 'y_label', 'y_label2'
 
-Tells Chart what to use for the y-axis label.  If empty, no label
+Tells Chart what to use for the y-axis labels.  If empty, no label
 is drawn.  Default is empty.
 
 =item 'legend'
 
 Specifies the placement of the legend.  Valid values are 'left', 'right',
 'top', 'bottom'.  Setting this to 'none' tells chart not to draw a
-legend.  Default is 'bottom'.
+legend.  Default is 'right'.
 
 =item 'legend_labels'
 
@@ -213,6 +213,12 @@ this hash are
 
 	'background' (background color for the gif)
 	'text' (all the text in the chart)
+	'y_label' (color of the first y axis label)
+	'y_label2' (color of the second y axis label)
+	'grid_lines' (color of the grid lines)
+	'x_grid_lines' (color of the x grid lines - for x axis ticks)
+	'y_grid_lines' (color of the y grid lines - for to left y axis ticks)
+	'y2_grid_lines' (color of the y2 grid lines - for right y axis ticks)
 	'dataset0'..'dataset15' (the different datasets)
 	'misc' (everything else, ie. ticks, box around the legend)
 
@@ -224,6 +230,10 @@ for 'dataset0' through 'dataset7' for the second component chart.
 
 Puts a nice soft grey background on the actual data plot when
 set to 'true'.  Default is 'true'.
+
+=item 'grid_lines'
+
+Draws grid lines matching up to x and y ticks
 
 =item 'spaced_bars'
 
@@ -508,8 +518,13 @@ death threats, etc.
 
 David Bonner (dbonner@cs.bu.edu)
 
+=head1 MAINTAINER
+
+Peter Clark (ninjaz@webexpress.com)
+
 =head1 COPYRIGHT
 
-Copyright(c) 1997-1998 by David Bonner.  All rights reserved.  This program 
-is free software; you can redistribute it and/or modify it under the same 
-terms as Perl itself.
+Copyright(c) 1997-1998 by David Bonner, 1999 by Peter Clark
+All rights reserved.  This program is free software; you can
+redistribute it and/or modify it under the same terms as Perl 
+itself.

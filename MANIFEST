@@ -9,11 +9,5 @@ Chart/StackedBars.pm
 MANIFEST
 Makefile.PL
 README
-rgb.txt
-t/bars.t
-t/composite.t
-t/lines.t
-t/linespoints.t
-t/points.t
-t/stackedbars.t
 TODO
+rgb.txt

@@ -3,6 +3,10 @@
 #                             #
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
+#                             #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
+#                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
@@ -110,6 +114,10 @@ sub _draw_data {
 
 	# now outline it
 	$self->{'gd_obj'}->rectangle ($x2, $y3, $x3, $y2, $misccolor);
+      } else {
+	  if ($self->{'imagemap'} =~ /^true$/i) {
+            $self->{'imagemap_data'}->[$i][$j] = [undef(), undef(), undef(), undef()];
+          }
       }
     }
   }

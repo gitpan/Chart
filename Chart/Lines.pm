@@ -3,6 +3,10 @@
 #                             #
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
+#                             #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
+#                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
@@ -75,7 +79,7 @@ sub _draw_data {
     # draw every line for this dataset
     for $j (1..$self->{'num_datapoints'}) {
       # don't try to draw anything if there's no data
-      if (defined ($data->[$i][$j])) {
+      if (defined ($data->[$i][$j]) and defined ($data->[$i][$j-1])) {
 	$x2 = $x1 + ($delta * ($j - 1));
 	$x3 = $x1 + ($delta * $j);
 	$y2 = $y1 - (($data->[$i][$j-1] - $mod) * $map);
@@ -89,6 +93,11 @@ sub _draw_data {
 	  $self->{'imagemap_data'}->[$i][$j-1] = [ $x2, $y2 ];
 	  $self->{'imagemap_data'}->[$i][$j] = [ $x3, $y3 ];
 	}
+      } else {
+	if ($self->{'imagemap'} =~ /^true$/i) {
+	  $self->{'imagemap_data'}->[$i][$j-1] = [ undef(), undef() ];
+	  $self->{'imagemap_data'}->[$i][$j] = [ undef(), undef() ];
+        }
       }
     }
   }

@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 0.99a
+Chart version 0.99.1
 ------------------------------------------------------------------------
 
 	This is the first stable release of a general-purpose graphing
@@ -33,7 +33,7 @@ Lincoln Stein's GD module
 CHANGES
 -------
 
-0.99 - 0.99a:
+0.99 - 0.99.1:
 	Added use of undef() values to represent 'no data' for line breaks
 	Added ylabel*_color options
 	Added y_grid_lines, x_grid_lines, and color options for each

@@ -3,6 +3,10 @@
 #                             #
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
+#                             #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
+#                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
@@ -577,6 +581,8 @@ sub _draw_x_ticks {
   my ($width, $delta);
   my ($stag);
 
+  $self->{'grid_data'}->{'x'} = [];
+
   # make sure we got a real font
   unless ((ref $font) eq 'GD::Font') {
     croak "The tick label font you specified isn\'t a GD Font object";
@@ -725,18 +731,30 @@ sub _draw_x_ticks {
     for (0..int(($self->{'num_datapoints'}-1)/$self->{'skip_x_ticks'})) {
       $x2 = $x1 + ($delta/2) + ($delta*($_*$self->{'skip_x_ticks'}));
       $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+      if ($self->{'grid_lines'} =~ /^true$/i
+        or $self->{'x_grid_lines'} =~ /^true$/i) {
+        $self->{'grid_data'}->{'x'}->[$_] = $x2;
+      }
     }
   }
   elsif ($self->{'custom_x_ticks'}) {
     for (@{$self->{'custom_x_ticks'}}) {
       $x2 = $x1 + ($delta/2) + ($delta*$_);
       $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+      if ($self->{'grid_lines'} =~ /^true$/i
+        or $self->{'x_grid_lines'} =~ /^true$/i) {
+        $self->{'grid_data'}->{'x'}->[$_] = $x2;
+      }
     }
   }
   else {
     for (0..$self->{'num_datapoints'}-1) {
       $x2 = $x1 + ($delta/2) + ($delta*$_);
       $self->{'gd_obj'}->line($x2, $y1, $x2, $y2, $misccolor);
+      if ($self->{'grid_lines'} =~ /^true$/i
+        or $self->{'x_grid_lines'} =~ /^true$/i) {
+        $self->{'grid_data'}->{'x'}->[$_] = $x2;
+      }
     }
   }
 
@@ -781,6 +799,15 @@ sub _draw_data {
     $self->{'sub_0'}->{'grey_background'} = 'false';
     $self->{'sub_1'}->{'grey_background'} = 'false';
   }
+
+  # draw grid again if necessary (if grey background ruined it..)
+  unless ($self->{grey_background} !~ /^true$/i) {
+    $self->_draw_grid_lines if ($self->{grid_lines} =~ /^true$/i);
+    $self->_draw_x_grid_lines if ($self->{x_grid_lines} =~ /^true$/i);
+    $self->_draw_y_grid_lines if ($self->{y_grid_lines} =~ /^true$/i);
+    $self->_draw_y2_grid_lines if ($self->{y2_grid_lines} =~ /^true$/i);
+  }
+
 
   # do a final bounds update
   $self->_boundary_update ($self, $self->{'sub_0'});
@@ -827,6 +854,17 @@ sub _boundary_update {
   return;
 }
 
+sub _draw_y_grid_lines {
+	my ($self) = shift;
+	$self->{'sub_0'}->_draw_y_grid_lines();
+	return;
+}
+
+sub _draw_y2_grid_lines {
+	my ($self) = shift;
+	$self->{'sub_1'}->_draw_y2_grid_lines();
+	return;
+}
 
 ## be a good module and return 1
 1;

@@ -3,6 +3,10 @@
 #                             #
 #  written by david bonner    #
 #  dbonner@cs.bu.edu          #
+#                             #
+#  maintained by peter clark  #
+#  ninjaz@webexpress.com      #
+#                             #
 #  theft is treason, citizen  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 

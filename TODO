@@ -1,8 +1,8 @@
-rewrite Pie.pm and Pareto.pm
+control charts
 
-add Area.pm and StackedArea.pm
+label values at points and bars?
 
-support for numerical x-axes
+x-ticks numerical, not just labels
+	- spaces the data points out correctly along x-axis?
 
 3-D charts
-
