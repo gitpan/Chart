@@ -1,0 +1,382 @@
+=head1 NAME
+
+Chart::* - a series of charting modules 
+
+=head1 SYNOPSIS
+
+    use Chart::type;
+
+    $obj = Chart::type->new;
+    $obj = Chart::type->new ( $gif_width, $gif_height );
+   
+    $obj->set ( $key_1, $val_1, ... ,$key_n, $val_n );
+    $obj->set ( $key_1 => $val_1,
+	        ...
+	        $key_n => $val_n );
+    $obj->set ( %hash );
+
+    # GIFgraph.pm-style API
+    @data = ( \@x_tick_labels, \@dataset1, ... , \@dataset_n );
+    $obj->gif ( "filename", \@data );
+    $obj->cgi_gif ( \@data );
+
+    # Graph.pm-style API
+    $obj->add_pt ($label, $val_1, ..., $val_n);
+    $obj->add_dataset ($val_1, ..., $val_n);
+    $obj->gif ( "filename" );
+    $obj->cgi_gif ();
+
+=head1 DESCRIPTION
+
+This module is an attempt to build a general purpose graphing module
+that is easily modified and expanded.  I borrowed most of the API
+from Martien Verbruggen's GIFgraph module.  I liked most of GIFgraph,
+but I thought it was to difficult to modify, and it was missing a few
+things that I needed, most notably legends.  So I decided to write
+a new module from scratch, and I've designed it from the bottom up
+to be easy to modify.  Like GIFgraph, Chart::* uses Lincoln Stein's GD 
+module for all of its graphics primitives calls.
+
+=head2 use-ing Chart
+
+Okay, so you caught me.  There's really no Chart::type module.
+All of the different chart types (points, lines, bars, linespoints, pie,
+and pareto so far) are classes by themselves, each inheriting a bunch
+of methods from the Chart::Base class.  Simply replace the word type
+with the type of chart you want and you're on your way.  For example,
+  
+  use Chart::lines;
+
+would invoke the lines module.
+
+=head2 Getting an object
+
+The new method can either be called without arguments, in which
+case it returns an object with the default image size (400x300 pixels),
+or you can specify the width and height of the image.  Just remember
+to replace type with the type of graph you want.  For example,
+
+  $obj = Chart::bars (600,400);
+
+would return a Chart::bars object containing a 600x400 pixel
+image.  New also initializes most of the default variables, which you 
+can subsequently change with the set method.
+
+=head2 Setting different options
+
+This is where the fun begins.  Set looks for a hash of keys and
+values.  You can pass it a hash that you've already constructed, like
+
+  %hash = ('title' => 'Foo Bar');
+  $obj->set (%hash);
+  
+or you can try just constructing the hash inside the set call, like
+
+  $obj->set ('title', 'Foo Bar');
+
+or
+
+  $obj->set ('title' => 'Foo Bar');
+
+The following are all of the currently supported options:
+
+=over 4
+
+=item 'gif_border'
+
+Sets the number of pixels used as a border between the graph
+and the edges of the gif.  Defaults to 10.
+
+=item 'graph_border'
+
+Sets the number of pixels used as a border between the title/labels
+and the actual graph within the gif.  Defaults to 10.
+
+=item 'text_space'
+
+Sets the amount of space left on the sides of text, to make it more
+readable.  Defaults to 2.
+
+=item 'title'
+
+Tells GD graph what to use for the title of the graph.  If empty,
+no title is drawn.  Default is empty.
+
+=item 'sub_title'
+
+The second line for the title, if needed.  Default is empty.
+
+=item 'x_label'
+
+Tells Chart::* what to use for the x-axis label.  If empty, no label
+is drawn.  Default is empty.
+
+=item 'y_label'
+
+Tells Chart::* what to use for the y-axis label.  If empty, no label
+is drawn.  Default is empty.
+
+=item 'legend'
+
+Draws a legend in the upper-right corner of the gif when set to 'true'.  
+Default is 'true'.
+
+=item 'legend_labels'
+
+Sets the values for the labels for the different datasets.  Should
+be assigned a reference to an array of labels.  For example,
+  
+  @labels = ('foo', 'bar');
+  $obj->set ('legend_labels' => \@labels);
+
+Default is empty, in which case 'Dataset 1', 'Dataset 2', etc. are
+used as the labels.  
+
+For a pareto graph, the first value should be the name of the set, and 
+the second should be the name of the running sum of the values.  
+
+For a pie graph, this option is ignored, as the values for the legend 
+are taken from the array of data point labels.
+
+=item 'tick_len'
+
+Sets the length of the x- and y-ticks in pixels.  Default is 4. 
+
+=item 'stagger_x_labels'
+
+Staggers the x-tick labels vertically to make them readable if set 
+to 'true'.  Default is 'true'.
+
+=item 'y_ticks'
+
+Sets the number of y_ticks to draw.  Default is 5.
+
+=item 'max_val'
+
+Sets the maximum y-value on the graph, cancelling the auto-scaling.
+Default is undef.
+
+=item 'pt_size'
+
+Sets the size of the points for points, linespoints, and pareto
+graphs.  Points are drawn as squares with sides of length 'pt_size'.
+Default is 4.
+
+=item 'dashed_lines'
+
+Uses dashed lines, instead of solid lines, for the graph.  If this
+is set to any other value than '' or undef, it will draw dashed
+lines.  (I use this when the chart is going to be printed with a B&W
+printer.  Unfortunately, it's hard to differentiate the lines after
+4 datasets.  There just weren't enough different ways to make dotted
+lines.)  Default is undef.
+
+=item 'skip_x_ticks'
+
+Sets the number of x-ticks and x-tick labels to skip.  (ie.  
+if 'skip_x_ticks' was set to 4, Chart::* would draw every 4th x-tick
+and x-tick label).  Default is undef.
+
+=item 'custom_x_ticks'
+
+Used in points, lines, linespoints, and bars charts, this option
+allows you to specify exatly which x-ticks and x-tick labels should
+be drawn.  It should be assigned a reference to an array of desired
+ticks.  Just remember that I'm counting from the 0th element of the
+array.  (ie., if 'custom_x_ticks' is assigned [0,3,4], then the 0th,
+3rd, and 4th x-ticks will be displayed)
+
+=item 'sort'
+
+Tells Chart::* to sort the data before plotting it.  Can be assigned
+an order ('asc' or 'desc' for ascending and descending, respectively),
+in which case it sorts numerically.  Or it can also be assigned an
+array reference.  The array reference should contain 3 elements:  the
+order in which to search (as above), which dataset to use (remember
+that 0 is the x-tick labels), and the type of sort to do ('alpha' or 'num'
+for alphabetical or numerical sorts, respectively).  For example,
+
+    $obj->set ('sort' => ['asc', 2, 'num']);
+
+would sort the data numerically in ascending order, sorting by the 
+third dataset (second if you don't count the x-tick labels).  Note that
+
+    $obj->set ('sort' => ['asc', 0, 'alpha']);
+
+will sort the data in ascending alphabetical order by the x-tick labels.
+Defualts to undef, normally, and 'desc' for pareto.
+
+=item 'nosort'
+
+Turns off the default sort for pareto graphs.  Default is undef.
+
+=item 'cutoff'
+
+Only used for pareto graphs, this option determines where the 
+cut-off point is.  It then lumps everything after the highest 'cutoff' 
+data points into an 'Other' entry on the graph.  Default
+is 5.
+
+=item 'nocutoff'
+
+Turns off the default 'cutoff' feature of pareto graphs.  Defaut is 
+undef.
+
+=back 
+
+=head2 GIFgraph.pm-style API
+
+=over 4
+
+=item Sending the image to a file
+
+Invoking the gif method causes the graph to be plotted and saved to 
+a file.  It takes the name of the output file and a reference to the
+data as arguments.  For example,
+
+  $obj->gif ("foo.gif", \@data);
+
+would plot the data in @data, and the save the image to foo.gif.
+Of course, this then beggars the question "What should @data look
+like?".  Well, just like GIFgraph, @data should contain references
+to arrays of data, with the first array reference pointing to an
+array of x-tick labels.  For example,
+
+  @data = ( [ 'foo', 'bar', 'junk' ],
+	    [ 30.2,  23.5,  92.1   ] );
+
+would set up a graph with one dataset, and three data points in that
+set.  In general, the @data array should look something like
+
+  @data = ( \@x_tick_labels, \@dataset1, ... , \@dataset_n );
+
+And no worries, I make my own internal copy of the data, so that it doesn't
+touch yours.
+
+=item CGI and Chart::*
+
+Okay, so you're probably thinking, "Do I always have to save these images
+to disk?  What if I want to use Chart::* to create dynamic images for my
+web site?"  Well, here's the answer to that.
+
+  $obj->cgi_gif ( \@data );
+
+The cgi_gif method will print the chart, along with the appropriate http
+header, to stdout, allowing you to call chart-generating scripts directly
+from your html pages (ie. with a <img src=image.pl> HTML tag).  The @data
+array should be set up the same way as for the normal gif method.
+
+=back
+
+=head2 Graph.pm-style API
+
+You might ask, "But what if I just want to add a few points to the graph, 
+and then display it, without all those references to references?".  Well,
+friend, the solution is simple.  Borrowing the add_pt idea from Matt
+Kruse's Graph.pm, you simply make a few calls to the add_pt method, like
+so:
+
+    $obj->add_pt ('foo', 30, 25);
+    $obj->add_pt ('bar', 16, 32);
+
+Or, if you want to be able to add entire datasets, simply use the add_dataset
+method:
+
+    $obj->add_dataset ('foo', 'bar');
+    $obj->add_dataset (30, 16);
+    $obj->add_dataset (25, 32);
+
+These methods check to make sure that the points and datasets you are
+adding are the same size as the ones already there.  So, if you have
+two datasets currently stored, and try to add a data point with three
+different values, it will carp (from Carp.pm) an error message and
+return undef.  Similarly, if you try to add a dataset with 4 data points,
+and all the other datasets have 3 data points, it will carp an error
+message and return undef.
+
+Don't forget, when using this API, that I treat the first dataset as
+a series of x-tick labels.  So, in the above examples, the graph would
+have two x-ticks, labeled 'foo' and 'bar', each with two data points.
+
+=over 4
+
+=item Clearing the data
+
+A simple call to the clear_data method empties any values that may
+have been entered.
+
+    $obj->clear_data ();
+
+=item Getting a copy of the data
+
+If you want a copy of the data that has been added so far, make a call
+to the get_data method like so:
+
+    $dataref = $obj->get_data;
+
+It returns (you guessed it!) a reference to an array of references to
+datasets.  So the x-tick labels would be stored as
+
+    @x_labels = @{$dataref->[0]};
+
+=item Sending the image to a file
+
+Invoking the gif method causes the graph to be plotted and saved to 
+a file.  It takes the name of the output file as an argument.  For example,
+
+  $obj->gif ("foo.gif");
+
+would plot the data , and the save the image to foo.gif.
+
+=item CGI and Chart::*
+
+Okay, so you're probably thinking (again), "Do I always have to save these 
+images to disk?  What if I want to use Chart::* to create dynamic images for
+my web site?"  Well, here's the answer to that.
+
+  $obj->cgi_gif ();
+
+The cgi_gif method will print the chart, along with the appropriate http
+header, to stdout, allowing you to call chart-generating scripts directly
+from your html pages (ie. with a <img src=image.pl> HTML tag). 
+
+=back
+
+
+
+=head1 TO DO
+
+A bunch of things.  The most pressing being
+
+=over 4
+
+=item *
+
+Add in support for negative values.  (I consider this a bug)
+
+=item *
+
+Add more customization, such as fonts, colors, etc. for each element
+of the chart.
+
+=item *
+
+Add some 3-D graphs.
+
+=back
+
+=head1 BUGS
+
+This module can't graph negative values yet.  There are probably lots more, 
+since I consider this an alpha release.  Mail me with any bugs, comments, 
+suggestions, flames, death threats, etc. 
+
+=head1 AUTHOR
+
+David Bonner (dbonner@cs.bu.edu)
+
+=head1 COPYRIGHT
+
+Copyright(c) 1997 by David Bonner.  All rights reserved.  This program is
+free software; you can redistribute it and/or modify it under the same terms
+as Perl itself.

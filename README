@@ -1,0 +1,46 @@
+-----------------------------------------------------------------------
+Chart::* version 0.92
+-----------------------------------------------------------------------
+
+	This is an alpha release of a general-purpose graphing module 
+using Lincoln Stein's GD.pm for graphics primitives.  It allows easy 
+generation of line, bar, point, point-and-line, pie, and pareto graphs,
+and is designed to be easily modified/extended/built upon.
+
+
+----------
+INSTALLING
+----------
+
+The usual.
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+This should install to your site_perl directory.  The test scripts also
+put samples of the different charts in the samples/ directory.
+
+
+-------------
+PREREQUISITES
+-------------
+
+Lincoln Stein's GD.pm module
+
+
+------
+AUTHOR
+------
+
+David Bonner (dbonner@cs.bu.edu)
+http://www.cs.bu.edu/staff/TA/dbonner
+
+---------
+COPYRIGHT
+---------
+
+Copyright(c) 1997 David Bonner.  All rights reserved.  This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.
