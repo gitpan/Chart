@@ -1,22 +1,24 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::EorrorBars          #
-#                             #
-#  written by markus brandl   #
-#  dbonner@cs.bu.edu          #
-#                             #
-#                             #
-#  theft is treason, citizen  #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::EorrorBars             #
+#                                #
+#  written by david bonner       #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#  theft is treason, citizen     #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::ErrorBars;
 
-use Chart::Base;
+use Chart::Base 2.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::ErrorBars::ISA = qw(Chart::Base);
-$Chart::ErrorBars::VERSION = '2.0';
+$Chart::ErrorBars::VERSION = '2.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

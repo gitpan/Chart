@@ -1,19 +1,22 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Pareto              #
-#                             #
-#  written by markus brandl   #
-#                             #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Pareto                 #
+#                                #
+#  written by Chart Group        #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Pareto;
 
-use Chart::Base;
+use Chart::Base 2.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Pareto::ISA = qw(Chart::Base);
-$Chart::Pareto::VERSION = '2.0';
+$Chart::Pareto::VERSION = '2.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

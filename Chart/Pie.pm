@@ -1,19 +1,23 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Pie                 #
-#                             #
-#  written by markus brandl   #
-#                             #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Pie                    #
+#                                #
+#  written by Chart Group        #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#                                #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Pie;
 
-use Chart::Base;
+use Chart::Base 2.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Pie::ISA = qw(Chart::Base);
-$Chart::Pie::VERSION = '2.0';
+$Chart::Pie::VERSION = '2.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

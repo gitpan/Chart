@@ -1,24 +1,25 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::Bars                #
-#                             #
-#  written by david bonner    #
-#  dbonner@cs.bu.edu          #
-#                             #
-#  maintained by peter clark  #
-#  ninjaz@webexpress.com      #
-#                             #
-#  theft is treason, citizen  #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::Bars                   #
+#                                #
+#  written by david bonner       #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#                                #
+#  theft is treason, citizen     #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::Bars;
 
-use Chart::Base;
+use Chart::Base 2.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Bars::ISA = qw(Chart::Base);
-$Chart::Bars::VERSION = '2.0';
+$Chart::Bars::VERSION = '2.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

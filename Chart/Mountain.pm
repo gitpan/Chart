@@ -1,18 +1,24 @@
-#============================#
-#                            #
-#  Chart::Mountain           #
-#                            #
-#  Inspired by Chart::Lines  #
-#  by davidb bonner          #
-#  dbonner@cs.bu.edu         #
-#                            #
-#  Updated for               #
-#  compatibility with        #
-#  changes to Chart::Base    #
-#  by peter clark            #
-#  ninjaz@webexpress.com     #
-#                            #
-#============================#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#                                #
+#  Chart::Mountain               #
+#                                #
+#  Inspired by Chart::Lines      #
+#  by davidb bonner              #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  Updated for                   #
+#  compatibility with            #
+#  changes to Chart::Base        #
+#  by peter clark                #
+#  ninjaz@webexpress.com         #
+#  written by david bonner       #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#                                #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 # Copyright 1998, 1999 by James F. Miner.
 # All rights reserved. 
@@ -27,7 +33,7 @@ use Carp;
 use strict;
 
 @Chart::Mountain::ISA = qw ( Chart::Base );
-@Chart::Mountain::VERSION = '2.0';
+@Chart::Mountain::VERSION = '2.1';
 
 
 ##  Some Mountain chart details:

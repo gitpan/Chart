@@ -10,9 +10,12 @@
 #  theft is treason, citizen     #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 # History:
-# $RCSfile: Base.pm,v $ $Revision: 1.5 $ $Date: 2002/06/19 12:36:58 $
+# $RCSfile: Base.pm,v $ $Revision: 1.6 $ $Date: 2003/01/14 13:38:37 $
 # $Author: dassing $
 # $Log: Base.pm,v $
+# Revision 1.6  2003/01/14 13:38:37  dassing
+# Big changes for Version 2.0
+#
 # Revision 1.5  2002/06/19 12:36:58  dassing
 # Correcting some undefines
 #
@@ -34,7 +37,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = '2.0';
+$Chart::Base::VERSION = '2.1';
 
 use vars qw(%named_colors);
 

@@ -1,21 +1,24 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::HorizontalBars      #
-#                             #
-#  written by markus brandl   #
-#                             #
-#                             #
-#  theft is treason, citizen  #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::HorizontalBars         #
+#                                #
+#  written by david bonner       #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#  theft is treason, citizen     #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::HorizontalBars;
 
-use Chart::Base;
+use Chart::Base 2.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::HorizontalBars::ISA = qw(Chart::Base);
-$Chart::HorizontalBars::VERSION = '2.0';
+$Chart::HorizontalBars::VERSION = '2.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

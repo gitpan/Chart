@@ -1,24 +1,24 @@
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
-#  Chart::StackedBars         #
-#                             #
-#  written by david bonner    #
-#  dbonner@cs.bu.edu          #
-#                             #
-#  maintained by peter clark  #
-#  ninjaz@webexpress.com      #
-#                             #
-#  theft is treason, citizen  #
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>#
+#  Chart::StackedBars            #
+#                                #
+#  written by david bonner       #
+#  dbonner@cs.bu.edu             #
+#                                #
+#  maintained by the Chart Group #
+#  Chart@wettzell.ifag.de        #
+#                                #
+#  theft is treason, citizen     #
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 package Chart::StackedBars;
 
-use Chart::Base;
+use Chart::Base 2.0;
 use GD;
 use Carp;
 use strict;
 
 @Chart::StackedBars::ISA = qw(Chart::Base);
-$Chart::StackedBars::VERSION = '2.0';
+$Chart::StackedBars::VERSION = '2.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
