@@ -188,8 +188,12 @@ sub cgi_gif {
   # pass off the real work to the appropriate subs
   $self->_draw();
 
-  # print the header (ripped the crlf octal from the CGI modle)
-  print "Content-type: image/gif\015\012\015\012";
+  # print the header (ripped the crlf octal from the CGI module)
+  if ($self->{no_cache} =~ /^true$/i) {
+      print "Content-type: image/gif\015\012Pragma: no-cache\015\012\015\012";
+  } else {
+      print "Content-type: image/gif\015\012\015\012";
+  }
 
   # now print the gif, and binmode it first so nt likes us
   binmode STDOUT;
@@ -311,6 +315,9 @@ sub _init {
   $self->{x_grid_lines} = 'false';
   $self->{y_grid_lines} = 'false';
   $self->{y2_grid_lines} = 'false';
+
+  # default for no_cache is false.  (it breaks netscape 4.5)
+  $self->{no_cache} = 'false';
 
   # and return
   return 1;
@@ -503,10 +510,10 @@ sub _set_user_colors {
 
   # okay, now go for the data sets
   for (keys(%{$self->{'colors'}})) {
-    if (($self->{'colors'}{$_} =~ /^dataset/i) &&
+    if (($_ =~ /^dataset/i) &&
         (scalar(@{$self->{'colors'}{$_}}) == 3)) {
-      @rgb = @{$self->{'colors'}{'dataset'.$_}};
-      $color_table->{'dataset'.$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
+      @rgb = @{$self->{'colors'}{$_}};
+      $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
     }
   }
 
@@ -810,7 +817,7 @@ sub _plot {
   my $self = shift;
 
   # draw the legend first
-  $self->_draw_legend unless $self->{'legend'} =~ /none/i;
+  $self->_draw_legend;
 
   # mark off the graph_border space
   $self->{'curr_x_min'} += $self->{'graph_border'};
@@ -847,6 +854,10 @@ sub _draw_legend {
   my $self = shift;
   my ($length);
 
+  # check to see if legend type is none..
+  if ($self->{'legend'} =~ /^none$/) {
+    return 1;
+  }
   # check to see if they have as many labels as datasets,
   # warn them if not
   if (($#{$self->{'legend_labels'}} >= 0) && 
@@ -882,8 +893,7 @@ sub _draw_legend {
   }
   elsif ($self->{'legend'} eq 'top') {
     $self->_draw_top_legend;
-  }
-  else {
+  } else {
     carp "I can't put a legend there\n";
   }
 

@@ -1,12 +1,16 @@
 ------------------------------------------------------------------------
-Chart version 0.99a
+Chart version 0.99b
 ------------------------------------------------------------------------
 
-	This is the first stable release of a general-purpose graphing
-module.  It uses Lincoln Stein's GD module for graphics primitives.  It
-allows easy generation of line, bar, point, point-and-line, stacked bar,
-and composite charts.
+This is mainly a bugfix release for 0.99a.  The primary changes are a fix
+for user-defined dataset colors, and adding a no_cache option for http
+headers.  no_cache is currently experimental, because, unfortunately,
+Netscape 4.5 breaks with POST while using this.  I'm looking into workarounds,
+and if anyone has ideas, feel free to mail me: ninjaz@webexpress.com
 
+Also, look for new and improved Pie charts with the next release!
+
+Enjoy. :)
 
 ----------
 INSTALLING
@@ -33,11 +37,19 @@ Lincoln Stein's GD module
 CHANGES
 -------
 
+0.99a - 0.99b:
+	Fixed left legend in composite charts
+	Fixed no color problem when using composite charts w/ no legend
+	Fixed color handling for datasets
+	Added option for http header Pragma: no-cache
+		Netscape 4.5 has a bug that breaks it, but it works with
+		other browsers.  Any ideas for a workaround?
+
 0.99 - 0.99a:
 	Added use of undef() values to represent 'no data' for line breaks
 	Added ylabel*_color options
-	Added y_grid_lines, x_grid_lines, and color options for each
-	Added Expires: 0 to cgi header: Reiner Nippes <nippes@ums-ulm.de>
+	Added x_grid_lines, y_grid_lines & y2_grid_lines , and color options for each
+	Cache disabling in cgi header: Reiner Nippes <nippes.r@gmx.de>
 	Restored grid_lines option: Heinz-Guenter Kontny <hek@kronos.nic.dtag.de>
 	Fixed a typo that broke imagemap data storage in Lines charts
 
@@ -70,16 +82,15 @@ CHANGES
 	Added StackedBars charts
 	
 ------
-AUTHOR
+MAINTAINER
 ------
 
-David Bonner (dbonner@cs.bu.edu)
-http://www.cs.bu.edu/staff/TA/dbonner
+Peter Clark (ninjaz@webexpress.com)
 
 ---------
 COPYRIGHT
 ---------
 
-Copyright(c) 1997-1998 David Bonner.  All rights reserved.  This program 
-is free software; you can redistribute it and/or modify it under the 
-same terms as Perl itself.
+Copyright(c) 1997-1998 David Bonner, 1999 Peter Clark.  All rights reserved.
+This program is free software; you can redistribute it and/or modify it under 
+the same terms as Perl itself.

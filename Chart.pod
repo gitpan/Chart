@@ -332,6 +332,11 @@ Forces both component charts in a composite chart to use the same maximum
 and minimum y-values if set to 'true'.  This helps to keep the composite 
 charts from being too confusing.  Default is undef.
 
+=item 'no_cache'
+
+Adds Pragma: no-cache to the http header.  Be careful with this one, as
+Netscape 4.5 is unfriendly with POST using this method.
+
 =back 
 
 =head2 GIFgraph.pm-style API

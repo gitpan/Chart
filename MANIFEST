@@ -6,6 +6,12 @@ Chart/Lines.pm
 Chart/LinesPoints.pm
 Chart/Points.pm
 Chart/StackedBars.pm
+t/bars.t
+t/composite.t
+t/lines.t
+t/linespoints.t
+t/points.t
+t/stackedbars.t
 MANIFEST
 Makefile.PL
 README

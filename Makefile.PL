@@ -7,4 +7,4 @@ mkdir ('samples', 00755);
 WriteMakefile ( 'NAME' => 'Chart',
 		'PREREQ_PM' => { 'GD' => 0 },
 		'dist' => { 'COMPRESS' => 'gzip', 'SUFFIX' => 'gz' },
-		'VERSION' => '1.0' );
+		'VERSION' => '0.99' );

@@ -229,6 +229,54 @@ sub _split_data {
   return;
 }
 
+sub _draw_legend {
+  my $self = shift;
+  my ($length);
+ 
+  # check to see if they have as many labels as datasets,
+  # warn them if not
+  if (($#{$self->{'legend_labels'}} >= 0) &&
+       ((scalar(@{$self->{'legend_labels'}})) != $self->{'num_datasets'})) {
+    carp "The number of legend labels and datasets doesn\'t match";
+  }
+ 
+  # init a field to store the length of the longest legend label
+  unless ($self->{'max_legend_label'}) {
+    $self->{'max_legend_label'} = 0;
+  }
+ 
+  # fill in the legend labels, find the longest one
+  for (1..$self->{'num_datasets'}) {
+    unless ($self->{'legend_labels'}[$_-1]) {
+      $self->{'legend_labels'}[$_-1] = "Dataset $_";
+    }
+    $length = length($self->{'legend_labels'}[$_-1]);
+    if ($length > $self->{'max_legend_label'}) {
+      $self->{'max_legend_label'} = $length;
+    }
+  }
+ 
+  # different legend types
+  if ($self->{'legend'} eq 'bottom') {
+    $self->_draw_bottom_legend;
+  }
+  elsif ($self->{'legend'} eq 'right') {
+    $self->_draw_right_legend;
+  }
+  elsif ($self->{'legend'} eq 'left') {
+    $self->_draw_left_legend;
+  }
+  elsif ($self->{'legend'} eq 'top') {
+    $self->_draw_top_legend;
+  } elsif ($self->{'legend'} eq 'none') {
+    $self->_draw_none_legend;
+  } else {
+    carp "I can't put a legend there\n";
+  }
+ 
+  # and return
+  return 1;
+}
 
 ## put the legend on the top of the data plot
 sub _draw_top_legend {
@@ -237,7 +285,7 @@ sub _draw_top_legend {
   my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
   my ($col_width, $row_height, $i, $j, $r, $c, $index, $x, $y, $sub, $w, $h);
   my $font = $self->{'legend_font'};
-  my @colors = qw(light_purple pink peach olive plum turquoise mauve brown);
+  my (%colors, @datasets);
 
   # copy the current boundaries into the sub-objects
   $self->_sub_update;
@@ -245,9 +293,23 @@ sub _draw_top_legend {
   # modify the dataset color table entries to avoid duplicating
   # dataset colors (this limits the number of possible data sets
   # for each component to 8)
-  for (0..$#colors) {
+  for (0..7) {
     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
-      = $self->{'color_table'}{$colors[$_]};
+      = $self->{'color_table'}{'dataset'.($_+8)};
+  }
+
+  # make sure we use the right colors for the legend
+  @datasets = @{$self->{'composite_info'}[0][1]};
+  $i = 0;
+  for (0..$#datasets) {
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i)};
+    $i++;
+  }
+  @datasets = @{$self->{'composite_info'}[1][1]};
+  $i = 0;
+  for (0..$#datasets) {
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+8)};
+    $i++;
   }
 
   # make sure we're using a real font
@@ -440,6 +502,98 @@ sub _draw_right_legend {
   return;
 }
 
+##  draw the legend at the left of the data plot
+sub _draw_left_legend {
+  my $self = shift;
+  my @labels = @{$self->{'legend_labels'}};
+  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h);
+  my $font = $self->{'legend_font'};
+  my (%colors, @datasets, $i);
+ 
+  # copy the current boundaries and colors into the sub-objects
+  $self->_sub_update;
+ 
+  # modify the dataset color table entries to avoid duplicating
+  # dataset colors (this limits the number of possible data sets
+  # for each component to 8)
+  for (0..7) {
+    $self->{'sub_1'}{'color_table'}{'dataset'.$_}
+      = $self->{'color_table'}{'dataset'.($_+8)};
+  }
+
+  # make sure we use the right colors for the legend
+  @datasets = @{$self->{'composite_info'}[0][1]};
+  $i = 0;
+  for (0..$#datasets) {
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i)};
+    $i++;
+  }
+  @datasets = @{$self->{'composite_info'}[1][1]};
+  $i = 0;
+  for (0..$#datasets) {
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+8)};
+    $i++;
+  }
+ 
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
+ 
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+ 
+  # get the miscellaneous color
+  $misccolor = $self->{'color_table'}{'misc'};
+ 
+  # find out how wide the largest label is
+  $width = (2 * $self->{'text_space'})
+    + ($self->{'max_legend_label'} * $w)
+    + $self->{'legend_example_size'}
+    + (2 * $self->{'legend_space'});
+ 
+  # get some base x-y coordinates
+  $x1 = $self->{'curr_x_min'};
+  $x2 = $self->{'curr_x_min'} + $width;
+  $y1 = $self->{'curr_y_min'} + $self->{'graph_border'} ;
+  $y2 = $self->{'curr_y_min'} + $self->{'graph_border'} + $self->{'text_space'
+}
+          + ($self->{'num_datasets'} * ($h + $self->{'text_space'}))
+          + (2 * $self->{'legend_space'});
+ 
+  # box the legend off
+  $self->{'gd_obj'}->rectangle ($x1, $y1, $x2, $y2, $misccolor);
+ 
+  # leave that nice space inside the legend box
+  $x1 += $self->{'legend_space'};
+  $y1 += $self->{'legend_space'} + $self->{'text_space'};
+ 
+  # now draw the actual legend
+  for (0..$#labels) {
+    # get the color
+    $color = $colors{$_};
+ 
+    # find the x-y coords
+    $x2 = $x1;
+    $x3 = $x2 + $self->{'legend_example_size'};
+    $y2 = $y1 + ($_ * ($self->{'text_space'} + $h)) + $h/2;
+ 
+    # do the line first
+    $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+ 
+    # now the label
+    $x2 = $x3 + (2 * $self->{'text_space'});
+    $y2 -= $h/2;
+    $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$_], $color);
+  }
+ 
+  # mark off the used space
+  $self->{'curr_x_min'} += $width;
+ 
+  # and return
+  return 1;
+}
+
 
 ##  draw the legend on the bottom of the data plot
 sub _draw_bottom_legend {
@@ -448,7 +602,7 @@ sub _draw_bottom_legend {
   my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
   my ($col_width, $row_height, $i, $j, $r, $c, $index, $x, $y, $sub, $w, $h);
   my $font = $self->{'legend_font'};
-  my @colors = qw(light_purple pink peach olive plum turquoise mauve brown);
+  my (%colors, @datasets);
 
   # copy the current boundaries and colors into the sub-objects
   $self->_sub_update;
@@ -456,9 +610,22 @@ sub _draw_bottom_legend {
   # modify the dataset color table entries to avoid duplicating
   # dataset colors (this limits the number of possible data sets
   # for each component to 8)
-  for (0..$#colors) {
+  for (0..7) {
     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
-      = $self->{'color_table'}{$colors[$_]};
+      = $self->{'color_table'}{'dataset'.($_+8)};
+  }
+
+  @datasets = @{$self->{'composite_info'}[0][1]};
+  $i = 0;
+  for (0..$#datasets) {
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i)};
+    $i++;
+  }
+  @datasets = @{$self->{'composite_info'}[1][1]};
+  $i = 0;
+  for (0..$#datasets) {
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+8)};
+    $i++;
   }
 
   # make sure we're using a real font
@@ -547,6 +714,18 @@ sub _draw_bottom_legend {
 			      + 2 * $self->{'legend_space'}; 
 
   return;
+}
+
+# no legend to draw.. just update the color tables for subs
+sub _draw_none_legend {
+  my $self = shift;
+
+  $self->_sub_update();
+
+  for (0..7) {
+    $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
+       = $self->{'color_table'}{'dataset'.($_+8)};
+   }
 }
 
 
