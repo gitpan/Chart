@@ -11,7 +11,7 @@ $g->add_dataset (5000, 7000, 2020, 8000, 9000);
 $g->set ('y_grid_lines' => 'true');
 $g->set ('title' => 'Bar Chart');
 
-$g->gif ("samples/bars.gif");
+$g->png ("samples/bars.png");
 
 print "ok 1\n";
 

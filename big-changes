@@ -1,0 +1,17 @@
+Richard Dice:
+# Lines.pm : added prepare brush - done (& legends done)
+# Bars.pm : none
+# StackedBars.pm : none
+# LinesPoints: lots of changes - use this
+# Points: added Prepare brush
+# Base: 
+# added prepare brush and scalar gif
+
+Jim Miner:
+# changed color roles in all modules - 1 line change in all (done)
+# fixed bug on y scale in base (took this base, basically. )
+# added mountain
+# Points: 1 line - done
+# Stacked Bars: lots (use this - done)
+# Bars: 1 line - done
+# changed composite - Use this (in c now)

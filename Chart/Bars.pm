@@ -34,7 +34,7 @@ $Chart::Bars::VERSION = 0.99;
 sub _draw_data {
   my $self = shift;
   my $data = $self->{'dataref'};
-  my $misccolor = $self->{'color_table'}{'misc'};
+  my $misccolor = $self->_color_role_to_index('misc');
   my ($x1, $x2, $x3, $y1, $y2, $y3);
   my ($width, $height, $delta1, $delta2, $map, $mod);
   my ($i, $j, $color);
@@ -79,7 +79,7 @@ sub _draw_data {
   # draw the bars
   for $i (1..$self->{'num_datasets'}) {
     # get the color for this dataset
-    $color = $self->{'color_table'}{'dataset'.($i-1)};
+    $color = $self->_color_role_to_index('dataset'.($i-1));
 
     # draw every bar for this dataset
     for $j (0..$self->{'num_datapoints'}) {

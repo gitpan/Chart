@@ -62,7 +62,7 @@ sub imagemap_dump {
   # croak if they didn't ask me to remember the data, or if they're asking
   # for the data before I generate it
   unless (($self->{'imagemap'} =~ /^true$/i) && $self->{'imagemap_data'}) {
-    croak "You need to set the imagemap option to true, and then call the gif method, before you can get the imagemap data";
+    croak "You need to set the imagemap option to true, and then call the png method, before you can get the imagemap data";
   }
 
   # make a copy for them, and reorder it
@@ -140,10 +140,11 @@ sub _split_data {
   my @types = ($self->{'composite_info'}[0][0],$self->{'composite_info'}[1][0]);
   my ($ref, $i, $j);
 
-  # we can only do two at a time
-  if ($self->{'composite_info'}[2]) {
-    croak "Sorry, Chart::Composite can only do two chart types at a time";
-  }
+## Already checked for number of components in _check_data, above.
+#   # we can only do two at a time
+#   if ($self->{'composite_info'}[2]) {
+#     croak "Sorry, Chart::Composite can only do two chart types at a time";
+#   }
 
   # load the individual modules
   require "Chart/".$types[0].".pm";
@@ -192,6 +193,7 @@ sub _split_data {
     $self->{'component_datasets'}[$i] = $self->{'composite_info'}[$i][1];
     push @{$ref}, $self->{'dataref'}[0];
     for $j (@{$self->{'composite_info'}[$i][1]}) {
+      $self->_color_role_to_index('dataset'.($j-1)); # allocate color index
       push @{$ref}, $self->{'dataref'}[$j];
     }
     $self->{'sub_'.$i}->_copy_data ($ref);
@@ -290,12 +292,20 @@ sub _draw_top_legend {
   # copy the current boundaries into the sub-objects
   $self->_sub_update;
 
+## Make datasetI numbers match indexes of @{ $self->{'dataref'} }[1.....].
+#   # modify the dataset color table entries to avoid duplicating
+#   # dataset colors (this limits the number of possible data sets
+#   # for each component to 8)
+#   for (0..7) {
+#     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
+#       = $self->{'color_table'}{'dataset'.($_+8)};
+#   }
   # modify the dataset color table entries to avoid duplicating
-  # dataset colors (this limits the number of possible data sets
-  # for each component to 8)
-  for (0..7) {
+  # dataset colors.
+  my ($n0, $n1) = map { scalar @{ $self->{'composite_info'}[$_][1] } } 0..1;
+  for (0..$n1-1) {
     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
-      = $self->{'color_table'}{'dataset'.($_+8)};
+      = $self->{'color_table'}{'dataset'.($_+$n0)};
   }
 
   # make sure we use the right colors for the legend
@@ -308,7 +318,7 @@ sub _draw_top_legend {
   @datasets = @{$self->{'composite_info'}[1][1]};
   $i = 0;
   for (0..$#datasets) {
-    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+8)};
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+$n0)};
     $i++;
   }
 
@@ -361,7 +371,7 @@ sub _draw_top_legend {
   $y2 = $self->{'curr_y_min'} + $self->{'text_space'}
           + ($rows * $row_height) + (2 * $self->{'legend_space'});
   $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
-                               $self->{'color_table'}{'misc'});
+                               $self->_color_role_to_index('misc'));
 
   # leave some space inside the legend
   $x1 += $self->{'legend_space'} + $self->{'text_space'};
@@ -424,12 +434,19 @@ sub _draw_right_legend {
   # copy the current boundaries and colors into the sub-objects
   $self->_sub_update;
 
+#   # modify the dataset color table entries to avoid duplicating
+#   # dataset colors (this limits the number of possible data sets
+#   # for each component to 8)
+#   for (0..7) {
+#     $self->{'sub_1'}{'color_table'}{'dataset'.$_}
+#       = $self->{'color_table'}{'dataset'.($_+8)};
+#   }
   # modify the dataset color table entries to avoid duplicating
-  # dataset colors (this limits the number of possible data sets
-  # for each component to 8)
-  for (0..7) {
-    $self->{'sub_1'}{'color_table'}{'dataset'.$_}
-      = $self->{'color_table'}{'dataset'.($_+8)};
+  # dataset colors.
+  my ($n0, $n1) = map { scalar @{ $self->{'composite_info'}[$_][1] } } 0..1;
+  for (0..$n1-1) {
+    $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
+      = $self->{'color_table'}{'dataset'.($_+$n0)};
   }
 
   # make sure we use the right colors for the legend
@@ -442,7 +459,7 @@ sub _draw_right_legend {
   @datasets = @{$self->{'composite_info'}[1][1]};
   $i = 0;
   for (0..$#datasets) {
-    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+8)};
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+$n0)};
     $i++;
   }
 
@@ -455,7 +472,7 @@ sub _draw_right_legend {
   ($h, $w) = ($font->height, $font->width);
 
   # get the miscellaneous color
-  $misccolor = $self->{'color_table'}{'misc'};
+  $misccolor = $self->_color_role_to_index('misc');
 
   # find out how wide the largest label is
   $width = (2 * $self->{'text_space'})
@@ -513,12 +530,19 @@ sub _draw_left_legend {
   # copy the current boundaries and colors into the sub-objects
   $self->_sub_update;
  
+#   # modify the dataset color table entries to avoid duplicating
+#   # dataset colors (this limits the number of possible data sets
+#   # for each component to 8)
+#   for (0..7) {
+#     $self->{'sub_1'}{'color_table'}{'dataset'.$_}
+#       = $self->{'color_table'}{'dataset'.($_+8)};
+#   }
   # modify the dataset color table entries to avoid duplicating
-  # dataset colors (this limits the number of possible data sets
-  # for each component to 8)
-  for (0..7) {
-    $self->{'sub_1'}{'color_table'}{'dataset'.$_}
-      = $self->{'color_table'}{'dataset'.($_+8)};
+  # dataset colors.
+  my ($n0, $n1) = map { scalar @{ $self->{'composite_info'}[$_][1] } } 0..1;
+  for (0..$n1-1) {
+    $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
+      = $self->{'color_table'}{'dataset'.($_+$n0)};
   }
 
   # make sure we use the right colors for the legend
@@ -531,7 +555,7 @@ sub _draw_left_legend {
   @datasets = @{$self->{'composite_info'}[1][1]};
   $i = 0;
   for (0..$#datasets) {
-    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+8)};
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+$n0)};
     $i++;
   }
  
@@ -544,7 +568,7 @@ sub _draw_left_legend {
   ($h, $w) = ($font->height, $font->width);
  
   # get the miscellaneous color
-  $misccolor = $self->{'color_table'}{'misc'};
+  $misccolor = $self->_color_role_to_index('misc');
  
   # find out how wide the largest label is
   $width = (2 * $self->{'text_space'})
@@ -607,12 +631,19 @@ sub _draw_bottom_legend {
   # copy the current boundaries and colors into the sub-objects
   $self->_sub_update;
 
+#   # modify the dataset color table entries to avoid duplicating
+#   # dataset colors (this limits the number of possible data sets
+#   # for each component to 8)
+#   for (0..7) {
+#     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
+#       = $self->{'color_table'}{'dataset'.($_+8)};
+#   }
   # modify the dataset color table entries to avoid duplicating
-  # dataset colors (this limits the number of possible data sets
-  # for each component to 8)
-  for (0..7) {
+  # dataset colors.
+  my ($n0, $n1) = map { scalar @{ $self->{'composite_info'}[$_][1] } } 0..1;
+  for (0..$n1-1) {
     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
-      = $self->{'color_table'}{'dataset'.($_+8)};
+      = $self->{'color_table'}{'dataset'.($_+$n0)};
   }
 
   @datasets = @{$self->{'composite_info'}[0][1]};
@@ -624,7 +655,7 @@ sub _draw_bottom_legend {
   @datasets = @{$self->{'composite_info'}[1][1]};
   $i = 0;
   for (0..$#datasets) {
-    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+8)};
+    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+$n0)};
     $i++;
   }
 
@@ -674,7 +705,7 @@ sub _draw_bottom_legend {
           - ($rows * $row_height) - (2 * $self->{'legend_space'});
   $y2 = $self->{'curr_y_max'};
   $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
-                               $self->{'color_table'}{'misc'});
+                               $self->_color_role_to_index('misc'));
   $x1 += $self->{'legend_space'} + $self->{'text_space'};
   $x2 -= $self->{'legend_space'};
   $y1 += $self->{'legend_space'} + $self->{'text_space'};
@@ -722,10 +753,17 @@ sub _draw_none_legend {
 
   $self->_sub_update();
 
-  for (0..7) {
+#   for (0..7) {
+#     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
+#        = $self->{'color_table'}{'dataset'.($_+8)};
+#    }
+  # modify the dataset color table entries to avoid duplicating
+  # dataset colors.
+  my ($n0, $n1) = map { scalar @{ $self->{'composite_info'}[$_][1] } } 0..1;
+  for (0..$n1-1) {
     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
-       = $self->{'color_table'}{'dataset'.($_+8)};
-   }
+      = $self->{'color_table'}{'dataset'.($_+$n0)};
+  }
 }
 
 
@@ -753,8 +791,8 @@ sub _draw_x_ticks {
   my $self = shift;
   my $data = $self->{'dataref'};
   my $font = $self->{'tick_label_font'};
-  my $textcolor = $self->{'color_table'}{'text'};
-  my $misccolor = $self->{'color_table'}{'misc'};
+  my $textcolor = $self->_color_role_to_index('text');
+  my $misccolor = $self->_color_role_to_index('misc');
   my ($h, $w);
   my ($x1, $x2, $y1, $y2);
   my ($width, $delta);
@@ -772,10 +810,16 @@ sub _draw_x_ticks {
 
   # allow for the amount of space the y-ticks will push the
   # axes over to the right and to the left
+## _draw_y_ticks allows 3 * text_space, not 2 * ;  this caused mismatch between
+## the ticks (and grid lines) and the data.
+#   $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length1'})
+#          + (2 * $self->{'text_space'}) + $self->{'tick_len'};
+#   $x2 = $self->{'curr_x_max'} - ($w * $self->{'y_tick_label_length2'})
+#          - (2 * $self->{'text_space'}) - $self->{'tick_len'};
   $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length1'})
-         + (2 * $self->{'text_space'}) + $self->{'tick_len'};
+         + (3 * $self->{'text_space'}) + $self->{'tick_len'};
   $x2 = $self->{'curr_x_max'} - ($w * $self->{'y_tick_label_length2'})
-         - (2 * $self->{'text_space'}) - $self->{'tick_len'};
+         - (3 * $self->{'text_space'}) - $self->{'tick_len'};
   $y1 = $self->{'curr_y_max'} - $h - $self->{'text_space'};
 
   # get the delta value, figure out how to draw the labels

@@ -16,7 +16,7 @@ $g->set ('y_label' => 'y label 1');
 $g->set ('y_label2' => 'y label 2');
 $g->set ('y_grid_lines' => 'true');
 $g->set ('legend' => 'none');
-$g->gif ("samples/lines.gif");
+$g->png ("samples/lines.png");
 
 print "ok 1\n";
 

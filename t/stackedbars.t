@@ -10,7 +10,7 @@ $g->add_dataset (5, 7, 2, 13, 4);
 
 $g->set ('title' => 'Stacked Bar Chart');
 
-$g->gif ("samples/stackedbars.gif");
+$g->png ("samples/stackedbars.png");
 
 print "ok 1\n";
 

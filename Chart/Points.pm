@@ -34,7 +34,7 @@ $Chart::Points::VERSION = 0.99;
 sub _draw_data {
   my $self = shift;
   my $data = $self->{'dataref'};
-  my $misccolor = $self->{'color_table'}{'misc'};
+  my $misccolor = $self->_color_role_to_index('misc');
   my ($x1, $x2, $x3, $y1, $y2, $y3, $mod);
   my ($width, $height, $delta, $map);
   my ($i, $j, $color, $brush);

@@ -20,7 +20,7 @@ $g->set ('colors' => {'y_label' => [0,0,255], y_label2 => [0,255,0],
 	'dataset0' => [0,127,0], 'dataset1' => [0,0,127], 'dataset8', => [0,255,0],
        'dataset9' => [ 255,0,0 ] });
 
-$g->gif("samples/composite.gif");
+$g->png("samples/composite.png");
 
 print "ok 1\n";
 

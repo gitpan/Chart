@@ -89,77 +89,30 @@ sub _check_data {
 }
 
 
-## override _find_y_scale to account for stacked bars
-sub _find_y_scale {
+sub _find_y_range {
   my $self = shift;
-  my $raw = $self->{'dataref'};
-  my $data = [@{$raw->[1]}];
-  my ($i, $j, $max, $min);
-  my ($order, $mult, $tmp);
-  my ($range, $delta, @dec, $y_ticks);
-  my $labels = [];
-  my $length = 0;
-
-  # use realy weird max and min values
-  $max = -999999999999;
-  $min = 999999999999;
-
-  # go through and stack them
-  for $i (0..$self->{'num_datapoints'}-1) {
-    for $j (2..$self->{'num_datasets'}) {
-      $data->[$i] += $raw->[$j][$i];
+  
+  #   This finds the minimum and maximum point-sum over all x points,
+  #   where the point-sum is the sum of the dataset values for that point.
+  #   If the y value in any dataset is undef for a given x, it simply
+  #   adds nothing to the sum.
+  
+  my $data = $self->{'dataref'};
+  my $max = undef;
+  my $min = undef;
+  for my $i (0..$#{$data->[0]}) { # data point
+    my $sum = $data->[1]->[$i] || 0;
+    for my $dataset ( @$data[2..$#$data] ) { # order not important
+      my $datum = $dataset->[$i];
+      $sum += $datum if defined $datum;
     }
-  }
-
-  # get max and min values
-  for $i (0..$self->{'num_datapoints'}-1) {
-    if ($data->[$i] > $max) {
-      $max = $data->[$i];
+    if ( defined $max ) {
+      if ( $sum > $max ) { $max = $sum }
+      elsif ( $sum < $min ) { $min = $sum }
     }
-    if ($data->[$i] < $min) {
-      $min = $data->[$i];
-    }
+    else { $min = $max = $sum }
   }
 
-  # calculate good max value
-  if ($max < -10) {
-    $tmp = -$max;
-    $order = int((log $tmp) / (log 10));
-    $mult = int ($tmp / (10 ** $order));
-    $tmp = ($mult - 1) * (10 ** $order);
-    $max = -$tmp;
-  }
-  elsif ($max < 0) {
-    $max = 0;
-  }
-  elsif ($max > 10) {
-    $order = int((log $max) / (log 10));
-    $mult = int ($max / (10 ** $order));
-    $max = ($mult + 1) * (10 ** $order);
-  }
-  elsif ($max >= 0) {
-    $max = 10;
-  }
-
-  # now go for a good min
-  if ($min < -10) {
-    $tmp = -$min;
-    $order = int((log $tmp) / (log 10));
-    $mult = int ($tmp / (10 ** $order));
-    $tmp = ($mult + 1) * (10 ** $order);
-    $min = -$tmp;
-  }
-  elsif ($min < 0) {
-    $min = -10;
-  }
-  elsif ($min > 10) {
-    $order = int ((log $min) / (log 10));
-    $mult = int ($min / (10 ** $order));
-    $min = $mult * (10 ** $order);
-  }
-  elsif ($min >= 0) {
-    $min = 0;
-  }
 
   # make sure all-positive or all-negative charts get anchored at
   # zero so that we don't cut out some parts of the bars
@@ -170,47 +123,133 @@ sub _find_y_scale {
     $max = 0;
   }
 
-  # put the appropriate in and max values into the object if necessary
-  unless (defined ($self->{'max_val'})) {
-    $self->{'max_val'} = $max;
-  }
-  unless (defined ($self->{'min_val'})) {
-    $self->{'min_val'} = $min;
-  }
-
-  # generate the y_tick labels, store them in the object
-  # figure out which one is going to be the longest
-  $range = $self->{'max_val'} - $self->{'min_val'};
-  $y_ticks = $self->{'y_ticks'} - 1;
-  if ($self->{'integer_ticks_only'} =~ /^true$/i) {
-    unless (($range % $y_ticks) == 0) {
-      while (($range % $y_ticks) != 0) {
-	$y_ticks++;
-      }
-      $self->{'y_ticks'} = $y_ticks + 1;
-    }
-  }
-    
-  $delta = $range / $y_ticks;
-  for (0..$y_ticks) {
-    $tmp = $self->{'min_val'} + ($delta * $_);
-    @dec = split /\./, $tmp;
-    if ($dec[1] && (length($dec[1]) > 3)) {
-      $tmp = sprintf("%.3f", $tmp);
-    }
-    $labels->[$_] = $tmp;
-    if (length($tmp) > $length) {
-      $length = length($tmp);
-    }
-  }
-
-  # store it in the object
-  $self->{'y_tick_labels'} = $labels;
-  $self->{'y_tick_label_length'} = $length;
- 
-  # and return
-  return;
+	($min, $max);
 }
+
+
+# ## override _find_y_scale to account for stacked bars
+# sub _find_y_scale {
+#   my $self = shift;
+#   my $raw = $self->{'dataref'};
+#   my $data = [@{$raw->[1]}];
+#   my ($i, $j, $max, $min);
+#   my ($order, $mult, $tmp);
+#   my ($range, $delta, @dec, $y_ticks);
+#   my $labels = [];
+#   my $length = 0;
+# 
+#   # use realy weird max and min values
+#   $max = -999999999999;
+#   $min = 999999999999;
+# 
+#   # go through and stack them
+#   for $i (0..$self->{'num_datapoints'}-1) {
+#     for $j (2..$self->{'num_datasets'}) {
+#       $data->[$i] += $raw->[$j][$i];
+#     }
+#   }
+# 
+#   # get max and min values
+#   for $i (0..$self->{'num_datapoints'}-1) {
+#     if ($data->[$i] > $max) {
+#       $max = $data->[$i];
+#     }
+#     if ($data->[$i] < $min) {
+#       $min = $data->[$i];
+#     }
+#   }
+# 
+#   # make sure all-positive or all-negative charts get anchored at
+#   # zero so that we don't cut out some parts of the bars
+#   if (($max > 0) && ($min > 0)) {
+#     $min = 0;
+#   }
+#   if (($min < 0) && ($max < 0)) {
+#     $max = 0;
+#   }
+# 
+#   # calculate good max value
+#   if ($max < -10) {
+#     $tmp = -$max;
+#     $order = int((log $tmp) / (log 10));
+#     $mult = int ($tmp / (10 ** $order));
+#     $tmp = ($mult - 1) * (10 ** $order);
+#     $max = -$tmp;
+#   }
+#   elsif ($max < 0) {
+#     $max = 0;
+#   }
+#   elsif ($max > 10) {
+#     $order = int((log $max) / (log 10));
+#     $mult = int ($max / (10 ** $order));
+#     $max = ($mult + 1) * (10 ** $order);
+#   }
+#   elsif ($max >= 0) {
+#     $max = 10;
+#   }
+# 
+#   # now go for a good min
+#   if ($min < -10) {
+#     $tmp = -$min;
+#     $order = int((log $tmp) / (log 10));
+#     $mult = int ($tmp / (10 ** $order));
+#     $tmp = ($mult + 1) * (10 ** $order);
+#     $min = -$tmp;
+#   }
+#   elsif ($min < 0) {
+#     $min = -10;
+#   }
+#   elsif ($min > 10) {
+#     $order = int ((log $min) / (log 10));
+#     $mult = int ($min / (10 ** $order));
+#     $min = $mult * (10 ** $order);
+#   }
+#   elsif ($min >= 0) {
+#     $min = 0;
+#   }
+# 
+#   # put the appropriate min and max values into the object if necessary
+#   unless (defined ($self->{'max_val'})) {
+#     $self->{'max_val'} = $max;
+#   }
+#   unless (defined ($self->{'min_val'})) {
+#     $self->{'min_val'} = $min;
+#   }
+# 
+#   # generate the y_tick labels, store them in the object
+#   # figure out which one is going to be the longest
+#   $range = $self->{'max_val'} - $self->{'min_val'};
+#   $y_ticks = $self->{'y_ticks'} - 1;
+#   ## Don't adjust y_ticks if the user specified custom labels
+#   if ($self->{'integer_ticks_only'} =~ /^true$/i && ! $self->{'y_tick_labels'}) {
+#     unless (($range % $y_ticks) == 0) {
+#       while (($range % $y_ticks) != 0) {
+# 	$y_ticks++;
+#       }
+#       $self->{'y_ticks'} = $y_ticks + 1;
+#     }
+#   }
+#     
+#   $delta = $range / $y_ticks;
+#   for (0..$y_ticks) {
+#     $tmp = $self->{'min_val'} + ($delta * $_);
+#     @dec = split /\./, $tmp;
+#     if ($dec[1] && (length($dec[1]) > 3)) {
+#       $tmp = sprintf("%.3f", $tmp);
+#     }
+#     $labels->[$_] = $tmp;
+#     if (length($tmp) > $length) {
+#       $length = length($tmp);
+#     }
+#   }
+# 
+#   # store it in the object
+#   $self->{'y_tick_labels'} = $labels;
+#   $self->{'y_tick_label_length'} = $length;
+#  
+#   # and return
+#   return;
+# }
 
 
 ## finally get around to plotting the data
@@ -218,7 +257,7 @@ sub _draw_data {
   my $self = shift;
   my $raw = $self->{'dataref'};
   my $data = [];
-  my $misccolor = $self->{'color_table'}{'misc'};
+  my $misccolor = $self->_color_role_to_index('misc');
   my ($width, $height, $delta, $map, $mod);
   my ($x1, $y1, $x2, $y2, $x3, $y3, $i, $j, $color);
 
@@ -271,7 +310,7 @@ sub _draw_data {
     
     for $j (1..$self->{'num_datasets'}) {
       # get the color
-      $color = $self->{'color_table'}{'dataset'.($j-1)};
+      $color = $self->_color_role_to_index('dataset'.($j-1));
       
       # set up the geometry for the bar
       if ($self->{'spaced_bars'} =~ /^true$/i) {

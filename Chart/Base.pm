@@ -19,6 +19,8 @@ use FileHandle;
 
 $Chart::Base::VERSION = 0.99;
 
+use vars qw(%named_colors);
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<#
@@ -117,9 +119,11 @@ sub get_data {
 
   # give them a copy, not a reference into the object
   for $i (0..$#{$self->{'dataref'}}) {
-    for $j (0..$#{$self->{'dataref'}->[$i]}) {
-      $ref->[$i][$j] = $self->{'dataref'}->[$i][$j];
-    }
+    @{ $ref->[$i] } = @{ $self->{'dataref'}->[$i] }
+## speedup, compared to...
+#   for $j (0..$#{$self->{'dataref'}->[$i]}) {
+#     $ref->[$i][$j] = $self->{'dataref'}->[$i][$j];
+#   }
   }
 
   # return it
@@ -130,7 +134,7 @@ sub get_data {
 ##  called after the options are set, this method
 ##  invokes all my private methods to actually
 ##  draw the chart and plot the data
-sub gif {
+sub png {
   my $self = shift;
   my $file = shift;
   my $dataref = shift;
@@ -147,9 +151,12 @@ sub gif {
     $fh = $file;
   }
   else {
-    croak "I'm not sure what you gave me to write this gif to,\n",
+    croak "I'm not sure what you gave me to write this png to,\n",
           "but it wasn't a filename or a filehandle.\n";
   }
+
+  # allocate the background color
+  $self->_set_colors();
 
   # make sure the object has its copy of the data
   $self->_copy_data($dataref);
@@ -164,7 +171,7 @@ sub gif {
   # now write it to the file handle, and don't forget
   # to be nice to the poor ppl using nt
   binmode $fh;
-  print $fh $self->{'gd_obj'}->gif();
+  print $fh $self->{'gd_obj'}->png();
 
   # now exit
   return 1;
@@ -174,9 +181,12 @@ sub gif {
 ##  called after the options are set, this method
 ##  invokes all my private methods to actually
 ##  draw the chart and plot the data
-sub cgi_gif {
+sub cgi_png {
   my $self = shift;
   my $dataref = shift;
+
+  # allocate the background color
+  $self->_set_colors();
 
   # make sure the object has its copy of the data
   $self->_copy_data($dataref);
@@ -190,17 +200,62 @@ sub cgi_gif {
 
   # print the header (ripped the crlf octal from the CGI module)
   if ($self->{no_cache} =~ /^true$/i) {
-      print "Content-type: image/gif\015\012Pragma: no-cache\015\012\015\012";
+      print "Content-type: image/png\015\012Pragma: no-cache\015\012\015\012";
   } else {
-      print "Content-type: image/gif\015\012\015\012";
+      print "Content-type: image/png\015\012\015\012";
   }
 
-  # now print the gif, and binmode it first so nt likes us
+  # now print the png, and binmode it first so nt likes us
   binmode STDOUT;
-  print STDOUT $self->{'gd_obj'}->gif();
+  print STDOUT $self->{'gd_obj'}->png();
 
   # now exit
   return 1;
+}
+
+##  called after the options are set, this method
+##  invokes all my private methods to actually
+##  draw the chart and plot the data
+sub scalar_png {
+  my $self = shift;
+  my $dataref = shift;
+
+  # make sure the object has its copy of the data
+  $self->_copy_data($dataref);
+
+  # do a sanity check on the data, and collect some basic facts
+  # about the data
+  $self->_check_data();
+
+  # pass off the real work to the appropriate subs
+  $self->_draw();
+
+  # returns the png image as a scalar value, so that
+  # the programmer-user can do whatever the heck
+  # s/he wants to with it
+  $self->{'gd_obj'}->png();
+}
+
+
+sub make_gd {
+  my $self = shift;
+  my $dataref = shift;
+
+  # allocate the background color
+  $self->_set_colors();
+
+  # make sure the object has its copy of the data
+  $self->_copy_data($dataref);
+
+  # do a sanity check on the data, and collect some basic facts
+  # about the data
+  $self->_check_data();
+
+  # pass off the real work to the appropriate subs
+  $self->_draw();
+
+  # return the GD::Image object that we've drawn into
+  return $self->{'gd_obj'};
 }
 
 
@@ -213,7 +268,7 @@ sub imagemap_dump {
   # croak if they didn't ask me to remember the data, or if they're asking
   # for the data before I generate it
   unless (($self->{'imagemap'} =~ /^true$/i) && $self->{'imagemap_data'}) {
-    croak "You need to set the imagemap option to true, and then call the gif method, before you can get the imagemap data";
+    croak "You need to set the imagemap option to true, and then call the png method, before you can get the imagemap data";
   }
 
   # can't just return a ref to my internal structures...
@@ -246,8 +301,8 @@ sub _init {
   $self->{'curr_x_min'} = 0;
   $self->{'curr_x_max'} = $x;
 
-  # use a 10 pixel border around the whole gif
-  $self->{'gif_border'} = 10;
+  # use a 10 pixel border around the whole png
+  $self->{'png_border'} = 10;
 
   # leave some space around the text fields
   $self->{'text_space'} = 2;
@@ -279,6 +334,12 @@ sub _init {
 
   # make the ticks 4 pixels long
   $self->{'tick_len'} = 4;
+
+  # no custom y tick labels
+  $self->{'y_tick_labels'} = undef;
+  
+  # no patterns
+  $self->{'patterns'} = undef;
 
   # let the lines in Chart::Lines be 6 pixels wide
   $self->{'brush_size'} = 6;
@@ -319,6 +380,31 @@ sub _init {
   # default for no_cache is false.  (it breaks netscape 4.5)
   $self->{no_cache} = 'false';
 
+  $self->{typeStyle} = 'default';
+
+  # default color specs for various color roles.
+  # Subclasses should extend as needed.
+  my $d = 0;
+  $self->{'colors_default_spec'} = {
+    background	=> 'white',
+    misc	=> 'black',
+    text	=> 'black',
+    y_label	=> 'black',
+    y_label2	=> 'black',
+    grid_lines	=> 'black',
+    grey_background => 'grey',
+    (map { 'dataset'.$d++ => $_ } qw (red green blue purple peach orange mauve olive pink light_purple light_blue plum yellow turquoise light_green brown) ),
+
+  };
+  
+  # get default color specs for some color roles from alternate role.
+  # Subclasses should extend as needed.
+  $self->{'colors_default_role'} = {
+    'x_grid_lines'	=> 'grid_lines',
+    'y_grid_lines'	=> 'grid_lines',
+    'y2_grid_lines'	=> 'grid_lines', # should be added by Char::Composite...
+  };
+
   # and return
   return 1;
 }
@@ -341,9 +427,11 @@ sub _copy_data {
     
     # loop through and copy
     for $i (0..$#{$extern_ref}) {
-      for $j (0..$#{$extern_ref->[$i]}) {
-	$ref->[$i][$j] = $extern_ref->[$i][$j];
-      }
+      @{ $ref->[$i] } = @{ $extern_ref->[$i] };
+## Speedup compared to:
+#     for $j (0..$#{$extern_ref->[$i]}) {
+#       $ref->[$i][$j] = $extern_ref->[$i][$j];
+#     }
     }
 
     # put it in the object
@@ -361,6 +449,13 @@ sub _check_data {
   # first make sure there's something there
   unless (scalar (@{$self->{'dataref'}}) >= 2) {
     croak "Call me again when you have some data to chart";
+  }
+
+  # make sure we don't end up dividing by zero if they ask for
+  # just one y_tick
+  if ($self->{'y_ticks'} == 1) {
+    $self->{'y_ticks'} = 2;
+    carp "The number of y_ticks displayed must be at least 2";
   }
 
   # remember the number of datasets
@@ -395,19 +490,21 @@ sub _check_data {
 sub _draw {
   my $self = shift;
   
-  # use their colors if they want
-  if ($self->{'colors'}) {
-    $self->_set_user_colors();
-  }
+## No Longer needed.
+#   # use their colors if they want
+#   if ($self->{'colors'}) {
+#     $self->_set_user_colors();
+#   }
 
-  # fill in the defaults for the colors
-  $self->_set_colors();
+## Moved to png(), cgi_png(), etc.
+#   # fill in the defaults for the colors
+#   $self->_set_colors();
 
-  # leave the appropriate border on the gif
-  $self->{'curr_x_max'} -= $self->{'gif_border'};
-  $self->{'curr_x_min'} += $self->{'gif_border'};
-  $self->{'curr_y_max'} -= $self->{'gif_border'};
-  $self->{'curr_y_min'} += $self->{'gif_border'};
+  # leave the appropriate border on the png
+  $self->{'curr_x_max'} -= $self->{'png_border'};
+  $self->{'curr_x_min'} += $self->{'png_border'};
+  $self->{'curr_y_max'} -= $self->{'png_border'};
+  $self->{'curr_y_min'} += $self->{'png_border'};
 
   # draw in the title
   $self->_draw_title() if $self->{'title'};
@@ -430,204 +527,291 @@ sub _draw {
 }
 
 
-##  let the user specify their own colors
-sub _set_user_colors {
-  my $self = shift;
-  my $color_table = {};
-  my @rgb;
-  
-  # see if they want a different background
-  if (($self->{'colors'}{'background'}) &&
-      (scalar(@{$self->{'colors'}{'background'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'background'}};
-    $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-  else { # make sure white becomes the background color
-    @rgb = (255, 255, 255);
-    $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
+%named_colors = (
+  'white'		=> [255,255,255],
+  'black'		=> [0,0,0],
+  'red'			=> [200,0,0],
+  'green'		=> [0,175,0],
+  'blue'		=> [0,0,200],
+  'orange'		=> [250,125,0],
+  'yellow'		=> [225,225,0],
+  'purple'		=> [200,0,200],
+  'light_blue'		=> [0,125,250],
+  'light_green'		=> [125,250,0],
+  'light_purple'	=> [145,0,250],
+  'pink'		=> [250,0,125],
+  'peach'		=> [250,125,125],
+  'olive'		=> [125,125,0],
+  'plum'		=> [125,0,125],
+  'turquoise'		=> [0,125,125],
+  'mauve'		=> [200,125,125],
+  'brown'		=> [160,80,0],
+  'grey'		=> [225,225,225],
+);
 
-  # make the background transparent if they asked nicely
-  if ($self->{'transparent'} =~ /^true$/i) {
-    $self->{'gd_obj'}->transparent ($color_table->{'background'});
-  }
 
-  # next check for the color for the miscellaneous stuff
-  # (the axes on the plot, the box around the legend, etc.)
-  if (($self->{'colors'}{'misc'}) &&
-      (scalar(@{$self->{'colors'}{'misc'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'misc'}};
-    $color_table->{'misc'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-
-  # what about the text?
-  if (($self->{'colors'}{'text'}) &&
-      (scalar(@{$self->{'colors'}{'text'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'text'}};
-    $color_table->{'text'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-
-  # and how about y_labels?
-  if (($self->{'colors'}{'y_label'}) &&
-      (scalar(@{$self->{'colors'}{'y_label'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'y_label'}};
-    $color_table->{'y_label'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
- 
-  if (($self->{'colors'}{'y_label2'}) &&
-      (scalar(@{$self->{'colors'}{'y_label2'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'y_label2'}};
-    $color_table->{'y_label2'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-
-  # set user-specified "default" grid_lines color 
-  if (($self->{'colors'}{'grid_lines'}) &&
-      (scalar(@{$self->{'colors'}{'grid_lines'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'grid_lines'}};
-    $color_table->{'grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-
-  # x_grid_lines color
-  if (($self->{'colors'}{'x_grid_lines'}) &&
-      (scalar(@{$self->{'colors'}{'x_grid_lines'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'x_grid_lines'}};
-    $color_table->{'x_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-
-  # y_grid_lines color
-  if (($self->{'colors'}{'y_grid_lines'}) &&
-      (scalar(@{$self->{'colors'}{'y_grid_lines'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'y_grid_lines'}};
-    $color_table->{'y_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-
-  # y2_grid_lines color
-  if (($self->{'colors'}{'y2_grid_lines'}) &&
-      (scalar(@{$self->{'colors'}{'y2_grid_lines'}}) == 3)) {
-    @rgb = @{$self->{'colors'}{'y2_grid_lines'}};
-    $color_table->{'y2_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-  }
-
-  # okay, now go for the data sets
-  for (keys(%{$self->{'colors'}})) {
-    if (($_ =~ /^dataset/i) &&
-        (scalar(@{$self->{'colors'}{$_}}) == 3)) {
-      @rgb = @{$self->{'colors'}{$_}};
-      $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
-    }
-  }
-
-  # stick the color table in the object
-  $self->{'color_table'} = $color_table;
-
-  # and return
-  return 1;
-}
+## No Longer needed.
+##  let the user specify their own colors in $self->{'colors'}
+# sub _set_user_colors {
+#   my $self = shift;
+#   my $color_table = {};
+#   my @rgb;
+#   
+#   # see if they want a different background
+#   if (($self->{'colors'}{'background'}) &&
+#       (scalar(@{$self->{'colors'}{'background'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'background'}};
+#     $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+#   else { # make sure white becomes the background color
+#     @rgb = (255, 255, 255);
+#     $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # make the background transparent if they asked nicely
+#   if ($self->{'transparent'} =~ /^true$/i) {
+#     $self->{'gd_obj'}->transparent ($color_table->{'background'});
+#   }
+# 
+#   # next check for the color for the miscellaneous stuff
+#   # (the axes on the plot, the box around the legend, etc.)
+#   if (($self->{'colors'}{'misc'}) &&
+#       (scalar(@{$self->{'colors'}{'misc'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'misc'}};
+#     $color_table->{'misc'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # what about the text?
+#   if (($self->{'colors'}{'text'}) &&
+#       (scalar(@{$self->{'colors'}{'text'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'text'}};
+#     $color_table->{'text'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # and how about y_labels?
+#   if (($self->{'colors'}{'y_label'}) &&
+#       (scalar(@{$self->{'colors'}{'y_label'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'y_label'}};
+#     $color_table->{'y_label'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+#  
+#   if (($self->{'colors'}{'y_label2'}) &&
+#       (scalar(@{$self->{'colors'}{'y_label2'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'y_label2'}};
+#     $color_table->{'y_label2'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # set user-specified "default" grid_lines color 
+#   if (($self->{'colors'}{'grid_lines'}) &&
+#       (scalar(@{$self->{'colors'}{'grid_lines'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'grid_lines'}};
+#     $color_table->{'grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # x_grid_lines color
+#   if (($self->{'colors'}{'x_grid_lines'}) &&
+#       (scalar(@{$self->{'colors'}{'x_grid_lines'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'x_grid_lines'}};
+#     $color_table->{'x_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # y_grid_lines color
+#   if (($self->{'colors'}{'y_grid_lines'}) &&
+#       (scalar(@{$self->{'colors'}{'y_grid_lines'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'y_grid_lines'}};
+#     $color_table->{'y_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # y2_grid_lines color
+#   if (($self->{'colors'}{'y2_grid_lines'}) &&
+#       (scalar(@{$self->{'colors'}{'y2_grid_lines'}}) == 3)) {
+#     @rgb = @{$self->{'colors'}{'y2_grid_lines'}};
+#     $color_table->{'y2_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # okay, now go for the data sets
+#   for (keys(%{$self->{'colors'}})) {
+#     if (($_ =~ /^dataset/i) &&
+#         (scalar(@{$self->{'colors'}{$_}}) == 3)) {
+#       @rgb = @{$self->{'colors'}{$_}};
+#       $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#     }
+#   }
+# 
+#   # stick the color table in the object
+#   $self->{'color_table'} = $color_table;
+# 
+#   # and return
+#   return 1;
+# }
 
 
 ##  specify my colors
 sub _set_colors {
   my $self = shift;
-  my %colors = ('white'		=> [255,255,255],
-  		'black'		=> [0,0,0],
-		'red'		=> [200,0,0],
-		'green'		=> [0,175,0],
-		'blue'		=> [0,0,200],
-		'orange'	=> [250,125,0],
-		'yellow'	=> [225,225,0],
-		'purple'	=> [200,0,200],
-		'light_blue'	=> [0,125,250],
-		'light_green'	=> [125,250,0],
-		'light_purple'	=> [145,0,250],
-		'pink'		=> [250,0,125],
-		'peach'		=> [250,125,125],
-		'olive'		=> [125,125,0],
-		'plum'		=> [125,0,125],
-		'turquoise'	=> [0,125,125],
-		'mauve'		=> [200,125,125],
-		'brown'		=> [160,80,0],
-		'grey'		=> [225,225,225]);
-  my ($color_table, @rgb, @colors);
-
-  # check to see if they specified colors
-  if ($self->{'color_table'}) {
-    $color_table = $self->{'color_table'};
-  }
-  else {
-    $color_table = {};
-  }
   
-  # put the background in first
-  unless ($color_table->{'background'}) {
-    @rgb = @{$colors{'white'}};
-    $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);    
-  }
+## Moved out to module level.
+#   my %colors = ('white'	=> [255,255,255],
+#   		'black'		=> [0,0,0],
+# 		'red'		=> [200,0,0],
+# 		'green'		=> [0,175,0],
+# 		'blue'		=> [0,0,200],
+# 		'orange'	=> [250,125,0],
+# 		'yellow'	=> [225,225,0],
+# 		'purple'	=> [200,0,200],
+# 		'light_blue'	=> [0,125,250],
+# 		'light_green'	=> [125,250,0],
+# 		'light_purple'	=> [145,0,250],
+# 		'pink'		=> [250,0,125],
+# 		'peach'		=> [250,125,125],
+# 		'olive'		=> [125,125,0],
+# 		'plum'		=> [125,0,125],
+# 		'turquoise'	=> [0,125,125],
+# 		'mauve'		=> [200,125,125],
+# 		'brown'		=> [160,80,0],
+# 		'grey'		=> [225,225,225]);
 
-  # make the background transparent if they asked for it
-  if ($self->{'transparent'} =~ /^true$/i) {
-    $self->{'gd_obj'}->transparent ($color_table->{'background'});
-  }
 
-  # now get all my named colors
-  for (keys (%colors)) {
-    @rgb = @{$colors{$_}};
-    $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
+  my $index = $self->_color_role_to_index('background'); # allocate GD color
+  if ( $self->{'transparent'} =~ m/^true$/i ) {
+    $self->{'gd_obj'}->transparent($index);
   }
+  # all other roles are initialized by calling $self->_color_role_to_index(ROLENAME);	
 
-  # set up the datatset* colors
-  @colors = qw (red green blue purple peach orange mauve olive pink light_purple light_blue plum yellow turquoise light_green brown);
-  for (0..$#colors) {
-    unless ($color_table->{'dataset'.$_}) { # don't override their colors
-      $color_table->{'dataset'.$_} = $color_table->{$colors[$_]};
-    }
-  }
 
-  # set up the miscellaneous color
-  unless ($color_table->{'misc'}) {
-    $color_table->{'misc'} = $color_table->{'black'};
-  }
 
-  # and the text color
-  unless ($color_table->{'text'}) {
-    $color_table->{'text'} = $color_table->{'black'};
-  }
-
-  unless ($color_table->{'y_label'}) {
-    $color_table->{'y_label'} = $color_table->{'black'};
-  }
-  unless ($color_table->{'y_label2'}) {
-    $color_table->{'y_label2'} = $color_table->{'black'};
-  }
-
-  unless ($color_table->{'grid_lines'}) {
-    $color_table->{'grid_lines'} = $color_table->{'black'};
-  }
-
-  unless ($color_table->{'x_grid_lines'}) {
-    $color_table->{'x_grid_lines'} = $color_table->{'grid_lines'};
-  }
-
-  unless ($color_table->{'y_grid_lines'}) {
-    $color_table->{'y_grid_lines'} = $color_table->{'grid_lines'};
-  }
-
-  unless ($color_table->{'y2_grid_lines'}) {
-    $color_table->{'y2_grid_lines'} = $color_table->{'grid_lines'};
-  }
-
-  # put the color table back in the object
-  $self->{'color_table'} = $color_table;
-  
-  # and return
-  return 1; 
+## Replaced by above, and calls to _color_role_to_index method elsewhere.
+#   my ($color_table, @rgb, @colors);
+# 
+#   # check to see if they specified colors
+#   if ($self->{'color_table'}) {
+#     $color_table = $self->{'color_table'};
+#   }
+#   else {
+#     $color_table = {};
+#   }
+#   
+#   # put the background in first
+#   unless ($color_table->{'background'}) {
+#     @rgb = @{$colors{'white'}};
+#     $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);    
+#   }
+# 
+#   # make the background transparent if they asked for it
+#   if ($self->{'transparent'} =~ /^true$/i) {
+#     $self->{'gd_obj'}->transparent ($color_table->{'background'});
+#   }
+# 
+#   # now get all my named colors
+#   for (keys (%colors)) {
+#     @rgb = @{$colors{$_}};
+#     $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
+#   }
+# 
+#   # set up the datatset* colors
+#   @colors = qw (red green blue purple peach orange mauve olive pink light_purple light_blue plum yellow turquoise light_green brown);
+#   for (0..$#colors) {
+#     unless ($color_table->{'dataset'.$_}) { # don't override their colors
+#       $color_table->{'dataset'.$_} = $color_table->{$colors[$_]};
+#     }
+#   }
+# 
+#   # set up the miscellaneous color
+#   unless ($color_table->{'misc'}) {
+#     $color_table->{'misc'} = $color_table->{'black'};
+#   }
+# 
+#   # and the text color
+#   unless ($color_table->{'text'}) {
+#     $color_table->{'text'} = $color_table->{'black'};
+#   }
+# 
+#   unless ($color_table->{'y_label'}) {
+#     $color_table->{'y_label'} = $color_table->{'black'};
+#   }
+#   unless ($color_table->{'y_label2'}) {
+#     $color_table->{'y_label2'} = $color_table->{'black'};
+#   }
+# 
+#   unless ($color_table->{'grid_lines'}) {
+#     $color_table->{'grid_lines'} = $color_table->{'black'};
+#   }
+# 
+#   unless ($color_table->{'x_grid_lines'}) {
+#     $color_table->{'x_grid_lines'} = $color_table->{'grid_lines'};
+#   }
+# 
+#   unless ($color_table->{'y_grid_lines'}) {
+#     $color_table->{'y_grid_lines'} = $color_table->{'grid_lines'};
+#   }
+# 
+#   unless ($color_table->{'y2_grid_lines'}) {
+#     $color_table->{'y2_grid_lines'} = $color_table->{'grid_lines'};
+#   }
+# 
+#   # put the color table back in the object
+#   $self->{'color_table'} = $color_table;
+#   
+#   # and return
+#   return 1; 
 }
+
+  sub _color_role_to_index {
+    my $self = shift;
+    
+    # Return a (list of) color index(es) corresponding to the (list of) role(s) in @_.
+    my @result =  map {
+      my $role = $_;
+      my $index = $self->{'color_table'}->{$role};
+      
+      unless ( defined $index ) {
+        my $spec = $self->{'colors'}->{$role} 
+          || $self->{'colors_default_spec'}->{$role}
+          || $self->{'colors_default_spec'}->{$self->{'colors_default_role'}->{$role}};
+        my @rgb = $self->_color_spec_to_rgb($role, $spec);
+        
+        my $string = sprintf " RGB(%d,%d,%d)", map { $_ + 0 } @rgb;
+        
+        $index = $self->{'color_table'}->{$string};
+        unless ( defined $index ) {
+          $index = $self->{'gd_obj'}->colorAllocate(@rgb);
+         $self->{'color_table'}->{$string} = $index;
+        }
+        
+        $self->{'color_table'}->{$role} = $index;
+    }
+      $index;
+    } @_;
+    (wantarray && @_ > 1 ? @result : $result[0]);
+  }
+      
+  sub _color_spec_to_rgb {
+    my $self = shift;
+    my $role = shift; # for error messages
+    my $spec = shift; # [r,g,b] or name
+    my @rgb;
+    if ( ref($spec) eq 'ARRAY' ) {
+      @rgb = @{ $spec };
+      croak "Invalid color RGB array (" . join(',', @rgb) . ") for $role\n" 
+        unless @rgb == 3 && grep( ! m/^\d+$/ || $_ > 255, @rgb) == 0;
+    }
+    elsif ( ! ref($spec) ) {
+      croak "Unknown named color ($spec) for $role\n"
+        unless $named_colors{$spec};
+      @rgb = @{ $named_colors{$spec} };
+    }
+    else {
+      croak "Unrecognized color for $role\n";
+    }
+    @rgb;
+  }
 
 
 ##  draw the title for the chart
 sub _draw_title {
   my $self = shift;
   my $font = $self->{'title_font'};
-  my $color = $self->{'color_table'}{'text'};
+  my $color = $self->_color_role_to_index('text');
   my ($h, $w, @lines, $x, $y);
 
   # make sure we're actually using a real font
@@ -668,7 +852,7 @@ sub _draw_title {
 sub _draw_sub_title {
   my $self = shift;
   my $font = $self->{'sub_title_font'};
-  my $color = $self->{'color_table'}{'text'};
+  my $color = $self->_color_role_to_index('text');
   my $text = $self->{'sub_title'};
   my ($h, $w, $x, $y);
 
@@ -703,30 +887,36 @@ sub _sort_data {
 sub _find_y_scale {
   my $self = shift;
   my $data = $self->{'dataref'};
-  my ($i, $j, $max, $min);
+#   my ($i, $j, $max, $min);
   my ($order, $mult, $tmp);
   my ($range, $delta, @dec, $y_ticks);
   my $labels = [];
   my $length = 0;
 
-  # use realy improbable starting max and min values
-  $max = -999999999999;
-  $min = 999999999999;
+## Handle data lying outside of -999999999999 to 999999999999
+## Completely ignore missing data.
+## Simplify loops.
+## Put range finding in a separate method for overriding.
+#   # use realy improbable starting max and min values
+#   $max = -999999999999;
+#   $min = 999999999999;
+# 
+#   # get the real max and min values
+#   for $i (1..$#{$data}) {
+#     for $j (0..$#{$data->[$i]}) {
+#       if ($data->[$i][$j] > $max) {
+# 	$max = $data->[$i][$j];
+#       }
+#       if ($data->[$i][$j] < $min) {
+#         # skip undefined values, for these are 'no data' values
+#         if (defined($data->[$i][$j])) {
+#           $min = $data->[$i][$j];
+#         }
+#       }
+#     }
+#   }
 
-  # get the real max and min values
-  for $i (1..$#{$data}) {
-    for $j (0..$#{$data->[$i]}) {
-      if ($data->[$i][$j] > $max) {
-	$max = $data->[$i][$j];
-      }
-      if ($data->[$i][$j] < $min) {
-        # skip undefined values, for these are 'no data' values
-        if (defined($data->[$i][$j])) {
-          $min = $data->[$i][$j];
-        }
-      }
-    }
-  }
+  my ($min, $max) = $self->_find_y_range();
 
   # calculate good max_val
   if ($max < -10) {
@@ -780,7 +970,8 @@ sub _find_y_scale {
   # if they asked for integer ticks only
   $range = $self->{'max_val'} - $self->{'min_val'};
   $y_ticks = $self->{'y_ticks'} - 1;
-  if ($self->{'integer_ticks_only'} =~ /^true$/i) {
+  ## Don't adjust y_ticks if the user specified custom labels
+  if ($self->{'integer_ticks_only'} =~ /^true$/i && ! $self->{'y_tick_labels'}) {
     unless (($range % $y_ticks) == 0) {
       while (($range % $y_ticks) != 0) {
 	$y_ticks++;
@@ -789,17 +980,41 @@ sub _find_y_scale {
     }
   }
 
-  # generate the y-tick labels, find the longest one
-  $delta = $range / $y_ticks;
-  for (0..$y_ticks) {
-    $tmp = $self->{'min_val'} + ($delta * $_);
-    @dec = split /\./, $tmp;
-    if ($dec[1] && (length($dec[1]) > 3)) {
-      $tmp = sprintf("%.3f", $tmp);
+## Allow custom y_tick_labels, see below.
+#   # generate the y-tick labels, find the longest one
+#   $delta = $range / $y_ticks;
+#   for (0..$y_ticks) {
+#     $tmp = $self->{'min_val'} + ($delta * $_);
+#     @dec = split /\./, $tmp;
+#     if ($dec[1] && (length($dec[1]) > 3)) {
+#       $tmp = sprintf("%.3f", $tmp);
+#     }
+#     $labels->[$_] = $tmp;
+#     if (length($tmp) > $length) {
+#       $length = length($tmp);
+#     }
+#   }
+
+  $labels = $self->{'y_tick_labels'};
+  unless ( $labels ) { 
+    # generate the y-tick labels, find the longest one
+    $delta = $range / $y_ticks;
+    for (0..$y_ticks) {
+      $tmp = $self->{'min_val'} + ($delta * $_);
+      @dec = split /\./, $tmp;
+      if ($dec[1] && (length($dec[1]) > 3)) {
+        $tmp = sprintf("%.3f", $tmp);
+      }
+      $labels->[$_] = $tmp;
     }
-    $labels->[$_] = $tmp;
-    if (length($tmp) > $length) {
-      $length = length($tmp);
+  }
+  else { # custom y tick labels
+    croak "Need $self->{'y_ticks'} y_tick_labels, got " . scalar(@$labels) . "\n"
+      unless @$labels == $self->{'y_ticks'};
+  }
+  for my $label ( @$labels ) {
+    if (length($label) > $length) {
+      $length = length($label);
     }
   }
 
@@ -811,6 +1026,28 @@ sub _find_y_scale {
   return 1;
 }
 
+sub _find_y_range {
+  my $self = shift;
+  my $data = $self->{'dataref'};
+
+  my $max = undef;
+  my $min = undef;
+  for my $dataset ( @$data[1..$#$data] ) {
+    for my $datum ( @$dataset ) {
+      if ( defined $datum ) {
+## Prettier, but probably slower:
+#         $max = $datum unless defined $max && $max >= $datum;
+#         $min = $datum unless defined $min && $min <= $datum;
+        if ( defined $max ) {
+          if ( $datum > $max ) { $max = $datum }
+          elsif ( $datum < $min ) { $min = $datum }
+        }
+        else { $min = $max = $datum }
+      }
+    }
+  }
+  ($min, $max);
+}
 
 ## main sub that controls all the plotting of the actual chart
 sub _plot {
@@ -906,7 +1143,7 @@ sub _draw_legend {
 sub _draw_bottom_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
-  my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
+  my ($x1, $y1, $x2, $x3, $y2, $empty_width, $max_label_width, $cols, $rows, $color, $brush);
   my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h);
   my $font = $self->{'legend_font'};
 
@@ -956,7 +1193,7 @@ sub _draw_bottom_legend {
           - ($rows * $row_height) - (2 * $self->{'legend_space'});
   $y2 = $self->{'curr_y_max'};
   $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
-                               $self->{'color_table'}{'misc'});
+                               $self->_color_role_to_index('misc'));
   $x1 += $self->{'legend_space'} + $self->{'text_space'};
   $x2 -= $self->{'legend_space'};
   $y1 += $self->{'legend_space'} + $self->{'text_space'};
@@ -968,7 +1205,7 @@ sub _draw_bottom_legend {
       $index = ($r * $cols) + $c;  # find the index in the label array
       if ($labels[$index]) {
 	# get the color
-        $color = $self->{'color_table'}{'dataset'.$index}; 
+        $color = $self->_color_role_to_index('dataset'.$index); 
 
         # get the x-y coordinate for the start of the example line
 	$x = $x1 + ($col_width * $c);
@@ -978,6 +1215,14 @@ sub _draw_bottom_legend {
         $self->{'gd_obj'}->line($x, $y, 
                                 $x + $self->{'legend_example_size'}, $y,
                                 $color);
+
+        # reset the brush for points
+        $brush = $self->_prepare_brush($color, 'point',
+				$self->{'pointStyle' . $_});
+        $self->{'gd_obj'}->setBrush($brush);
+        # draw the point
+        $self->{'gd_obj'}->line(int(($x3+$x2)/2), $y2,
+	  	int(($x3+$x2)/2), $y2, gdBrushed);
 
         # adjust the x-y coordinates for the start of the label
 	$x += $self->{'legend_example_size'} + (2 * $self->{'text_space'});
@@ -1002,7 +1247,7 @@ sub _draw_bottom_legend {
 sub _draw_right_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
-  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h);
+  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h, $brush);
   my $font = $self->{'legend_font'};
  
   # make sure we're using a real font
@@ -1014,7 +1259,7 @@ sub _draw_right_legend {
   ($h, $w) = ($font->height, $font->width);
 
   # get the miscellaneous color
-  $misccolor = $self->{'color_table'}{'misc'};
+  $misccolor = $self->_color_role_to_index('misc');
 
   # find out how wide the largest label is
   $width = (2 * $self->{'text_space'})
@@ -1040,7 +1285,7 @@ sub _draw_right_legend {
   # now draw the actual legend
   for (0..$#labels) {
     # get the color
-    $color = $self->{'color_table'}{'dataset'.$_};
+    $color = $self->_color_role_to_index('dataset'.$_);
 
     # find the x-y coords
     $x2 = $x1;
@@ -1049,7 +1294,15 @@ sub _draw_right_legend {
 
     # do the line first
     $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
-    
+
+    # reset the brush for points
+    $brush = $self->_prepare_brush($color, 'point',
+				$self->{'pointStyle' . $_});
+    $self->{'gd_obj'}->setBrush($brush);
+    # draw the point
+    $self->{'gd_obj'}->line(int(($x3+$x2)/2), $y2,
+				int(($x3+$x2)/2), $y2, gdBrushed);
+
     # now the label
     $x2 = $x3 + (2 * $self->{'text_space'});
     $y2 -= $h/2;
@@ -1068,7 +1321,7 @@ sub _draw_right_legend {
 sub _draw_top_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
-  my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
+  my ($x1, $y1, $x2, $x3, $y2, $empty_width, $max_label_width, $cols, $rows, $color, $brush);
   my ($col_width, $row_height, $r, $c, $index, $x, $y, $w, $h);
   my $font = $self->{'legend_font'};
 
@@ -1118,7 +1371,7 @@ sub _draw_top_legend {
   $y2 = $self->{'curr_y_min'} + $self->{'text_space'}
           + ($rows * $row_height) + (2 * $self->{'legend_space'});
   $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
-                               $self->{'color_table'}{'misc'});
+                               $self->_color_role_to_index('misc'));
 
   # leave some space inside the legend
   $x1 += $self->{'legend_space'} + $self->{'text_space'};
@@ -1132,7 +1385,7 @@ sub _draw_top_legend {
       $index = ($r * $cols) + $c;  # find the index in the label array
       if ($labels[$index]) {
 	# get the color
-        $color = $self->{'color_table'}{'dataset'.$index}; 
+        $color = $self->_color_role_to_index('dataset'.$index); 
         
 	# find the x-y coords
 	$x = $x1 + ($col_width * $c);
@@ -1142,6 +1395,14 @@ sub _draw_top_legend {
         $self->{'gd_obj'}->line($x, $y, 
                                 $x + $self->{'legend_example_size'}, $y,
                                 $color);
+
+        # reset the brush for points
+        $brush = $self->_prepare_brush($color, 'point',
+				$self->{'pointStyle' . $_});
+        $self->{'gd_obj'}->setBrush($brush);
+        # draw the point
+        $self->{'gd_obj'}->line(int(($x3+$x2)/2), $y2,
+	  	int(($x3+$x2)/2), $y2, gdBrushed);
 
         # now the label
 	$x += $self->{'legend_example_size'} + (2 * $self->{'text_space'});
@@ -1164,7 +1425,7 @@ sub _draw_top_legend {
 sub _draw_left_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
-  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h);
+  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h, $brush);
   my $font = $self->{'legend_font'};
  
   # make sure we're using a real font
@@ -1176,7 +1437,7 @@ sub _draw_left_legend {
   ($h, $w) = ($font->height, $font->width);
 
   # get the miscellaneous color
-  $misccolor = $self->{'color_table'}{'misc'};
+  $misccolor = $self->_color_role_to_index('misc');
 
   # find out how wide the largest label is
   $width = (2 * $self->{'text_space'})
@@ -1202,7 +1463,7 @@ sub _draw_left_legend {
   # now draw the actual legend
   for (0..$#labels) {
     # get the color
-    $color = $self->{'color_table'}{'dataset'.$_};
+    $color = $self->_color_role_to_index('dataset'.$_);
 
     # find the x-y coords
     $x2 = $x1;
@@ -1211,6 +1472,14 @@ sub _draw_left_legend {
 
     # do the line first
     $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+
+    # reset the brush for points
+    $brush = $self->_prepare_brush($color, 'point',
+				$self->{'pointStyle' . $_});
+    $self->{'gd_obj'}->setBrush($brush);
+    # draw the point
+    $self->{'gd_obj'}->line(int(($x3+$x2)/2), $y2,
+				int(($x3+$x2)/2), $y2, gdBrushed);
     
     # now the label
     $x2 = $x3 + (2 * $self->{'text_space'});
@@ -1231,7 +1500,7 @@ sub _draw_x_label {
   my $self = shift;
   my $label = $self->{'x_label'};
   my $font = $self->{'label_font'};
-  my $color = $self->{'color_table'}{'text'};
+  my $color = $self->_color_role_to_index('text');
   my ($h, $w, $x, $y);
 
   # make sure it's a real GD Font object
@@ -1268,11 +1537,11 @@ sub _draw_y_label {
   # get the label
   if ($side eq 'left') {
     $label = $self->{'y_label'};
-    $color = $self->{'color_table'}{'y_label'};
+    $color = $self->_color_role_to_index('y_label');
   }
   elsif ($side eq 'right') {
     $label = $self->{'y_label2'};
-    $color = $self->{'color_table'}{'y_label2'};
+    $color = $self->_color_role_to_index('y_label2');
   }
 
   # make sure it's a real GD Font object
@@ -1329,8 +1598,8 @@ sub _draw_x_ticks {
   my $self = shift;
   my $data = $self->{'dataref'};
   my $font = $self->{'tick_label_font'};
-  my $textcolor = $self->{'color_table'}{'text'};
-  my $misccolor = $self->{'color_table'}{'misc'};
+  my $textcolor = $self->_color_role_to_index('text');
+  my $misccolor = $self->_color_role_to_index('misc');
 
   my ($h, $w);
   my ($x1, $x2, $y1, $y2);
@@ -1349,8 +1618,13 @@ sub _draw_x_ticks {
 
   # allow for the amount of space the y-ticks will push the
   # axes over to the right
+## _draw_y_ticks allows 3 * text_space, not 1 * ;  this caused mismatch between
+## the ticks (and grid lines) and the data.
+#   $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
+#          + $self->{'text_space'} + $self->{'tick_len'};
+## And, what about the right-tick space??  Only affects Composite, I guess....
   $x1 = $self->{'curr_x_min'} + ($w * $self->{'y_tick_label_length'})
-         + $self->{'text_space'} + $self->{'tick_len'};
+         + 3 * $self->{'text_space'} + $self->{'tick_len'};
   $y1 = $self->{'curr_y_max'} - $h - $self->{'text_space'};
 
   # get the delta value, figure out how to draw the labels
@@ -1523,8 +1797,8 @@ sub _draw_y_ticks {
   my $side = shift || 'left';
   my $data = $self->{'dataref'};
   my $font = $self->{'tick_label_font'};
-  my $textcolor = $self->{'color_table'}{'text'};
-  my $misccolor = $self->{'color_table'}{'misc'};
+  my $textcolor = $self->_color_role_to_index('text');
+  my $misccolor = $self->_color_role_to_index('misc');
   my @labels = @{$self->{'y_tick_labels'}};
   my ($w, $h);
   my ($x1, $x2, $y1, $y2);
@@ -1710,7 +1984,7 @@ sub _grey_background {
                                       $self->{'curr_y_min'},
 				      $self->{'curr_x_max'},
 				      $self->{'curr_y_max'},
-				      $self->{'color_table'}{'grey'});
+				      $self->_color_role_to_index('grey_background'));
 
   # now return
   return 1;
@@ -1727,7 +2001,7 @@ sub _draw_grid_lines {
 
 sub _draw_x_grid_lines {
   my $self = shift;
-  my $gridcolor = $self->{'color_table'}{'x_grid_lines'};
+  my $gridcolor = $self->_color_role_to_index('x_grid_lines');
   my ($x, $y, $i);
 
   foreach $x (@{ $self->{grid_data}->{'x'} }) {
@@ -1738,7 +2012,7 @@ sub _draw_x_grid_lines {
 
 sub _draw_y_grid_lines {
   my $self = shift;
-  my $gridcolor = $self->{'color_table'}{'y_grid_lines'};
+  my $gridcolor = $self->_color_role_to_index('y_grid_lines');
   my ($x, $y, $i);
 
   # loop for y values is a little different. This is to discard the first 
@@ -1752,7 +2026,7 @@ sub _draw_y_grid_lines {
 
 sub _draw_y2_grid_lines {
   my $self = shift;
-  my $gridcolor = $self->{'color_table'}{'y2_grid_lines'};
+  my $gridcolor = $self->_color_role_to_index('y2_grid_lines');
   my ($x, $y, $i);
 
   # loop for y2 values is a little different. This is to discard the first 
@@ -1762,6 +2036,165 @@ sub _draw_y2_grid_lines {
     $self->{gd_obj}->line(($self->{'curr_x_min'} + 1), $y,  ($self->{'curr_x_max'} - 1), $y, $gridcolor);
   }
   return 1;
+}
+
+##
+##  set the gdBrush object to trick GD into drawing fat lines & points
+##  of interesting shapes
+##
+##  Needed by "Lines", "Points" and "LinesPoints"
+##
+##  All hacked up by Richard Dice <rdice@pobox.com> Sunday 16 May 1999
+##
+sub _prepare_brush {
+
+    my $self      = shift;
+    my $color     = shift;
+    my $type      = shift;
+    my $typeStyle = shift;
+
+    # decide what $type should be in the event that a param isn't
+    # passed -- this is necessary to preserve backward compatibility
+    # with apps that use this module prior to putting _prepare_brush
+    # in with Base.pm
+    if ( (! length($type) ) ||
+         ( ! grep { $type eq $_ } ('line', 'point') ) ) {
+
+        $typeStyle = $type;
+        $type = 'line' if ref $self eq 'Chart::Lines';
+        $type = 'point' if ref $self eq 'Chart::Points';
+        # Chart::LinesPoints is expected to pass a $type param
+
+    }
+
+    my ($radius, @rgb, $brush, $white, $newcolor);
+
+    # get the rgb values for the desired color
+    @rgb = $self->{'gd_obj'}->rgb($color);
+
+    # get the appropriate brush size
+    if ($type eq 'line') {
+        $radius = $self->{'brush_size'}/2;
+    } elsif ($type eq 'point') {
+        $radius = $self->{'pt_size'}/2;
+    }
+
+    # create the new image
+    $brush = GD::Image->new ($radius*2, $radius*2);
+
+    # get the colors, make the background transparent
+    $white    = $brush->colorAllocate (255,255,255);
+    $newcolor = $brush->colorAllocate (@rgb);
+    $brush->transparent ($white);
+
+    # draw the circle
+    if ( $type eq 'line') {
+        $brush->arc ($radius-1, $radius-1, $radius, $radius, 0, 360, $newcolor);
+        $brush->fill ($radius-1, $radius-1, $newcolor);
+
+        # RLD
+        #
+        # Does $brush->fill really have to be here?  Dunno... this
+        # seems to be a relic from earlier code
+        #
+        # Note that 'line's don't benefit from a $typeStyle... yet.
+        # It shouldn't be too tough to hack this in by taking advantage
+        # of GD's gdStyled facility
+
+    }
+
+    if ( $type eq 'point' ) {
+$^W = 0;
+        $typeStyle = 'default'
+            unless grep { $typeStyle eq $_ } ('circle', 'donut',
+                                              'triangle', 'upsidedownTriangle',
+                                              'square', 'hollowSquare',
+                                              'fatPlus');
+$^W = 1;
+
+        my ($xc, $yc) = ($radius-1, $radius-1);
+
+        # Note that 'default' will produce the same effect
+        # as a 'circle' typeStyle
+        if ( grep { $typeStyle eq $_ } ('default', 'circle', 'donut') ) {
+
+            $brush->arc($xc, $yc, $radius, $radius, 0, 360, $newcolor);
+            $brush->fill ($xc, $yc, $newcolor);
+
+            # draw a white (and therefore transparent) circle in the middle
+            # of the existing circle to make the "donut", if appropriate
+
+            if ( $typeStyle eq 'donut' ) {
+                $brush->arc($xc, $yc, int($radius/2), int($radius/2),
+                            0, 360, $white);
+                $brush->fill ($xc, $yc, $white);
+            }
+        }
+
+        if ( grep { $typeStyle eq $_ } ('triangle', 'upsidedownTriangle' ) ){
+
+            my $poly = new GD::Polygon;
+            my $sign = ( $typeStyle eq 'triangle' ) ? 1 : (-1);
+            my $z = int (0.8 * $radius); # scaling factor
+
+            # co-ords are chosen to make an equilateral triangle
+
+            $poly->addPt($xc,
+                         $yc - ($z * $sign));
+            $poly->addPt($xc + int((sqrt(3) * $z) / 2),
+                         $yc + (int($z/2) * $sign));
+            $poly->addPt($xc - int((sqrt(3) * $z) / 2),
+                         $yc + (int($z/2) * $sign));
+
+            $brush->filledPolygon($poly, $newcolor);
+        }
+
+        if ( $typeStyle eq 'fatPlus' ) {
+
+            my $poly = new GD::Polygon;
+
+            my $z = int(0.3 * $radius);
+
+            $poly->addPt($xc +     $z, $yc + $z);
+            $poly->addPt($xc + 2 * $z, $yc + $z);
+            $poly->addPt($xc + 2 * $z, $yc - $z);
+
+            $poly->addPt($xc + $z,     $yc - $z);
+            $poly->addPt($xc + $z,     $yc - 2 * $z);
+            $poly->addPt($xc - $z,     $yc - 2 * $z);
+
+            $poly->addPt($xc -     $z, $yc - $z);
+            $poly->addPt($xc - 2 * $z, $yc - $z);
+            $poly->addPt($xc - 2 * $z, $yc + $z);
+
+            $poly->addPt($xc - $z,     $yc + $z);
+            $poly->addPt($xc - $z,     $yc + 2 * $z);
+            $poly->addPt($xc + $z,     $yc + 2 * $z);
+            $brush->filledPolygon($poly, $newcolor);
+        }
+
+        if ( grep { $typeStyle eq $_ } ('square', 'hollowSquare') ) {
+
+            my $poly = new GD::Polygon;
+            my $z = int (0.5 * $radius);
+
+            $brush->filledRectangle($xc - $z, $yc - $z,
+                                    $xc + $z, $yc + $z,
+                                    $newcolor);
+
+            if ( $typeStyle eq 'hollowSquare' ) {
+
+                $z = int($z/2);
+
+                $brush->filledRectangle($xc - $z, $yc - $z,
+                                        $xc + $z, $yc + $z,
+                                        $white);
+            }
+        }
+    }
+
+    # set the new image as the main object's brush
+    return $brush;
 }
 
 ## be a good module and return positive

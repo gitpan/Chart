@@ -10,7 +10,7 @@ $g->add_dataset (5, 7, 2);
 
 $g->set ('title' => 'Points Chart');
 
-$g->gif ("samples/points.gif");
+$g->png ("samples/points.png");
 
 print "ok 1\n";
 

@@ -1,16 +1,27 @@
 ------------------------------------------------------------------------
-Chart version 0.99b
+Chart version 0.99c-pre3 
 ------------------------------------------------------------------------
 
-This is mainly a bugfix release for 0.99a.  The primary changes are a fix
-for user-defined dataset colors, and adding a no_cache option for http
-headers.  no_cache is currently experimental, because, unfortunately,
-Netscape 4.5 breaks with POST while using this.  I'm looking into workarounds,
-and if anyone has ideas, feel free to mail me: ninjaz@webexpress.com
+**** WARNING ****
 
-Also, look for new and improved Pie charts with the next release!
+This version of chart has replaced gif support with png support due to the
+Unisys patent problems.  This is the first png-enabled release.
 
-Enjoy. :)
+This version has fixed the x-axis placement bug in 0.99b, and all
+existing functionality, save for gif creation should be stable.
+
+New (and incomplete) area pattern functionality is currently Mountain.
+See t/mountain.t for calling details.
+
+Please send comments/patches/etc to ninjaz@webexpress.com (read: the current
+pattern API is subject to change)
+
+----------
+
+There are some very nice additions this iteration.  Specifically, black & white
+readability has been extremely improved by custom points for LinesPoints & 
+Points, and patterns are now optional.  Mountain Charts have also been added.
+
 
 ----------
 INSTALLING
@@ -31,11 +42,22 @@ put samples of the different charts in the samples/ directory.
 PREREQUISITES
 -------------
 
-Lincoln Stein's GD module
+Lincoln Stein's GD module version 1.20 or higher.
 
 -------
 CHANGES
 -------
+
+0.99b - 0.99c-pre3:
+	James F Miner <jfm@winternet.com>:
+	Added Mountain chart type
+	Added Patterns.  See t/mountain.t for details
+	Bugfix for drifting x tick
+	Improved internal color handling
+
+	Richard Dice  <rdice@shadnet.shad.ca>:
+	Added brush shapes for Points, LinesPoints
+	Added scalar_gif
 
 0.99a - 0.99b:
 	Fixed left legend in composite charts
