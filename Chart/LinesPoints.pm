@@ -19,13 +19,13 @@
 #====================================================================
 package Chart::LinesPoints;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::LinesPoints::ISA = qw(Chart::Base);
-$Chart::LinesPoints::VERSION = '2.2';
+$Chart::LinesPoints::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

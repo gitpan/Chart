@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 use Chart::Bars;
 
 print "1..1\n";
@@ -20,21 +22,21 @@ $g->add_dataset (17, 5, 7, 2, 6);
 
 %hash = (
  	 'title' => 'Sold Cars in 2001',
-         'text_space' => 5,
-         'grey_background' => 'false',
-         'integer_ticks_only' => 'true',
-	 'x_label' => 'City',
+         'x_label' => 'City',
 	 'y_label' => 'Number of Cars',
          'legend' => 'bottom',
          'legend_labels'  => ['January' , 'February' , 'March', 'April', 'May', 'June',
                               'July', 'August' , 'September' , 'October', 'November', 'December'],
-         'min_val' => 0,
-         'max_val' => 20,
-	 'grid_lines' =>'true',
+         'grid_lines' =>'true',
+	 'include_zero' => 'true',
+	 'max_val' => '20',
 	 'colors' => {'title' => 'red',
 	 	      'x_label' => 'blue',
                       'y_label' => 'blue',
+		      'background' => 'grey',
+		      'text'    => 'blue',
 	 	      },
+          
 	 );
 
 $g->set (%hash);
@@ -44,3 +46,7 @@ $g->png ("samples/bars_2.png");
 print "ok 1\n";
 
 exit (0);
+
+
+
+

@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.2
+Chart version 2.3
 ------------------------------------------------------------------------
 
 
@@ -27,10 +27,36 @@ Lincoln Stein's GD module version 1.20 or higher.
 -------
 CHANGES
 -------
+2.2 - 2.3  Changes done by Christine Zilker:
+        Added new Options: 
+	     in Composite: 
+                legend_example_height    changes thickness of the lines in the legend,
+	        f_y_tick1, f_y_tick2 analog to f_y_tick 
+                                         used for right and left y-axes
+	     in Direction: 
+                pairs                    
+
+        Added the possibility to add more datasets in Chart::Direction 
+			   
+	Fixed "label space" problem in Pie
+	Fixed dataset order (in the legend) in StackedBars
+	Fixed problem of getting the right values if round2Tick is used
+	Fixed problem of datavalues in _find_y_scale
+	Some minor bugfixes	    
+
+        Update of the Documentation (Documentation.pdf)
+
+        The requested support of TruType fonts was currently dropped due to
+        missing support in GD.pm (even in new versions)
+        
+        The print out of some hints and warnings where deleted not to confuse
+        the user.
+
 2.1 - 2.2: Composite.pm: imagemap_dump() repaired.
 
 1.1 - 2.1: Changes done by Markus Brandl:
-	new Modules added: ErrorBars.pm, HorizontalBars.pm, Pareto.pm, 
+	new Modules added: ErrorBars.pm, HorizontalBars.pm, Pareto.pm,                          
+	 
 	Pie.pm, Split.pm and Direction.pm
 
         Subdirectory "doc" contains a Acrobat Reader Documentation.pdf file.

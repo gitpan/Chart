@@ -34,13 +34,13 @@
 
 package Chart::Mountain;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Mountain::ISA = qw ( Chart::Base );
-@Chart::Mountain::VERSION = '2.2';
+@Chart::Mountain::VERSION = '2.3';
 
 
 ##  Some Mountain chart details:
@@ -131,8 +131,9 @@ sub _draw_data {
 	for my $i (reverse 1..$#{$data}) { # bottom to top of chart
 	    my $datum = $data->[$i][$j];
 
-            #set the repair flag, if the datum is out of teh borders of the chart
-            if ($datum > $self->{'max_val'}) { $repair_top_flag = 1;}
+            #set the repair flag, if the datum is out of the borders of the chart
+            if ( defined $datum && $datum > $self->{'max_val'}) { $repair_top_flag = 1;}
+            
             
             if ( defined $datum && $datum >= 0 ) {
 		$sum += $datum;
@@ -151,6 +152,8 @@ sub _draw_data {
     while ( $x_begin <= $x_end && ! defined $y[-1]->[$x_begin] ) { $x_begin++ }
     while ( $x_begin <= $x_end && ! defined $y[-1]->[$x_end] ) { $x_end-- }
    
+    if ( $x_begin > $x_end ) { croak "Internal error: x_begin > x_end ($x_begin > $x_end)"; }
+    
     # For each dataset, generate a polygon for the dataset's area of the chart,
     # and fill the polygon with the dataset's color/pattern.
     
@@ -177,8 +180,7 @@ sub _draw_data {
 	# draw the polygon
 	my $color = $self->_color_role_to_index('dataset'.$dataset);
 	if ( $patterns[$dataset] ) {
-	    $self->{'gd_obj'}->filledPolygon($poly, $color) 
-		if $patterns[$dataset]->transparent >= 0;
+	    $self->{'gd_obj'}->filledPolygon($poly, $color) if $patterns[$dataset]->transparent >= 0;
 	    $self->{'gd_obj'}->setTile($patterns[$dataset]);
 	    $self->{'gd_obj'}->filledPolygon($poly, gdTiled);
 	}

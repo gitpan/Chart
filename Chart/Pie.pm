@@ -11,13 +11,13 @@
 
 package Chart::Pie;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Pie::ISA = qw(Chart::Base);
-$Chart::Pie::VERSION = '2.1';
+$Chart::Pie::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -29,7 +29,7 @@ $Chart::Pie::VERSION = '2.1';
 #  private methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
-#Overwrite th legend methods to get the right legend
+#Overwrite the legend methods to get the right legend
 sub _draw_right_legend {
   my $self = shift;
   my $data = $self->{'dataref'};
@@ -426,6 +426,7 @@ sub _draw_bottom_legend {
 	# now draw the label
         if ( $self->{'legend_label_values'} =~ /^value$/i ) {
            $self->{'gd_obj'}->string($font, $x, $y, $labels[$index].' '.$data->[1][$index], $color);
+	 #$self->{'gd_obj'}->stringTTF($color, FONT, 10, 0, $x, $y+10, $labels[$index].' '.$data->[1][$index]);     ############
         }
         elsif ( $self->{'legend_label_values'} =~ /^percent$/i ) {
            $label = sprintf("%s %4.2f%%",$labels[$index], $data->[1][$index] / $dataset_sum * 100);
@@ -438,7 +439,9 @@ sub _draw_bottom_legend {
            else {
               $label = sprintf("%s %4.2f%% %d",$labels[$index], $data->[1][$index] / $dataset_sum * 100, $data->[1][$index]);
            }
-           $self->{'gd_obj'}->string($font, $x, $y, $label, $color);
+            $self->{'gd_obj'}->string($font, $x, $y, $label, $color); ###
+	   # $self->{'gd_obj'}->stringTTF($color, FONT, 10, 0, $x, $y, $label);
+  
         }
         else {
            $self->{'gd_obj'}->string($font, $x, $y, $labels[$index], $color);
@@ -651,6 +654,7 @@ sub _draw_data {
   my ($pi, $font, $fontW, $fontH, $labelX, $labelY, $label_offset);
   my ($last_labelX, $last_labelY, $label, $max_val_len);
   my ($i, $j, $color);
+  my $label_length; 
 
   # set up initial constant values
   $pi = 3.14159265;
@@ -672,26 +676,30 @@ sub _draw_data {
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
 
-
+ 
   # find the longest label
   # first we need the length of the values
   $max_val_len = 1;
-  for (0..$self->{'num_datapoints'}) {
-   if (defined $data->[1][$_]) {
-     if ( length($data->[1][$_]) > $max_val_len) {
+  for  (0..$self->{'num_datapoints'}) {   
+     if (defined $data->[1][$_]) {
+        if ( length($data->[1][$_]) > $max_val_len) {
          $max_val_len = length($data->[1][$_]);
      }
    }
+ 
   }
+ 
   # now the whole label
   $max_label_len = 1;
   for $j (0..$self->{'num_datapoints'}) {
      if(defined $data->[0][$j]) {
-       if( length($data->[0][$j]) > $max_label_len) {
+        if( length($data->[0][$j]) > $max_label_len) {
            $max_label_len = length($data->[0][$j]);
        }
      }
+   
   }
+
   if ( defined $self->{'label_values'} ) {
     if ($self->{'label_values'} =~ /^value$/i) {
       $max_label_len += $max_val_len + 1;
@@ -711,14 +719,17 @@ sub _draw_data {
 
   # always draw a circle, which means the diameter will be the smaller
   # of the width and height. let enougth space for the label.
+  
+ 
+  
   if ($width < $height) {
    $diameter = $width - 2*$max_label_len -20;
-  }
+    }
   else {
     $diameter = $height  - 2*$fontH -20 ;
-    if ( $width < ($diameter + 2 * $max_label_len) ) {
-      $diameter = $width - 2*$max_label_len -20 ;
-    }
+      if ( $width < ($diameter + 2 * $max_label_len) ) {
+    $diameter = $width - 2*$max_label_len -20 ;
+      }
   }
 
   # make sure, that we have a positiv diameter
@@ -741,7 +752,7 @@ sub _draw_data {
            }
         }
    }
-
+   
    for $j (0..($self->{'num_datapoints'}-1)) {
       # get the color for this datapoint, take the color of the datasets
       $color = $self->_color_role_to_index('dataset'.$j);
@@ -780,8 +791,12 @@ sub _draw_data {
                  $label = sprintf("%s",$label);
                }
         }
+	
+	$label_length = length($label);
+	
+	
       }
-
+  
 
     # The first value starts at 0 degrees, each additional dataset
     # stops where the previous left off, and since I've already 
@@ -834,6 +849,7 @@ sub _draw_data {
     $labelX = $centerX+$label_offset*$diameter*cos($label_degrees*$pi/180);
     $labelY = $centerY+$label_offset*$diameter*sin($label_degrees*$pi/180);
 
+   
     # If label is to the left of the pie chart, make sure the label doesn't
     # bleed into the chart. So, back it up the length of the label
     if($labelX < $centerX)
@@ -871,14 +887,33 @@ sub _draw_data {
     }
 
     # Now, draw the label for this pie slice
-    $self->{'gd_obj'}->string($font, $labelX, $labelY, $label, $textcolor);
-
+    
+    # Is enought space inside the border for the labels?   
+    
+  while ($labelX-($label_length*1)<$self->{'curr_x_min'}) {
+       $labelX+=1;
+ 	}
+  
+  while ($labelX+($label_length*$fontW)>$self->{'curr_x_max'}) {
+        $labelX-=1;
+ 	}
+ 	
+  while (($labelY-$fontH)<=$self->{'curr_y_min'}) {
+        $labelY+=1;
+ 	}
+ 	
+  while(($labelY+$fontH)>=$self->{'curr_y_max'}) {
+        $labelY-=1;
+ 	}	
+		
+  $self->{'gd_obj'}->string($font, $labelX, $labelY, $label, $textcolor);
+      
     # reset starting point for next dataset and continue.
     $start_degrees = $end_degrees;
     $last_labelX = $labelX;
     $last_labelY = $labelY;
   }
-
+  
   # and finaly box it off 
   $self->{'gd_obj'}->rectangle ($self->{'curr_x_min'},
                                 $self->{'curr_y_min'},
@@ -888,6 +923,7 @@ sub _draw_data {
   return;
 
 }
+
 
 ## be a good module and return 1
 1;

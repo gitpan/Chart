@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 use Chart::Pie;
 use strict;
 
@@ -5,7 +7,7 @@ print "1..1\n";
 
 my $g = Chart::Pie->new(550,500);
 $g->add_dataset ('The Red', 'The Black', 'The Yellow', 'The Brown', 'The Green');
-$g->add_dataset (430,411 , 50, 10, 100);
+$g->add_dataset (430, 411 , 50, 10, 100);
 
 $g->set ('title' => 'The Parlament');
 $g->set ('label_values' => 'percent');

@@ -20,23 +20,23 @@
 
 package Chart::Bars;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Bars::ISA = qw(Chart::Base);
-$Chart::Bars::VERSION = '2.2';
+$Chart::Bars::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 
-
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  private methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
+
 
 ## finally get around to plotting the data
 sub _draw_data {
@@ -46,7 +46,8 @@ sub _draw_data {
   my ($x1, $x2, $x3, $y1, $y2, $y3);
   my ($width, $height, $delta1, $delta2, $map, $mod, $cut, $pink);
   my ($i, $j, $color);
-
+  my $temp=0;
+ 
   # init the imagemap data field if they wanted it
   if ($self->{'imagemap'} =~ /^true$/i) {
     $self->{'imagemap_data'} = [];
@@ -57,19 +58,20 @@ sub _draw_data {
   # point) and the mapping constant
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
-  $delta1 = ( $self->{'num_datapoints'} > 0 ) ? $width / $self->{'num_datapoints'} : $width;
-
-  $map = ( ($self->{'max_val'} - $self->{'min_val'}) > 0 ) ? $height / ($self->{'max_val'} - $self->{'min_val'}) : $height;
+  $delta1 = ( $self->{'num_datapoints'} > 0 ) ? $width / ($self->{'num_datapoints'}*1) : $width;    ###
+ 
+   $map = ( ($self->{'max_val'} - $self->{'min_val'}) > 0 ) ? $height / ($self->{'max_val'} - $self->{'min_val'}) : $height;
   if ($self->{'spaced_bars'} =~ /^true$/i) {
     #OLD: $delta2 = $delta1 / ($self->{'num_datasets'} + 2);
     $delta2 = ( ($self->{'num_datasets'} + 2) > 0 ) ? $delta1 / ($self->{'num_datasets'} + 2) : $delta1;
-  }
+    }
   else {
     $delta2 = ( $self->{'num_datasets'} > 0 ) ? $delta1 / $self->{'num_datasets'} : $delta1;
   }
 
   # get the base x-y values
   $x1 = $self->{'curr_x_min'};
+
   if ($self->{'min_val'} >= 0) {
     $y1 = $self->{'curr_y_max'};
     $mod = $self->{'min_val'};
@@ -87,25 +89,26 @@ sub _draw_data {
   }
   
   # draw the bars
-  for $i (1..$self->{'num_datasets'}) {
+  for $i (1..$self->{'num_datasets'}) {   
     # get the color for this dataset
-    $color = $self->_color_role_to_index('dataset'.($i-1));
-
+    $color = $self->_color_role_to_index('dataset'.($i-1));        
+    
     # draw every bar for this dataset
     for $j (0..$self->{'num_datapoints'}) {
+    
       # don't try to draw anything if there's no data
       if (defined ($data->[$i][$j])) {
 	# find the bounds of the rectangle
         if ($self->{'spaced_bars'} =~ /^true$/i) {
-          $x2 = $x1 + ($j * $delta1) + ($i * $delta2);
-	}
+          $x2 = ($x1 + ($j * $delta1) + ($i * $delta2)); 
+	  }
 	else {
 	  $x2 = $x1 + ($j * $delta1) + (($i - 1) * $delta2);
 	}
 	$y2 = $y1;
 	$x3 = $x2 + $delta2;
 	$y3 = $y1 - (($data->[$i][$j] - $mod) * $map);
-
+	
         #cut the bars off, if needed
         if ($data->[$i][$j] > $self->{'max_val'}) {
            $y3 = $y1 - (($self->{'max_val'} - $mod ) * $map) ;
@@ -116,10 +119,9 @@ sub _draw_data {
            $cut = 1;
         }
         else {
-           #$y3 = $y1 + (($data->[$i][$j] - $mod) * $map);
            $cut = 0;
         }
-        
+        	
 	# draw the bar
 	## y2 and y3 are reversed in some cases because GD's fill
 	## algorithm is lame
@@ -149,8 +151,11 @@ sub _draw_data {
 	  if ($self->{'imagemap'} =~ /^true$/i) {
             $self->{'imagemap_data'}->[$i][$j] = [undef(), undef(), undef(), undef()];
           }
-      }
-    }
+	 
+       }
+      
+     }
+   
   }
       
   # and finaly box it off 

@@ -19,13 +19,13 @@
 
 package Chart::ErrorBars;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::ErrorBars::ISA = qw(Chart::Base);
-$Chart::ErrorBars::VERSION = '2.2';
+$Chart::ErrorBars::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

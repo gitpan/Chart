@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 use Chart::Pie;
 use strict;
 my $g;
@@ -11,7 +13,7 @@ $g->add_dataset (12, 20 , 12, 15, 8, 9, 22, 14, 8, 13 );
 
 $g->set ('title' => 'Pie Demo');
 $g->set ('label_values' => 'none');
-$g->set ('legend_label_values' => 'both');
+$g->set ('legend_label_values' => 'percent');
 $g->set ('grey_background' => 'false');
 $g->set ('colors' => {'title' => 'red'});
          

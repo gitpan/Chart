@@ -12,19 +12,17 @@
 
 package Chart::StackedBars;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::StackedBars::ISA = qw(Chart::Base);
-$Chart::StackedBars::VERSION = '2.1';
+$Chart::StackedBars::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<#
-
-
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  private methods go here  #
@@ -37,14 +35,26 @@ sub _check_data {
   my $data = $self->{'dataref'};
   my $length = 0;
   my ($i, $j, $posneg);
-
+  my $composite;
   # remember the number of datasets
-  $self->{'num_datasets'} = $#{$data};
-
+  if (defined $self->{'composite_info'}) { 
+    if ($self->{'composite_info'}[0][0] =~ /^StackedBars$/i) {
+      $composite=0; 
+      }
+    if ($self->{'composite_info'}[1][0] =~ /^StackedBars$/i) {
+      $composite=1;
+      }
+ # $self->{'num_datasets'} = $#{$data};     ###
+  
+  $self->{'num_datasets'} = ($#{$self->{'composite_info'}[$composite][1]})+1;
+  }
+  else {
+  $self->{'num_datasets'} = $#{$data}; 
+  }
   # remember the number of points in the largest dataset
   $self->{'num_datapoints'} = 0;
-  for (0..$self->{'num_datasets'}) {
-    if (scalar(@{$data->[$_]}) > $self->{'num_datapoints'}) {
+  for (0..$self->{'num_datasets'}) { 
+  if (scalar(@{$data->[$_]}) > $self->{'num_datapoints'}) {
       $self->{'num_datapoints'} = scalar(@{$data->[$_]});
     }
   }
@@ -85,6 +95,7 @@ sub _check_data {
   # now store it in the object
   $self->{'x_tick_label_length'} = $length;
 
+  
   return;
 }
 
@@ -96,6 +107,7 @@ sub _find_y_range {
   #   where the point-sum is the sum of the dataset values for that point.
   #   If the y value in any dataset is undef for a given x, it simply
   #   adds nothing to the sum.
+  
   
   my $data = $self->{'dataref'};
   my $max = undef;
@@ -261,19 +273,21 @@ sub _draw_data {
   my ($width, $height, $delta, $map, $mod);
   my ($x1, $y1, $x2, $y2, $x3, $y3, $i, $j, $color, $cut);
   my $pink = $self->{'gd_obj'}->colorAllocate(255,0,255);
+
   # init the imagemap data field if they want it
   if ($self->{'imagemap'} =~ /^true$/i) {
     $self->{'imagemap_data'} = [];
   }
-
+   
   # width and height of remaining area, delta for width of bars, mapping value
   $width = $self->{'curr_x_max'} - $self->{'curr_x_min'};
+   
   if ($self->{'spaced_bars'} =~ /^true$/i) {
-    $delta = $width / ($self->{'num_datapoints'} * 2);
-  }
+   $delta = ($width / ($self->{'num_datapoints'} * 2));
+    }
   else {
     $delta = $width / $self->{'num_datapoints'};
-  }
+    }
   $height = $self->{'curr_y_max'} - $self->{'curr_y_min'};
   $map = $height / ($self->{'max_val'} - $self->{'min_val'});
 
@@ -295,6 +309,7 @@ sub _draw_data {
 			     $misccolor);
   }
 
+  
   # create another copy of the data, but stacked
   $data->[1] = [@{$raw->[1]}];
   for $i (0..$self->{'num_datapoints'}-1) {
@@ -302,11 +317,12 @@ sub _draw_data {
       $data->[$j][$i] = $data->[$j-1][$i] + $raw->[$j][$i];
     }
   }
-     
+ 
   # draw the damn bars
   for $i (0..$self->{'num_datapoints'}-1) {
     # init the y values for this datapoint
     $y2 = $y1;
+    
     
     for $j (1..$self->{'num_datasets'}) {
       # get the color
@@ -315,14 +331,15 @@ sub _draw_data {
       # set up the geometry for the bar
       if ($self->{'spaced_bars'} =~ /^true$/i) {
         $x2 = $x1 + (2 * $i * $delta) + ($delta / 2);
-	$x3 = $x2 + $delta;
+       	$x3 = $x2 + $delta;
+	
       }
       else {
         $x2 = $x1 + ($i * $delta);
         $x3 = $x2 + $delta;
       }
       $y3 = $y1 - (($data->[$j][$i] - $mod) * $map);
-
+     
       #cut the bars off, if needed
       if ($data->[$j][$i] > $self->{'max_val'}) {
            $y3 = $y1 - (($self->{'max_val'} - $mod ) * $map) ;
@@ -362,18 +379,195 @@ sub _draw_data {
       }
 
       # now bootstrap the y values
-      $y2 = $y3;
+      $y2 = $y3; 
     }
   }
 
-
+  
   # and finaly box it off 
   $self->{'gd_obj'}->rectangle ($self->{'curr_x_min'},
   				$self->{'curr_y_min'},
-				$self->{'curr_x_max'},
-				$self->{'curr_y_max'},
-				$misccolor);
+ 				$self->{'curr_x_max'},
+ 				$self->{'curr_y_max'},
+ 				$misccolor);
   return;
+  
+}
+
+
+
+sub _draw_left_legend {
+  my $self = shift;
+  my @labels = @{$self->{'legend_labels'}};
+  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h, $brush);
+  my $font = $self->{'legend_font'};
+ 
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # get the miscellaneous color
+  $misccolor = $self->_color_role_to_index('misc');
+
+  # find out how wide the largest label is
+  $width = (2 * $self->{'text_space'})
+    + ($self->{'max_legend_label'} * $w)
+    + $self->{'legend_example_size'}
+    + (2 * $self->{'legend_space'});
+
+  # get some base x-y coordinates
+  $x1 = $self->{'curr_x_min'};
+  $x2 = $self->{'curr_x_min'} + $width;
+  $y1 = $self->{'curr_y_min'} + $self->{'graph_border'} ;
+  $y2 = $self->{'curr_y_min'} + $self->{'graph_border'} + $self->{'text_space'}
+          + ($self->{'num_datasets'} * ($h + $self->{'text_space'}))
+	  + (2 * $self->{'legend_space'});
+
+  # box the legend off
+  $self->{'gd_obj'}->rectangle ($x1, $y1, $x2, $y2, $misccolor);
+
+  # leave that nice space inside the legend box
+  $x1 += $self->{'legend_space'};
+  $y1 += $self->{'legend_space'} + $self->{'text_space'};
+
+  # now draw the actual legend
+  for (0..$#labels) {
+    # get the color
+    my $c = $self->{'num_datasets'}-$_-1;
+    # color of the datasets in the legend
+    if ($self->{'dataref'}[1][0] <0) {
+        $color = $self->_color_role_to_index('dataset'.$_);
+    }
+    else {
+        $color = $self->_color_role_to_index('dataset'.$c);
+    }
+
+    # find the x-y coords
+    $x2 = $x1;
+    $x3 = $x2 + $self->{'legend_example_size'};
+    $y2 = $y1 + ($_ * ($self->{'text_space'} + $h)) + $h/2;
+
+    # do the line first
+    $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+
+    # reset the brush for points
+    $brush = $self->_prepare_brush($color, 'point',
+				$self->{'pointStyle' . $_});
+    $self->{'gd_obj'}->setBrush($brush);
+    # draw the point
+    $self->{'gd_obj'}->line(int(($x3+$x2)/2), $y2,
+				int(($x3+$x2)/2), $y2, gdBrushed);
+    
+    # now the label
+    $x2 = $x3 + (2 * $self->{'text_space'});
+    $y2 -= $h/2;
+    # order of the datasets in the legend
+    if ($self->{'dataref'}[1][0] <0) {
+        $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$_], $color);
+    }
+    else {
+        $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$c], $color);
+    }
+  }
+
+  # mark off the used space
+  $self->{'curr_x_min'} += $width;
+
+  # and return
+  return 1;
+}
+
+
+sub _draw_right_legend {
+  my $self = shift;
+  my @labels = @{$self->{'legend_labels'}};
+  my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h, $brush);
+  my $font = $self->{'legend_font'};
+ 
+  # make sure we're using a real font
+  unless ((ref ($font)) eq 'GD::Font') {
+    croak "The subtitle font you specified isn\'t a GD Font object";
+  }
+
+  # get the size of the font
+  ($h, $w) = ($font->height, $font->width);
+
+  # get the miscellaneous color
+  $misccolor = $self->_color_role_to_index('misc');
+
+  # find out how wide the largest label is
+  $width = (2 * $self->{'text_space'})
+    + ($self->{'max_legend_label'} * $w)
+    + $self->{'legend_example_size'}
+    + (2 * $self->{'legend_space'});
+
+  # get some starting x-y values
+  $x1 = $self->{'curr_x_max'} - $width;
+  $x2 = $self->{'curr_x_max'};
+  $y1 = $self->{'curr_y_min'} + $self->{'graph_border'} ;
+  $y2 = $self->{'curr_y_min'} + $self->{'graph_border'} + $self->{'text_space'}
+          + ($self->{'num_datasets'} * ($h + $self->{'text_space'}))
+	  + (2 * $self->{'legend_space'});
+
+  # box the legend off
+  $self->{'gd_obj'}->rectangle ($x1, $y1, $x2, $y2, $misccolor);
+
+  # leave that nice space inside the legend box
+  $x1 += $self->{'legend_space'};
+  $y1 += $self->{'legend_space'} + $self->{'text_space'};
+
+  
+  # now draw the actual legend
+  for (0..$#labels) {
+    # get the color
+    my $c = $self->{'num_datasets'}-$_-1;
+    # color of the datasets in the legend  
+     
+   
+    if ($self->{'dataref'}[1][0] < 0) {
+        $color = $self->_color_role_to_index('dataset'.$_);
+    }
+    else {	
+        $color = $self->_color_role_to_index('dataset'.$c);
+    }
+
+    # find the x-y coords
+    $x2 = $x1;
+    $x3 = $x2 + $self->{'legend_example_size'};
+    $y2 = $y1 + ($_ * ($self->{'text_space'} + $h)) + $h/2;
+
+    # do the line first
+    $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+
+    # reset the brush for points
+    $brush = $self->_prepare_brush($color, 'point',
+				$self->{'pointStyle' . $_});
+    $self->{'gd_obj'}->setBrush($brush);
+    # draw the point
+    $self->{'gd_obj'}->line(int(($x3+$x2)/2), $y2,
+				int(($x3+$x2)/2), $y2, gdBrushed);
+
+    # now the label
+    $x2 = $x3 + (2 * $self->{'text_space'});
+    $y2 -= $h/2;
+    # order of the datasets in the legend
+    if ($self->{'dataref'}[1][0] <0) {
+        $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$_], $color);
+    }
+    else {
+        $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$c], $color);
+    }
+  }
+
+  # mark off the used space
+  $self->{'curr_x_max'} -= $width;
+
+  # and return
+  return 1;
 }
 
 ## be a good module and return 1

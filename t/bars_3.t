@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 use Chart::Bars;
 print "1..1\n";
 $g = Chart::Bars->new(500,500);
@@ -16,7 +18,7 @@ $g->add_dataset (-2.4, 3.4, 1.9, 1.2, -1.1, -2.9);
          'min_y_ticks' => 10,
          'y_axes' => 'both',
          'spaced_bars' => 'false',
-         'colors' => {'background' => [230,255,230],
+	 'colors' => {'background' => [230,255,230],
                       'title' =>'plum',
                       'dataset0' => 'mauve',
                      },

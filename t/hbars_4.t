@@ -1,3 +1,5 @@
+#!usr/bin/perl -w
+
 use Chart::HorizontalBars;
 
 print "1..1\n";

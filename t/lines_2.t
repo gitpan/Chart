@@ -9,6 +9,7 @@ $g->add_dataset ('foo', 'bar', 'whee', 'ding','bat', 'bit');
 $g->add_dataset (3.2, 4.34, 9.456, 10.459, 11.24234, 14.0234);
 $g->add_dataset (-1.3, 8.4, 5.34, 3.234, 4.33, 13.09);
 $g->add_dataset (5, 7, 2, 10, 12, 2.3445);
+$g->add_dataset (8, 4, 5, 12, 3, 9);
 
 $g->set ('title' => 'LINES');
 $g->set ('sub_title' => 'Lines Chart');

@@ -20,13 +20,13 @@
 
 package Chart::Lines;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Lines::ISA = qw(Chart::Base);
-$Chart::Lines::VERSION = '2.2';
+$Chart::Lines::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -105,7 +105,7 @@ sub _draw_data {
     $color = $self->_color_role_to_index('dataset'.($i-1));
     $brush = $self->_prepare_brush ($color);
     $self->{'gd_obj'}->setBrush ($brush);
-
+    
     # draw every line for this dataset
     for $j (1..$self->{'num_datapoints'}) {
       # don't try to draw anything if there's no data
@@ -121,10 +121,10 @@ sub _draw_data {
 	$y2 = $y1 - (($data->[$i][$j-1] - $mod) * $map);
 	$y3 = $y1 - (($data->[$i][$j] - $mod) * $map);
 
-        #now draw the line
+        # now draw the line
         $self->{'gd_obj'}->line($x2, $y2, $x3, $y3, gdBrushed);
-     #   print $x2,  " ";
-        #set the flags, if the lines are out of the borders of the chart
+       
+        # set the flags, if the lines are out of the borders of the chart
         if ( ($data->[$i][$j] > $self->{'max_val'}) || ($data->[$i][$j-1] > $self->{'max_val'}) ) {
            $repair_top_flag = 1;
         }

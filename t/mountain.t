@@ -1,4 +1,6 @@
-use Chart::Mountain;
+#!/usr/bin/perl -w
+
+use Chart::Mountain;         
 use File::Spec;
 
 print "1..2\n";

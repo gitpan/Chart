@@ -1,8 +1,10 @@
+#!/usr/bin/perl -w
+
 use Chart::Composite;
 
 print "1..1\n";
 
-$g = Chart::Composite->new;
+$g = Chart::Composite->new();
 
 $g->add_dataset ('foo', 'bar', 'junk','whee');
 $g->add_dataset (3, 4, 9,10);

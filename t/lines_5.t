@@ -25,7 +25,8 @@ $g->add_dataset (@y2_values);
          'skip_x_ticks' => 20,
          'legend_labels' => ['y = sin x', 'y = cos x'],
          'precision' => 2,
-         'colors' => {
+	 'integer_ticks_only' => 'true',
+	 'colors' => {
                       'title' =>'plum',
                       'dataset0' => 'mauve',
                      },

@@ -7,6 +7,7 @@
 #  maintained by the Chart Group
 #  Chart@wettzell.ifag.de
 #
+#
 #---------------------------------------------------------------------
 # History:
 #----------
@@ -20,13 +21,13 @@
 
 package Chart::Composite;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Composite::ISA = qw(Chart::Base);
-$Chart::Composite::VERSION = '2.2';
+$Chart::Composite::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -202,6 +203,13 @@ sub _split_data {
   if ($self->{'opts'}{'y_ticks2'}) {
     $self->{'sub_1'}->set ('y_ticks' => $self->{'opts'}{'y_ticks2'});
   }
+  #  f_y_tick for left and right axis
+  if (defined ($self->{'opts'}{'f_y_tick1'})) {
+    $self->{'sub_0'}->set ('f_y_tick' => $self->{'opts'}{'f_y_tick1'});
+  }
+  if (defined ($self->{'opts'}{'f_y_tick2'})) {
+    $self->{'sub_1'}->set ('f_y_tick' => $self->{'opts'}{'f_y_tick2'});
+  }
 
   # replace the gd_obj fields
   $self->{'sub_0'}->{'gd_obj'} = $self->{'gd_obj'};
@@ -311,11 +319,17 @@ sub _draw_top_legend {
   my @labels = @{$self->{'legend_labels'}};
   my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
   my ($col_width, $row_height, $i, $j, $r, $c, $index, $x, $y, $sub, $w, $h);
+  my ($yh,$yi); #  for boxing legends
   my $font = $self->{'legend_font'};
   my (%colors, @datasets);
+  my $max_legend_example=0;
+  $yh=0;
 
   # copy the current boundaries into the sub-objects
   $self->_sub_update;
+  
+  # init the legend_example_height
+  $self->_legend_example_height_init;
 
 ## Make datasetI numbers match indexes of @{ $self->{'dataref'} }[1.....].
 #   # modify the dataset color table entries to avoid duplicating
@@ -397,7 +411,8 @@ sub _draw_top_legend {
           + ($rows * $row_height) + (2 * $self->{'legend_space'});
   $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
                                $self->_color_role_to_index('misc'));
-
+			       
+  $max_legend_example = $y2-$y1;
   # leave some space inside the legend
   $x1 += $self->{'legend_space'} + $self->{'text_space'};
   $x2 -= $self->{'legend_space'};
@@ -407,6 +422,8 @@ sub _draw_top_legend {
   # draw in the actual legend
   $r = 0; # current row
   $c = 0; # current column
+  $yi= 0; # current dataset
+   
   for $i (0..1) {
     for $j (0..$#{$self->{'component_datasets'}[$i]}) {
       # get the color
@@ -417,10 +434,35 @@ sub _draw_top_legend {
       $x = $x1 + ($col_width * $c);
       $y = $y1 + ($row_height * $r) + $h/2;
 
-      # draw the example line
+	  #  draw the example line if legend_example_height==1 or ==0
+	  if ($rows==1) {
+	  if ($self->{'legend_example_height'.$yi}<$max_legend_example) {
+	    $yh = $self->{'legend_example_height'.$yi};
+	    }
+	  else {
+	    $yh = $max_legend_example;
+	    }
+	   }
+	   else {
+	   if ($self->{'legend_example_height'.$yi}<$row_height) {
+	    $yh = $self->{'legend_example_height'.$yi};
+	    }
+	   else {
+	     $yh = $row_height;
+	     }
+	   } 
+	   $yi++;
+	if ($yh <= 1) {
       $self->{'gd_obj'}->line ($x, $y,
                                $x + $self->{'legend_example_size'}, $y,
 			       $color);
+	} else {
+	  #  draw the example bar if legend_example_height > 1
+	  $yh = int($yh / 2);
+      $self->{'gd_obj'}->filledRectangle ($x, $y-$yh,
+                               $x + $self->{'legend_example_size'}, $y+$yh,
+			       $color);
+	}
 
       # find the x-y coordinates for the beginning of the label
       $x += $self->{'legend_example_size'} + 2 * $self->{'text_space'};
@@ -437,7 +479,7 @@ sub _draw_top_legend {
       }
     }
   }
-      
+  
       
   # mark of the space used
   $self->{'curr_y_min'} += ($rows * $row_height)
@@ -453,12 +495,18 @@ sub _draw_right_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
   my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h);
+  my ($yh)=0; # for boxing legend
   my $font = $self->{'legend_font'};
-  my (%colors, @datasets, $i);
-
+  my (%colors, @datasets, $i); 
+  my $max_legend_example = 0;
+  
+  
   # copy the current boundaries and colors into the sub-objects
   $self->_sub_update;
-
+  
+  # init the legend exapmle height
+  $self->_legend_example_height_init;
+  
 #   # modify the dataset color table entries to avoid duplicating
 #   # dataset colors (this limits the number of possible data sets
 #   # for each component to 8)
@@ -469,25 +517,29 @@ sub _draw_right_legend {
   # modify the dataset color table entries to avoid duplicating
   # dataset colors.
   my ($n0, $n1) = map { scalar @{ $self->{'composite_info'}[$_][1] } } 0..1;
+  
   for (0..$n1-1) {
     $self->{'sub_1'}{'color_table'}{'dataset'.$_} 
       = $self->{'color_table'}{'dataset'.($_+$n0)};
   }
-
+  
+  
+  
   # make sure we use the right colors for the legend
   @datasets = @{$self->{'composite_info'}[0][1]};
   $i = 0;
   for (0..$#datasets) {
-    $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i)};
+   $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($_)};
     $i++;
   }
+   
   @datasets = @{$self->{'composite_info'}[1][1]};
   $i = 0;
   for (0..$#datasets) {
     $colors{$datasets[$_]-1} = $self->{'color_table'}{'dataset'.($i+$n0)};
     $i++;
   }
-
+      
   # make sure we're using a real font
   unless ((ref ($font)) eq 'GD::Font') {
     croak "The subtitle font you specified isn\'t a GD Font object";
@@ -495,7 +547,7 @@ sub _draw_right_legend {
 
   # get the size of the font
   ($h, $w) = ($font->height, $font->width);
-
+ 
   # get the miscellaneous color
   $misccolor = $self->_color_role_to_index('misc');
 
@@ -519,22 +571,37 @@ sub _draw_right_legend {
   $y1 += $self->{'legend_space'} + $self->{'text_space'};
 
   # now draw the actual legend
-  for (0..$#labels) {
+  for (0..$#labels) { 
     # get the color
     $color = $colors{$_};
-
+    
+    # find the max_legend_example
+    $max_legend_example = $self->{'legend_space'}+$h; 
+   
     # find the x-y coords
     $x2 = $x1;
     $x3 = $x2 + $self->{'legend_example_size'};
     $y2 = $y1 + ($_ * ($self->{'text_space'} + $h)) + $h/2;
 
-    # do the line first
-    $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+	# draw the example line if legend_example_height==1 or ==0
+	if ($self->{'legend_example_height'.$_}<$max_legend_example) {
+	   $yh = $self->{'legend_example_height'.$_};
+	   }
+	else {
+	   $yh = $max_legend_example;
+	   }   
+	if ($yh <= 1) {
+      $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+	} else {
+	  $yh = int($yh / 2);
+	  $self->{'gd_obj'}->filledRectangle ($x2, $y2-$yh, $x3, $y2+$yh, $color);
+	}
 
     # now the label
     $x2 = $x3 + (2 * $self->{'text_space'});
     $y2 -= $h/2;
     $self->{'gd_obj'}->string ($font, $x2, $y2, $labels[$_], $color);
+   
   }
 
   # mark off the used space
@@ -549,12 +616,16 @@ sub _draw_left_legend {
   my $self = shift;
   my @labels = @{$self->{'legend_labels'}};
   my ($x1, $x2, $x3, $y1, $y2, $width, $color, $misccolor, $w, $h);
+  my $yh; # for boxing legend
   my $font = $self->{'legend_font'};
   my (%colors, @datasets, $i);
+  my $max_legend_example=0;
  
   # copy the current boundaries and colors into the sub-objects
   $self->_sub_update;
- 
+  
+  # init the legend_example height
+  $self->_legend_example_height_init;
 #   # modify the dataset color table entries to avoid duplicating
 #   # dataset colors (this limits the number of possible data sets
 #   # for each component to 8)
@@ -621,14 +692,29 @@ sub _draw_left_legend {
   for (0..$#labels) {
     # get the color
     $color = $colors{$_};
- 
+   
+    # find the max_legend_example    
+    $max_legend_example = $self->{'legend_space'} + $h;
+    
     # find the x-y coords
     $x2 = $x1;
     $x3 = $x2 + $self->{'legend_example_size'};
     $y2 = $y1 + ($_ * ($self->{'text_space'} + $h)) + $h/2;
  
-    # do the line first
-    $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+	# draw the example line if legend_example_height==1 or ==0
+	if ($self->{'legend_example_height'.$_}<$max_legend_example) {
+	   $yh = $self->{'legend_example_height'.$_};
+	   }
+	else {
+	   $yh = $max_legend_example;
+	   }   
+	if ($yh <= 1) {
+      $self->{'gd_obj'}->line ($x2, $y2, $x3, $y2, $color);
+	} else {
+	  # draw the example bar if legend_example_height > 1
+	  $yh = int($yh / 2);
+      $self->{'gd_obj'}->filledRectangle ($x2, $y2-$yh, $x3, $y2+$yh, $color);
+	}
  
     # now the label
     $x2 = $x3 + (2 * $self->{'text_space'});
@@ -650,12 +736,17 @@ sub _draw_bottom_legend {
   my @labels = @{$self->{'legend_labels'}};
   my ($x1, $y1, $x2, $y2, $empty_width, $max_label_width, $cols, $rows, $color);
   my ($col_width, $row_height, $i, $j, $r, $c, $index, $x, $y, $sub, $w, $h);
+  my ($yh,$yi); # for boxing legend
   my $font = $self->{'legend_font'};
   my (%colors, @datasets);
+  my $max_legend_example=0;
+  $yh=0;
 
   # copy the current boundaries and colors into the sub-objects
   $self->_sub_update;
-
+  # init the legend example height
+  $self->_legend_example_height_init;
+  
 #   # modify the dataset color table entries to avoid duplicating
 #   # dataset colors (this limits the number of possible data sets
 #   # for each component to 8)
@@ -691,6 +782,7 @@ sub _draw_bottom_legend {
 
   # get the size of the font
   ($h, $w) = ($font->height, $font->width);
+  
 
   # figure out how many columns we can fit
   $x1 = $self->{'curr_x_min'} + $self->{'graph_border'}
@@ -719,7 +811,7 @@ sub _draw_bottom_legend {
   $rows = int ($self->{'num_datasets'} / $cols);
   unless (($self->{'num_datasets'} % $cols) == 0) {
     $rows++;
-  }
+    }
   unless ($rows) {
     $rows = 1;
   }
@@ -731,6 +823,10 @@ sub _draw_bottom_legend {
   $y2 = $self->{'curr_y_max'};
   $self->{'gd_obj'}->rectangle($x1, $y1, $x2, $y2, 
                                $self->_color_role_to_index('misc'));
+			       
+  # get the max_legend_example_height			       
+  $max_legend_example = $y2-$y1;
+ 		       
   $x1 += $self->{'legend_space'} + $self->{'text_space'};
   $x2 -= $self->{'legend_space'};
   $y1 += $self->{'legend_space'} + $self->{'text_space'};
@@ -739,17 +835,46 @@ sub _draw_bottom_legend {
   # draw in the actual legend
   $r = 0;
   $c = 0;
-  for $i (0..1) {
-    for $j (0..$#{$self->{'component_datasets'}[$i]}) {
+  $yi= 0; # current dataset
+    for $i (0..1) {
+      for $j (0..$#{$self->{'component_datasets'}[$i]}) {
       $color = $self->{'sub_'.$i}->{'color_table'}{'dataset'.$j};
       $index = $self->{'component_datasets'}[$i][$j] - 1;
 
       $x = $x1 + ($col_width * $c);
       $y = $y1 + ($row_height * $r) + $h/2;
-      $self->{'gd_obj'}->line ($x, $y,
-                               $x + $self->{'legend_example_size'}, $y,
-			       $color);
-
+	  
+	  #  draw the example line if legend_example_height==1 or ==0
+	  if ($rows == 1) {
+	  if ($self->{'legend_example_height'.$yi} < $max_legend_example) {
+	    $yh = $self->{'legend_example_height'.$yi};
+	    }
+	  else {
+	    $yh = $max_legend_example;
+	    }
+	  }
+	  else {
+	  if ($self->{'legend_example_height'.$yi} < $row_height) {
+	     $yh = $self->{'legend_example_height'.$yi};
+	     }
+	  else {
+	     $yh = $row_height;
+	     }
+         }    
+	 $yi++;
+	 if ($yh <= 1) {
+          $self->{'gd_obj'}->line ($x, $y,
+		                         $x + $self->{'legend_example_size'}, $y,
+								 $color);
+	  } 
+	  else {
+	    # draw the example bar if legend_example_height > 1
+	    $yh = int($yh / 2);
+        $self->{'gd_obj'}->filledRectangle ($x, $y-$yh,
+				            $x + $self->{'legend_example_size'}, $y+$yh,
+							   $color);
+  	  }
+ 
       $x += $self->{'legend_example_size'} + 2 * $self->{'text_space'};
       $y -= $h/2;
       $self->{'gd_obj'}->string($font, $x, $y, 
@@ -761,9 +886,7 @@ sub _draw_bottom_legend {
 	$c++;
       }
     }
-  }
-      
-      
+  }   
   # mark of the space used
   $self->{'curr_y_max'} -= ($rows * $row_height)
   			      + $self->{'text_space'}
@@ -1069,6 +1192,7 @@ sub _draw_data {
   }
 
   # now let the component modules go to work
+  
   $self->{'sub_0'}->_draw_data;
   $self->{'sub_1'}->_draw_data;
       
@@ -1120,6 +1244,48 @@ sub _draw_y2_grid_lines {
 	$self->{'sub_1'}->_draw_y2_grid_lines();
 	return;
 }
+
+
+# init the legend_example_height_values
+sub _legend_example_height_init {
+  my $self = shift;
+  my $a = $self->{'num_datasets'};
+  my ($b, $e) =(0,0);
+  my $bis='..';
+  
+      
+  if ($self->{'legend_example_height'} =~ /^false$/i ) {
+  
+    for my $i (0..$a) {
+    $self->{'legend_example_height'.$i} = 1;
+    }
+  }
+ 
+  if ($self->{'legend_example_height'} =~ /^true$/i ) { 
+ 
+   for my $i (0..$a) {
+   
+   if (defined($self->{'legend_example_height'.$i})) { }
+   else { ($self->{'legend_example_height'.$i}) = 1;}   
+  
+   }
+
+   for  $b (0..$a) {
+    for  $e (0..$a) {
+      my $anh = sprintf($b.$bis.$e);
+       if (defined($self->{'legend_example_height'.$anh})) {
+        if ($b>$e) {croak "Please reverse the datasetnumber in legend_example_height\n";}
+       	  for (my $n=$b;$n<=$e;$n++) {
+	    $self->{'legend_example_height'.$n} = $self->{'legend_example_height'.$anh};
+	 }
+        }
+       }
+    }
+   }
+ 
+  
+  
+}     
 
 ## be a good module and return 1
 1;

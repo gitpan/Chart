@@ -19,13 +19,13 @@
 
 package Chart::HorizontalBars;
 
-use Chart::Base 2.0;
+use Chart::Base 2.3;
 use GD;
 use Carp;
 use strict;
 
 @Chart::HorizontalBars::ISA = qw(Chart::Base);
-$Chart::HorizontalBars::VERSION = '2.2';
+$Chart::HorizontalBars::VERSION = '2.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

@@ -1,8 +1,10 @@
+#!/usr/bin/perl -w
+
 use Chart::Pie;
 
 print "1..1\n";
 
-$g = Chart::Pie->new();
+$g = Chart::Pie->new(500,500);
 
 $g->add_dataset ('Har', 'Sug', 'Ert', 'Her', 'Tar', 'Kure');
 $g->add_dataset (12000, 20000 , 13000, 15000, 9000, 11000  );
