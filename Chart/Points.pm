@@ -20,13 +20,13 @@
 
 package Chart::Points;
 
-use Chart::Base 2.4;
+use Chart::Base '2.4.1';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Points::ISA = qw(Chart::Base);
-$Chart::Points::VERSION = '2.4';
+$Chart::Points::VERSION = '2.4.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

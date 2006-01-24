@@ -42,7 +42,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = '2.4';
+$Chart::Base::VERSION = '2.4.1';
 
 use vars qw(%named_colors);
 

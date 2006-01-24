@@ -34,13 +34,13 @@
 
 package Chart::Mountain;
 
-use Chart::Base 2.4;
+use Chart::Base '2.4.1';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Mountain::ISA = qw ( Chart::Base );
-$Chart::Mountain::VERSION = '2.4';
+$Chart::Mountain::VERSION = '2.4.1';
 
 
 ##  Some Mountain chart details:

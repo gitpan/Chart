@@ -19,13 +19,13 @@
 
 package Chart::Split;
 
-use Chart::Base 2.4;
+use Chart::Base '2.4.1';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Split::ISA = qw(Chart::Base);
-$Chart::Split::VERSION = '2.4';
+$Chart::Split::VERSION = '2.4.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

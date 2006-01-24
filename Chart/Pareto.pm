@@ -19,13 +19,13 @@
 
 package Chart::Pareto;
 
-use Chart::Base 2.4;
+use Chart::Base '2.4.1';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Pareto::ISA = qw(Chart::Base);
-$Chart::Pareto::VERSION = '2.4';
+$Chart::Pareto::VERSION = '2.4.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

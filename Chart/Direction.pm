@@ -19,14 +19,14 @@
 
 package Chart::Direction;
 
-use Chart::Base 2.4;
+use Chart::Base '2.4.1';
 use GD;
 use Carp;
 use strict;
 use POSIX;
 
 @Chart::Direction::ISA = qw(Chart::Base);
-$Chart::Direction::VERSION = '2.4';
+$Chart::Direction::VERSION = '2.4.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

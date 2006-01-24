@@ -12,7 +12,7 @@
 
 #     NAME => q[Chart]
 #     PREREQ_PM => { GD=>q[1.2] }
-#     VERSION => q[2.4]
+#     VERSION => q[2.4.1]
 #     dist => { COMPRESS=>q[gzip], SUFFIX=>q[gz] }
 
 # --- MakeMaker post_initialize section:
@@ -52,11 +52,11 @@ AR_STATIC_ARGS = cr
 DIRFILESEP = /
 NAME = Chart
 NAME_SYM = Chart
-VERSION = 2.4
+VERSION = 2.4.1
 VERSION_MACRO = VERSION
-VERSION_SYM = 2_4
+VERSION_SYM = 2_4_1
 DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
-XS_VERSION = 2.4
+XS_VERSION = 2.4.1
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
 INST_ARCHLIB = blib/arch
@@ -183,12 +183,13 @@ TO_INST_PM = Chart.pod \
 	Chart/Mountain.pm \
 	Chart/Pareto.pm \
 	Chart/Pie.pm \
-	Chart/Pie.pm.v0 \
 	Chart/Points.pm \
 	Chart/Split.pm \
 	Chart/StackedBars.pm
 
-PM_TO_BLIB = Chart.pod \
+PM_TO_BLIB = Chart/Base.pm \
+	$(INST_LIB)/Chart/Base.pm \
+	Chart.pod \
 	$(INST_LIB)/Chart.pod \
 	Chart/Lines.pm \
 	$(INST_LIB)/Chart/Lines.pm \
@@ -206,18 +207,14 @@ PM_TO_BLIB = Chart.pod \
 	$(INST_LIB)/Chart/Pie.pm \
 	Chart/Points.pm \
 	$(INST_LIB)/Chart/Points.pm \
+	Chart/Split.pm \
+	$(INST_LIB)/Chart/Split.pm \
 	Chart/ErrorBars.pm \
 	$(INST_LIB)/Chart/ErrorBars.pm \
 	Chart/Bars.pm \
 	$(INST_LIB)/Chart/Bars.pm \
 	Chart/StackedBars.pm \
 	$(INST_LIB)/Chart/StackedBars.pm \
-	Chart/Base.pm \
-	$(INST_LIB)/Chart/Base.pm \
-	Chart/Pie.pm.v0 \
-	$(INST_LIB)/Chart/Pie.pm.v0 \
-	Chart/Split.pm \
-	$(INST_LIB)/Chart/Split.pm \
 	Chart/LinesPoints.pm \
 	$(INST_LIB)/Chart/LinesPoints.pm
 
@@ -282,7 +279,7 @@ RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
 DISTNAME = Chart
-DISTVNAME = Chart-2.4
+DISTVNAME = Chart-2.4.1
 
 
 # --- MakeMaker macro section:
@@ -468,8 +465,8 @@ realclean purge ::  clean realclean_subdirs
 	$(RM_RF) $(INST_AUTODIR) $(INST_ARCHAUTODIR)
 	$(RM_RF) $(DISTVNAME)
 	$(RM_F)  $(INST_LIB)/Chart/Split.pm $(INST_LIB)/Chart/Mountain.pm $(INST_LIB)/Chart.pod $(INST_LIB)/Chart/Points.pm $(INST_LIB)/Chart/HorizontalBars.pm $(MAKEFILE_OLD) $(INST_LIB)/Chart/LinesPoints.pm
-	$(RM_F) $(INST_LIB)/Chart/Direction.pm $(INST_LIB)/Chart/Pie.pm.v0 $(INST_LIB)/Chart/Base.pm $(INST_LIB)/Chart/ErrorBars.pm $(FIRST_MAKEFILE) $(INST_LIB)/Chart/Pareto.pm $(INST_LIB)/Chart/StackedBars.pm
-	$(RM_F) $(INST_LIB)/Chart/Composite.pm $(INST_LIB)/Chart/Lines.pm $(INST_LIB)/Chart/Pie.pm $(INST_LIB)/Chart/Bars.pm
+	$(RM_F) $(INST_LIB)/Chart/Direction.pm $(INST_LIB)/Chart/Base.pm $(INST_LIB)/Chart/ErrorBars.pm $(FIRST_MAKEFILE) $(INST_LIB)/Chart/Pareto.pm $(INST_LIB)/Chart/StackedBars.pm $(INST_LIB)/Chart/Composite.pm
+	$(RM_F) $(INST_LIB)/Chart/Lines.pm $(INST_LIB)/Chart/Pie.pm $(INST_LIB)/Chart/Bars.pm
 
 
 # --- MakeMaker metafile section:
@@ -477,7 +474,7 @@ metafile :
 	$(NOECHO) $(ECHO) '# http://module-build.sourceforge.net/META-spec.html' > META.yml
 	$(NOECHO) $(ECHO) '#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#' >> META.yml
 	$(NOECHO) $(ECHO) 'name:         Chart' >> META.yml
-	$(NOECHO) $(ECHO) 'version:      2.4' >> META.yml
+	$(NOECHO) $(ECHO) 'version:      2.4.1' >> META.yml
 	$(NOECHO) $(ECHO) 'version_from: ' >> META.yml
 	$(NOECHO) $(ECHO) 'installdirs:  site' >> META.yml
 	$(NOECHO) $(ECHO) 'requires:' >> META.yml
@@ -746,7 +743,7 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd:
-	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="2,4,0,0">' > $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="2,4,1,0">' > $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <TITLE>$(DISTNAME)</TITLE>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR></AUTHOR>' >> $(DISTNAME).ppd
@@ -763,6 +760,7 @@ ppd:
 
 pm_to_blib: $(TO_INST_PM)
 	$(NOECHO) $(PERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', '\''$(PM_FILTER)'\'')'\
+	  Chart/Base.pm $(INST_LIB)/Chart/Base.pm \
 	  Chart.pod $(INST_LIB)/Chart.pod \
 	  Chart/Lines.pm $(INST_LIB)/Chart/Lines.pm \
 	  Chart/HorizontalBars.pm $(INST_LIB)/Chart/HorizontalBars.pm \
@@ -772,12 +770,10 @@ pm_to_blib: $(TO_INST_PM)
 	  Chart/Direction.pm $(INST_LIB)/Chart/Direction.pm \
 	  Chart/Pie.pm $(INST_LIB)/Chart/Pie.pm \
 	  Chart/Points.pm $(INST_LIB)/Chart/Points.pm \
+	  Chart/Split.pm $(INST_LIB)/Chart/Split.pm \
 	  Chart/ErrorBars.pm $(INST_LIB)/Chart/ErrorBars.pm \
 	  Chart/Bars.pm $(INST_LIB)/Chart/Bars.pm \
 	  Chart/StackedBars.pm $(INST_LIB)/Chart/StackedBars.pm \
-	  Chart/Base.pm $(INST_LIB)/Chart/Base.pm \
-	  Chart/Pie.pm.v0 $(INST_LIB)/Chart/Pie.pm.v0 \
-	  Chart/Split.pm $(INST_LIB)/Chart/Split.pm \
 	  Chart/LinesPoints.pm $(INST_LIB)/Chart/LinesPoints.pm 
 	$(NOECHO) $(TOUCH) $@
 

@@ -14,7 +14,7 @@ Short term:
    min_val, max_val
    and document it.
    (At the moment the autoscale is used as the default)
-   
+-  Include Skyplot (Direction->polar) into the distribution   
 
 Long term:
 ----------

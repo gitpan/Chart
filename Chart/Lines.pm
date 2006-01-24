@@ -20,13 +20,13 @@
 
 package Chart::Lines;
 
-use Chart::Base 2.4;
+use Chart::Base '2.4.1';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Lines::ISA = qw(Chart::Base);
-$Chart::Lines::VERSION = '2.4';
+$Chart::Lines::VERSION = '2.4.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

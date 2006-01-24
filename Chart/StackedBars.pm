@@ -12,13 +12,13 @@
 
 package Chart::StackedBars;
 
-use Chart::Base 2.4;
+use Chart::Base '2.4.1';
 use GD;
 use Carp;
 use strict;
 
 @Chart::StackedBars::ISA = qw(Chart::Base);
-$Chart::StackedBars::VERSION = '2.4';
+$Chart::StackedBars::VERSION = '2.4.1';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
