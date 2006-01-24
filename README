@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.3
+Chart version 2.4
 ------------------------------------------------------------------------
 
 
@@ -27,7 +27,31 @@ Lincoln Stein's GD module version 1.20 or higher.
 -------
 CHANGES
 -------
-2.2 - 2.3  Changes done by Christine Zilker:
+2.4  Changes done by Christine Zilker, Gerhard Stuhlpfarrer, R. Dassing
+        Added new Options:
+             ring             Draw a ring instead of a Pie
+             legend_lines     Connect Pie and the description with a line
+             stepline         Connect Lines and LinesPoints by a stepped line
+             stepline_mode    (thanks to Gerhard Stuhlpfarrer)
+             brush_size1      Define Brush Size for Composite 1 
+             brush_size2      and 2
+        Color problem in Pie fixed
+        Positioning of the description optimized in Pie
+        Division by zero problem fixed in Pie
+        Module 'Bars' checks for numeric data a input on y-axis
+        New Function added to Base:
+            minimum  - determine minimal value of an array of numeric values
+            maximum  - determine maximal value of an array of numeric values
+            arccos   - arccos
+            arcsin   - arcsin
+        Some small bugs corrected:
+            Base::_find_y_scale
+            Base::_find_y_range   : check for numeric values
+            Base::_find_x_range   : check for numeric values
+        Latex sources for documentation included 
+            (We hope to get a better documentation be a native english speaking person)
+                 
+2.3  Changes done by Christine Zilker:
         Added new Options: 
 	     in Composite: 
                 legend_example_height    changes thickness of the lines in the legend,
@@ -52,9 +76,9 @@ CHANGES
         The print out of some hints and warnings where deleted not to confuse
         the user.
 
-2.1 - 2.2: Composite.pm: imagemap_dump() repaired.
+2.2: Composite.pm: imagemap_dump() repaired.
 
-1.1 - 2.1: Changes done by Markus Brandl:
+2.1: Changes done by Markus Brandl:
 	new Modules added: ErrorBars.pm, HorizontalBars.pm, Pareto.pm,                          
 	 
 	Pie.pm, Split.pm and Direction.pm
@@ -90,7 +114,7 @@ CHANGES
 	Updates in _find_y_scale, _round2tick, _calcTickInterval 
 	   
 
-1.0.1 - 1.1: Changes done by David Pottage:
+1.1: Changes done by David Pottage:
         Plot scales can now have any magnitude. 
         It does not matter if the data covers a range of 100000000000 units
         or 0.00000000001 units, the scale will be correctly calculated.
@@ -104,7 +128,7 @@ CHANGES
 
         Added: include_zero, min_y_ticks, max_y_ticks, integer_ticks_only
 
-1.0 - 1.0.1:
+1.0.1:
         Fixed _draw_bottom_legend in Base.pm
 
 0.99c-pre3 - 1.0:

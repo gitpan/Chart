@@ -16,6 +16,7 @@ $g->set ('label_values' => 'none');
 $g->set ('legend_label_values' => 'percent');
 $g->set ('grey_background' => 'false');
 $g->set ('colors' => {'title' => 'red'});
+$g->set ('legend_lines' => 'true');
          
 $g->png ("samples/pie_2.png");
 print "ok 1\n";

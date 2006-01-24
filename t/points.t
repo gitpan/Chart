@@ -1,3 +1,6 @@
+#!/usr/bin/perl -w
+
+
 use Chart::Points;
 
 print "1..1\n";

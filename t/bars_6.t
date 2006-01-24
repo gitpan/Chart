@@ -23,9 +23,10 @@ $g->set(
             graph_border       => 0,
             grey_background    => 'false',
             grid_lines         => 'true',
-            integer_ticks_only => 'true',
+         #   integer_ticks_only => 'true',
             legend             => 'none',
-            min_val            => 0,
+         #   min_val            => 0,
+	 #   include_zero       =>  'true',
             png_border         => 4,
             precision          => 1,
             skip_int_ticks     => 1000,
@@ -37,7 +38,7 @@ $g->set(
             x_ticks            => 'vertical',
             y_axes             => 'both',
             y_label            => '# Tickets',
-            max_val            => 9000,
+        #    max_val            => 9000,
             );
 
 $g->png ("samples/bars_6.png");

@@ -34,13 +34,13 @@
 
 package Chart::Mountain;
 
-use Chart::Base 2.3;
+use Chart::Base 2.4;
 use GD;
 use Carp;
 use strict;
 
 @Chart::Mountain::ISA = qw ( Chart::Base );
-@Chart::Mountain::VERSION = '2.3';
+$Chart::Mountain::VERSION = '2.4';
 
 
 ##  Some Mountain chart details:
@@ -95,10 +95,6 @@ sub _find_y_range {
 	    $max = $y_sum unless defined $max && $y_sum <= $max;
 	}
     }
-
-## new _find_y_scale does this:
-#   my $tmp = ($max) ? 10 ** (int (log ($max) / log (10))) : 10;
-#   $max = $tmp * (int ($max / $tmp) + 1);
 
     (0, $max);
 }

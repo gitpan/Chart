@@ -1,3 +1,6 @@
+#!/usr/bin/perl -w
+
+
 use Chart::Pareto;
 
 print "1..1\n";

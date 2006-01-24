@@ -23,6 +23,7 @@ $g->set ('colors' => {'misc' => 'light_blue',
                       'dataset3' => 'DarkOrange',
                       'dataset4' => 'green'
               	      });
+$g->set('legend_lines'=>'true');
          
 $g->png ("samples/pie_1.png");
 print "ok 1\n";

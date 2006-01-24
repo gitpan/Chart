@@ -1,3 +1,6 @@
+#!/usr/bin/perl -w
+
+
 use Chart::Lines;
 use strict;
 my $g;

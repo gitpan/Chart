@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 use Chart::LinesPoints;
 use strict;
 

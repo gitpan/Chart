@@ -1,3 +1,6 @@
+#!/usr/bin/perl -w
+
+
 use Chart::Lines;
 print "1..1\n";
 
@@ -26,6 +29,7 @@ $g->add_dataset (@y2_values);
          'legend_labels' => ['y = sin x', 'y = cos x'],
          'precision' => 2,
 	 'integer_ticks_only' => 'true',
+	 #'custom_x_ticks' => [0,3],
 	 'colors' => {
                       'title' =>'plum',
                       'dataset0' => 'mauve',

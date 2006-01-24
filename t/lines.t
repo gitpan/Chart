@@ -1,13 +1,15 @@
+#!/usr/bin/perl -w
+
+
 use Chart::Lines;
 
 print "1..1\n";
 
 $g = Chart::Lines->new;
-$g->add_dataset ('foo', 'bar', 'whee', 'ding','bat');
-$g->add_dataset (3.2, 4.1, 9.8, 10, 11);
-$g->add_dataset (8, 5.3, 3, 4, 5.1);
-$g->add_dataset (5, 7, 2.3, 10, 12);
-
+$g->add_dataset ('foo', 'bar', 'whee', 'ding','bat',);
+$g->add_dataset (3.2, 4.1, 9.8, 10, 11,);
+$g->add_dataset (8, 5.3, 3, 4, 5.1,);
+$g->add_dataset (5, 7, 2.3, 10, 12,);
 
 
 

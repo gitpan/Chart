@@ -42,7 +42,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = '2.3';
+$Chart::Base::VERSION = '2.4';
 
 use vars qw(%named_colors);
 
@@ -164,7 +164,7 @@ sub add_datafile  {
    #add the data
    while(<$File>) {
       @array = split;
-      if ( @array != ( )) {
+      if ( $#array > -1 ) {
         if ($format =~ m/^pt$/i) {
           $self->add_pt(@array);
         }
@@ -489,6 +489,54 @@ sub imagemap_dump {
   return $ref;
 }
 
+# determine minimum of an array of values
+sub minimum 
+{
+   my $self = shift;
+   my @array = @_;
+   
+   return undef if !@array;
+   my $min = $array[0];
+   for ( my $iIndex=0; $iIndex < scalar @array; $iIndex++ )
+   {
+      $min = $array[$iIndex] if ( $min > $array[$iIndex] );
+   }
+   $min;
+}
+
+# determine maximum of an array of values
+sub maximum
+{
+   my $self = shift;
+   my @array = @_;
+   
+   return undef if !@array;
+   my $max = $array[0];
+   for ( my $iIndex=0; $iIndex < scalar @array; $iIndex++ )
+   {
+      $max = $array[$iIndex] if ( $max < $array[$iIndex] );
+   }
+   $max;
+}
+
+# arccos(a)
+sub arccos
+{
+   my $self = shift;
+   my $a = shift;
+   
+   return ( atan2( sqrt(1-$a*$a),$a) );
+}
+
+# arcsin(a)
+sub arcsin
+{
+   my $self = shift;
+   my $a = shift;
+   
+   return ( atan2( $a, sqrt(1-$a*$a)) );
+}
+   
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  private methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
@@ -667,6 +715,19 @@ sub _init {
   
   # dont use different 'x_axes' in a direction Chart
   $self->{'pairs'} = 'false';
+  
+  # polarplot for a direction Chart (not yet tested)
+  $self->{'polar'} = 'false';
+  
+  # guiding lines in a Pie Chart
+  $self->{'legend_lines'} = 'false';
+  
+  # Ring Chart instead of Pie
+  $self->{'ring'} = 1; # width of ring; i.e. normal pie
+  
+  # stepline for Lines, LinesPoints
+  $self->{'stepline'}      = 'false';
+  $self->{'stepline_mode'} = 'end'; # begin, end
   
   # used function to transform x- and y-tick labels to strings
   $self->{f_x_tick} = \&_default_f_tick;
@@ -1236,12 +1297,15 @@ sub _find_x_scale {
     my $maxtickLabelLen = 0;
     
     #look, if we have numbers
-    for $i (0..($self->{'num_datasets'})) {
-        for $j (0..($self->{'num_datapoints'}-1)) {
-                #the following regular Expression matches all possible numbers, including scientific numbers!!
-                if ($data[$i][$j] !~ m/^[+-]?((\.\d+)|(\d+\.?\d*))([eE][+-]?\d+)?[fFdD]?$/ ) {
-                   croak "<$data[$i][$j]> You should give me numbers for drawing a xy plot!\n";
-                }
+    for $i (0..($self->{'num_datasets'})) 
+    {
+        for $j (0..($self->{'num_datapoints'}-1)) 
+        {
+            #the following regular Expression matches all possible numbers, including scientific numbers!!
+            if ($data[$i][$j] !~ m/^[+-]?((\.\d+)|(\d+\.?\d*))([eE][+-]?\d+)?[fFdD]?$/ ) 
+            {
+                croak "<$data[$i][$j]> You should give me numbers for drawing a xy plot!\n";
+            }
         }
     }
     
@@ -1249,23 +1313,27 @@ sub _find_x_scale {
     ($d_min, $d_max) = $self->_find_x_range();
 
    # Force the inclusion of zero if the user has requested it.
-   if( $self->{'include_zero'} =~ m!^true$!i )    {
-       if( ($d_min * $d_max) > 0 ) {	# If both are non zero and of the same sign.
-         if( $d_min > 0 ) {	# If the whole scale is positive.
-             $d_min = 0;
-         }
-         else	{			# The scale is entirely negative.
-    		$d_max = 0;
-         }
-      }
+    if( $self->{'include_zero'} =~ m!^true$!i )    
+    {
+        if( ($d_min * $d_max) > 0 ) # If both are non zero and of the same sign.
+        {
+            if( $d_min > 0 ) # If the whole scale is positive.
+            {
+                $d_min = 0;
+            }
+            else	# The scale is entirely negative.
+            {
+    	        $d_max = 0;
+            }
+        }
    }
 
-   # Calculate the width of the dataset. (posibly modified by the user)
+   # Calculate the width of the dataset. (possibly modified by the user)
    my $d_width = $d_max - $d_min;
 
-   # If the width of the range is zero, forcibly widen it
+   # If the width of the range is zero, forcebly widen it
    # (to avoid division by zero errors elsewhere in the code).
-   if( 0 == $d_width )  {
+   if ( 0 == $d_width )  {
        $d_min--;
        $d_max++;
        $d_width = 2;
@@ -1290,7 +1358,8 @@ sub _find_x_scale {
    my $precision = $self->{'precision'};
 
    # Now sort out an array of tick labels.
-   for( my $labelNum = $p_min; $labelNum<=$p_max; $labelNum+=$tickInterval ) {
+   for( my $labelNum = $p_min; $labelNum<$p_max+$tickInterval/2; $labelNum+=$tickInterval ) 
+   {
 	my $labelText;
 
         if( defined $self->{f_y_tick} )  {
@@ -1318,6 +1387,8 @@ sub _find_x_scale {
    $self->{'x_number_ticks'} = $tickCount;
    return 1;
 }
+
+
 ##  find good values for the minimum and maximum y-value on the chart
 # New version, re-written by David Pottage of Tao Group.
 # This code is *AS IS* and comes with *NO WARRANTY*
@@ -1327,16 +1398,16 @@ sub _find_x_scale {
 #
 # max_val, min_val: 	The maximum and minimum values for the y axis.
 # 
-# y_ticks:				The number of ticks to plot on the y scale, including
-#						the end points. e.g. If the scale runs from 0 to 50,
-#						with ticks every 10, y_ticks will have the value of 6.
+# y_ticks:		The number of ticks to plot on the y scale, including
+#			the end points. e.g. If the scale runs from 0 to 50,
+#			with ticks every 10, y_ticks will have the value of 6.
 # 
-# y_tick_labels:		An array of strings, each is a label for the y axis.
+# y_tick_labels:	An array of strings, each is a label for the y axis.
 # 
 # y_tick_labels_length:	The length to allow for B tick labels. (How long is
 #						the longest?)	
 
-sub _find_y_scale
+sub _find_y_scale 
 {
 	my $self = shift;
 	
@@ -1350,94 +1421,39 @@ sub _find_y_scale
 	my $temp_rangeExponent;
 	
 	# Find the datatset minimum and maximum.
-	($d_min, $d_max) = $self->_find_y_range();
+	($d_min, $d_max) = $self->_find_y_range(); 
 
 	# Force the inclusion of zero if the user has requested it.
 	if( $self->{'include_zero'} =~ m!^true$!i )
-	{
-		if( ($d_min * $d_max) > 0 )	# If both are non zero and of the same sign.
+	{ 
+	#print "include_zero = true\n";
+	    if( ($d_min * $d_max) > 0 )	# If both are non zero and of the same sign.
+	    {
+	        if( $d_min > 0 )	# If the whole scale is positive.
 		{
-			if( $d_min > 0 )	# If the whole scale is positive.
-			{
-				$d_min = 0;
-			}
-			else				# The scale is entirely negative.
-			{
-				$d_max = 0;
-			}
+		    $d_min = 0;
 		}
+		else				# The scale is entirely negative.
+		{
+		    $d_max = 0;
+		}
+	    }
 	}
 	
-        if ( $self->{'integer_ticks_only'} =~ /^\d$/ ) {
-           if ( $self->{'integer_ticks_only'} == 1 ) {
-              $self->{'integer_ticks_only'} = 'true';
-           } else {
-              $self->{'integer_ticks_only'} = 'false';
-           }
+        if ( $self->{'integer_ticks_only'} =~ /^\d$/ ) 
+        {
+            if ( $self->{'integer_ticks_only'} == 1 ) 
+            {
+                $self->{'integer_ticks_only'} = 'true';
+            } 
+            else 
+            {
+                $self->{'integer_ticks_only'} = 'false';
+            }
         }
 	if( $self->{'integer_ticks_only'} =~ m!^true$!i )
 	{
-                # Allow the dataset range to be overidden by the user.
-	        # f_min/max are booleans which indicate that the min & max should not be modified.
-	        my $f_min = defined $self->{'min_val'};
-	        $d_min = $self->{'min_val'} if $f_min;
-
-	        my $f_max = defined $self->{'max_val'};
-	        $d_max = $self->{'max_val'} if $f_max;
-
-	        # Assert against the min is larger than the max.
-	        if( $d_min > $d_max )
-	        {
-	         croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
-	        }
-		# The user asked for integer ticks, force the limits to integers.
-		# & work out the range directly.
-		#$p_min = $self->_round2Tick($d_min, 1, -1);
-		#$p_max = $self->_round2Tick($d_max, 1, 1);
-
-		$skip = $self->{skip_int_ticks};
-                $skip = 1 if $skip < 1;      
-	    
-                $p_min = $self->_round2Tick($d_min, 1, -1);
-		$p_max = $self->_round2Tick($d_max, 1, 1);
-
-		$tickInterval = $skip;
-		$tickCount = ($p_max - $p_min ) / $skip + 1;
-
-                
-
-             	# Now sort out an array of tick labels.
-
-		for( my $labelNum = $p_min; $labelNum<=$p_max; $labelNum+=$tickInterval )
-		{
-			my $labelText;
-		
-			if( defined $self->{f_y_tick} )
-			{	
-                        	# Is _default_f_tick function used?
-                        	if ( $self->{f_y_tick} == \&_default_f_tick) {
-			   	$labelText = sprintf("%d", $labelNum);
-				
-                        	}
-				else {
-					$labelText = $self->{f_y_tick}->($labelNum);
-					
-                        	}
-			}
-			
-			else
-			{
-				$labelText = sprintf("%d", $labelNum);
-			}	
-			
-		push @tickLabels, $labelText;
-		$maxtickLabelLen = length $labelText if $maxtickLabelLen < length $labelText;
-		}
-	
-	}
-	else
-	{  
-	    # Allow the dataset range to be overidden by the user.
+            # Allow the dataset range to be overidden by the user.
 	    # f_min/max are booleans which indicate that the min & max should not be modified.
 	    my $f_min = defined $self->{'min_val'};
 	    $d_min = $self->{'min_val'} if $f_min;
@@ -1448,29 +1464,97 @@ sub _find_y_scale
 	    # Assert against the min is larger than the max.
 	    if( $d_min > $d_max )
 	    {
-	     croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
-	     }
+	        croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
+	    }
+	    # The user asked for integer ticks, force the limits to integers.
+	    # & work out the range directly.
+	    #$p_min = $self->_round2Tick($d_min, 1, -1);
+	    #$p_max = $self->_round2Tick($d_max, 1, 1);
 
-	     # Calculate the width of the dataset. (posibly modified by the user)
+	    $skip = $self->{skip_int_ticks};
+            $skip = 1 if $skip < 1;      
+	    
+            $p_min = $self->_round2Tick($d_min, 1, -1);
+            $p_max = $self->_round2Tick($d_max, 1, 1); 
+            if ( ($p_max - $p_min ) == 0 )
+	    {
+	        $p_max++, $p_min--;
+	    }
+
+	    $tickInterval = $skip;
+            $tickCount = ($p_max - $p_min ) / $skip + 1;
+                
+
+            # Now sort out an array of tick labels.
+                
+	    for( my $labelNum = $p_min; $labelNum<$p_max+$tickInterval/3; $labelNum+=$tickInterval )
+	    {
+                my $labelText;
+		
+		if ( defined $self->{f_y_tick} )
+	        {	
+                    # Is _default_f_tick function used?
+                    if ( $self->{f_y_tick} == \&_default_f_tick) 
+		    {
+		        $labelText = sprintf("%d", $labelNum);
+                    }
+		    else 
+		    {
+			$labelText = $self->{f_y_tick}->($labelNum);	
+                    }
+		}
+		else
+		{
+		    $labelText = sprintf("%d", $labelNum);
+		}	
+		
+                push @tickLabels, $labelText;
+		$maxtickLabelLen = length $labelText if $maxtickLabelLen < length $labelText;
+	    }
+	}
+	else
+	{  
+	    # Allow the dataset range to be overidden by the user.
+	    # f_min/max are booleans which indicate that the min & max should not be modified.
+	    my $f_min = defined $self->{'min_val'};
+	    $d_min = $self->{'min_val'} if $f_min;
+
+	    my $f_max = defined $self->{'max_val'};
+	    $d_max = $self->{'max_val'} if $f_max;
+	    
+	  #  print "fmin $f_min fmax $f_max\n";
+          #  print "dmin $d_min dmax $d_max\n";
+	    
+	    # Assert against the min is larger than the max.
+	    if( $d_min > $d_max )
+	    {
+	        croak "The the specified 'min_val' & 'max_val' values are reversed (min > max: $d_min>$d_max)";
+	    }
+
+	     # Calculate the width of the dataset. (possibly modified by the user)
 	     my $d_width = $d_max - $d_min;
 		
 	     # If the width of the range is zero, forcibly widen it
 	     # (to avoid division by zero errors elsewhere in the code).
-	     if( 0 == $d_width )
-	         {
-		$d_min--;
-		$d_max++;
-		$d_width = 2;
-	          }
-		
+	     if ( $d_width == 0 )
+	     { 
+	   	$d_min--;
+	   	$d_max++;
+	   	$d_width = 2;
+	     }
+		  
+	  		
              # Descale the range by converting the dataset width into
              # a floating point exponent & mantisa pair.
              my( $rangeExponent, $rangeMantisa ) = $self->_sepFP( $d_width );
 	     my $rangeMuliplier = 10 ** $rangeExponent;
+	   
+	    # print "fmin $f_min fmax $f_max\n";
+            # print "dmin $d_min dmax $d_max\n";
 	   		
 	     # Find what tick
 	     # to use & how many ticks to plot,
-	     # round the plot min & max to suatable round numbers.
+	     # round the plot min & max to suitable round numbers.
 	     ($tickInterval, $tickCount, $p_min, $p_max)
 		= $self->_calcTickInterval($d_min/$rangeMuliplier, $d_max/$rangeMuliplier,
 				$f_min, $f_max,
@@ -1479,52 +1563,95 @@ sub _find_y_scale
 	     $_ *= $rangeMuliplier foreach($tickInterval, $p_min, $p_max);
 	
 	     # Is precision < |rangeExponent|?
-	     if ($rangeExponent <0) {
-	         $temp_rangeExponent = $rangeExponent*(-1);}
-	     else {
-	         $temp_rangeExponent = $rangeExponent;
-		 }
-		 	 
-	     #get the precision for the labels
-	     my $precision = $self->{'precision'};
-	     
-	     if (($temp_rangeExponent+1) > $precision) {
-	         $prec_test =1;
-		 }
-		 
-             # Now sort out an array of tick labels.
-	     for( my $labelNum = $p_min; $labelNum<=$p_max; $labelNum+=$tickInterval )
+	     if ($rangeExponent < 0) 
+             {
+	         $temp_rangeExponent = -$rangeExponent;
+             }
+	     else 
 	     {
-		my $labelText;
+	         $temp_rangeExponent = $rangeExponent;
+	     }
+		
+	    # print "pmin $p_min pmax $p_max\n";	
+	    # print "range exponent $rangeExponent\n"; 	
+	     
+            #get the precision for the labels
+	    my $precision = $self->{'precision'};
+	     
+	    if ( $temp_rangeExponent != 0 && $rangeExponent < 0 && $temp_rangeExponent > $precision) 
+            {
+	  	$prec_test = 1;
+	    }
+	   	     	 
+            # Now sort out an array of tick labels.
+            for( my $labelNum = $p_min; $labelNum<$p_max+$tickInterval/2; $labelNum+=$tickInterval )
+	    {
+	        my $labelText;
 		if( defined $self->{f_y_tick} )
 		{
-                        # Is _default_f_tick function used?
-                        if (( $self->{f_y_tick} == \&_default_f_tick) && ($prec_test ==0)) {
-			   $labelText = sprintf("%.".$precision."f", $labelNum);
-			 }
-			# If precision <|rangeExponent| print the labels whith exponents 
-			elsif (($self->{f_y_tick} == \&_default_f_tick) && ($prec_test ==1)) {
-			   $labelText = $self->{f_y_tick}->($labelNum); 
+                    # Is _default_f_tick function used?
+                    if (( $self->{f_y_tick} == \&_default_f_tick) && ($prec_test == 0)) 
+                    {
+		        $labelText = sprintf("%.".$precision."f", $labelNum);
+		    }
+		    # If precision <|rangeExponent| print the labels whith exponents 
+		    elsif (($self->{f_y_tick} == \&_default_f_tick) && ($prec_test == 1)) 
+                    {
+			$labelText = $self->{f_y_tick}->($labelNum); 
+			#  print "precision $precision\n"; 
+			#  print "temp range exponent $temp_rangeExponent\n";
+			#  print "range exponent $rangeExponent\n";
+			#  print "labelText $labelText\n";
 			  
-                        } else {
-			   $labelText = $self->{f_y_tick}->($labelNum);
-			}
+                    }
+		    else 
+                    {
+			$labelText = $self->{f_y_tick}->($labelNum);
+		    }
 		}
 		else
 		{
-			$labelText = sprintf("%.".$precision."f", $labelNum);
+		    $labelText = sprintf("%.".$precision."f", $labelNum);
 		}
 		push @tickLabels, $labelText;
 		$maxtickLabelLen = length $labelText if $maxtickLabelLen < length $labelText;
-	     }
+	     } # end for
 	}
 	
 	# Store the calculated data.
-	$self->{'min_val'} = $p_min;
-	$self->{'max_val'} = $p_max;
-	$self->{'y_ticks'} = $tickCount;
-	$self->{'y_tick_labels'} = \@tickLabels;
+        #### begin debugging output
+	#if ( defined $self->{'y_ticks'} )
+        #{
+        #   print "_find_y_scale: self->{'y_ticks'}=".$self->{'y_ticks'}."\n";	
+        #}
+        #else
+        #{
+        #   print "_find_y_scale: self->{'y_ticks'}= NOT DEFINED\n";	
+        #}
+        #if ( defined $self->{'min_val'} )
+        #{
+	#    print "_find_y_scale: self->{'min_val'}=".$self->{'min_val'}."\n";	
+        #}
+        #else
+        #{
+	#    print "_find_y_scale: self->{'min_val'}=NOT DEFINED\n";	
+        #}
+        #if ( defined $self->{'max_val'} )
+        #{
+	#    print "_find_y_scale: self->{'max_val'}=".$self->{'max_val'}."\n";
+        #}
+        #else
+        #{
+	#    print "_find_y_scale: self->{'max_val'}= NOT DEFINED\n";
+        #}	
+        #### end debugging output
+        
+        $self->{'min_val'}             = $p_min;
+        $self->{'max_val'}             = $p_max;
+	$self->{'y_ticks'}             = $tickCount;
+	$self->{'y_tick_labels'}       = \@tickLabels;
 	$self->{'y_tick_label_length'} = $maxtickLabelLen;
+        
 	
 	# and return.
 	return 1;
@@ -1542,6 +1669,8 @@ sub _calcTickInterval
 		$minF, $maxF,	# Indicates if those min/max are fixed.
 		$minTicks, $maxTicks,	# The minimum & maximum number of ticks.
 	) = @_;
+	
+#	print "calcTickInterval min $min max $max minF $minF maxF $maxF\n"; 
 	
 	# Verify the supplied 'min_y_ticks' & 'max_y_ticks' are sensible.
 	if( $minTicks < 2 )
@@ -1602,6 +1731,8 @@ sub _calcTickInterval
 	
 	die "can't happen!";
 }
+
+
 sub _calcXTickInterval
 {       my $self = shift;
 	my(
@@ -1731,11 +1862,13 @@ sub _find_y_range {
   my $min = undef;
   for my $dataset ( @$data[1..$#$data] ) {
     for my $datum ( @$dataset ) {
-      if ( defined $datum ) {
+      if ( defined $datum && $datum =~ /^[\-\+]{0,}\s*[\d\.eE\-\+]+/ ) {
+      # if ( defined $datum  ) {
 ## Prettier, but probably slower:
 #         $max = $datum unless defined $max && $max >= $datum;
 #         $min = $datum unless defined $min && $min <= $datum;
-        if ( defined $max ) {
+       if ( defined $max && $max =~ /^[\-\+]{0,}\s*[\d\.eE\-\+]+/ ) {
+       # if ( defined $max ) {
           if ( $datum > $max ) { $max = $datum }
           elsif ( $datum < $min ) { $min = $datum }
         }
@@ -1754,8 +1887,10 @@ sub _find_x_range {
   my $min = undef;
 
     for my $datum ( @{$data->[0]} ) {
-      if ( defined $datum ) {
-        if ( defined $max ) {
+     if ( defined $datum && $datum =~ /^[\-\+]{0,1}\s*[\d\.eE\-\+]+/ ) {
+     # if ( defined $datum ) {
+       if ( defined $max && $max =~ /^[\-\+]{0,1}\s*[\d\.eE\-\+]+/ ) {
+     # if ( defined $max  ) {
           if ( $datum > $max ) { $max = $datum }
           elsif ( $datum < $min ) { $min = $datum }
         }
@@ -2759,15 +2894,15 @@ sub _draw_y_ticks {
   ($w, $h) = ($font->width, $font->height);
 
   # figure out which ticks not to draw
-  if ($self->{'min_val'} >= 0) {
+  if ($self->{'min_val'} >= 0) { 
     $s = 1;
-    $f = $#labels;
+    $f = $#labels; 
   }
-  elsif ($self->{'max_val'} <= 0) {
+  elsif ($self->{'max_val'} <= 0) {  
     $s = 0;
-    $f = $#labels ;                        # -1 entfernt
+    $f = $#labels;                        # -1 entfernt
   }
-  else {
+  else {    
     $s = 0;
     $f = $#labels;
   }
@@ -3174,8 +3309,6 @@ sub _default_f_tick {
     
     return $label;
 }
-
-
 
 
 

@@ -1,3 +1,6 @@
+#!/usr/bin/perl -w
+
+
 use Chart::Split;
 print "1..1\n";
 

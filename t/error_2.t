@@ -19,6 +19,7 @@ $g->set( 'xy_plot' => 'true',
          'title' => 'Error Bars Demo',
          'include_zero' => 'true',
 	 'max_val' => 3,
+	 'custom_x_ticks' => [0,1],
          );
 
 $g->png ("samples/error_2.png");
