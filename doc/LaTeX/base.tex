@@ -195,12 +195,20 @@ please remember that the 0th dataset will be empty, since that's the place for t
    
 \label{options}
 \Attributes
-These are the options which have effects on all types of chart:
+These are the options which have effects on all types of chart. 
+There different kind of attributes: attributes which needs a number, for example the
+number of pixels, attributes which needs a written explanation or definition,
+for example the title of the chart and attributes which represent a boolean value.
+Before Version 2.4.2 the value 'true' was represented by string 'true' and
+the boolean value 'false' was represented by the string 'false'.
+From version 2.4.2 onwards 'true' may also be represented by 1, 't', 'T' and
+'false' may be represented by 0, 'f', 'F'.
+
 \begin{description}
 \item ['transparent']Makes the background of the image transparent if set to 'true'. 
                     Useful for making web page images. 
                     It doesn't work for all browsers. 
-                    Defaults to false.
+                    Defaults to 'false'.
 
 \item ['png\_border']Sets the number of pixels 
                      used as a border between the graph and the edges of the png/jpeg. 

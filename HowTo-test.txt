@@ -1,0 +1,14 @@
+Teste ge"anderte Quellen:
+--------------------------
+make test
+PERL_DL_NONLAZY=1 /usr/bin/perl -dw -Iblib/lib -Iblib/arch t/points_100.t
+(vgl. test.sh)
+
+Create doxygen documentation
+doxygen Chart_doxygen.conf 2>&1 | more
+Browser: open file html/index.html
+
+
+Doxygen Perl Modules:
+---------------------
+DoxyDocs.pm:

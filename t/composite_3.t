@@ -1,62 +1,64 @@
 #!/usr/bin/perl -w
 use strict;
-use Chart::Composite;   #(type is one of: Points, Lines, Bars, LinesPoints, Composite, StackedBars, Mountain)
+use Chart::Composite;    #(type is one of: Points, Lines, Bars, LinesPoints, Composite, StackedBars, Mountain)
 
 print "1..1\n";
-my $obj = Chart::Composite->new(800, 600);   #Breite, Höhe
+my $obj = Chart::Composite->new( 800, 600 );    #Breite, Höhe
 my @legend_ary;
-my ($legend, @zeile)    ;
+my ( $legend, @zeile );
 my @all_aryref;
-open(OUT, ">samples/composite_3.png") or die "kann Datei nicht schreiben\n";
+open( OUT, ">samples/composite_3.png" ) or die "kann Datei nicht schreiben\n";
 
-my $i =0;
-my $e = 0;
+my $i       = 0;
+my $e       = 0;
 my $max_val = 0;
-while(<DATA>) {
-        if ($_ =~ /EOF/i){
-            last;
-      }
-      chomp;
-       $i++;
-       ($legend, @zeile) = split/\|/,$_;
-       $obj->add_dataset(@zeile);
-       if ( $i != 1 ){
-              push @legend_ary ,$legend ;    # Erste Zeile ist die x-Achsenbezeichnung und gehört nicht zur Legende
-              for (0..$#zeile) { $zeile[$_] > $max_val  ? $max_val = $zeile [$_]  : 1 ;}  # den Maximalen Wert ermitteln
-       }
-       $all_aryref[$e++] = [@zeile];
+while (<DATA>)
+{
+    if ( $_ =~ /EOF/i )
+    {
+        last;
+    }
+    chomp;
+    $i++;
+    ( $legend, @zeile ) = split /\|/, $_;
+    $obj->add_dataset(@zeile);
+    if ( $i != 1 )
+    {
+        push @legend_ary, $legend;    # Erste Zeile ist die x-Achsenbezeichnung und gehört nicht zur Legende
+        for ( 0 .. $#zeile ) { $zeile[$_] > $max_val ? $max_val = $zeile[$_] : 1; }    # den Maximalen Wert ermitteln
+    }
+    $all_aryref[ $e++ ] = [@zeile];
 
 }
 
-if ( $max_val =~ /^\d+$/ ) {
+if ( $max_val =~ /^\d+$/ )
+{
 
-      $max_val = 100 * int( 1 + $max_val/100);
-} # den Scalenwert die nächste 100er Stellen setzen
+    $max_val = 100 * int( 1 + $max_val / 100 );
+}    # den Scalenwert die nächste 100er Stellen setzen
 
 # Der zweite Charttyp überdeckt immer den ersten
-$obj->set(  'legend'        => "top",
-            'legend_labels' => \@legend_ary ,
-            'x_ticks'       => "vertical",
-            'composite_info'=> [ ['StackedBars', [8,7,6,5]  ],
-                                 ['Bars',[1,2,3,4,9] ],
-                                ],
-	    'same_y_axes'  => "true",
-            'y_label'      => "Anzahl",
-            'max_val1'     =>  $max_val ,
-            'max_val2'     =>  $max_val,
-            'space_bars'   =>  1 ,
-            'brush_size'   =>  10,
-	    'legend_example_height'  => 'true',
-	    'legend_example_height0..3' => '50',
-	    'legend_example_height4..8' => '4',
-	                                     );
+$obj->set(
+    'legend'                    => "top",
+    'legend_labels'             => \@legend_ary,
+    'x_ticks'                   => "vertical",
+    'composite_info'            => [ [ 'StackedBars', [ 8, 7, 6, 5 ] ], [ 'Bars', [ 1, 2, 3, 4, 9 ] ], ],
+    'same_y_axes'               => "true",
+    'y_label'                   => "Anzahl",
+    'max_val1'                  => $max_val,
+    'max_val2'                  => $max_val,
+    'space_bars'                => 1,
+    'brush_size'                => 10,
+    'legend_example_height'     => 'true',
+    'legend_example_height0..3' => '50',
+    'legend_example_height4..8' => '4',
+);
 
-$obj->png(\*OUT);
+$obj->png( \*OUT );
 print "ok 1\n";
 close OUT;
 
 exit 0;
-
 
 __END__
 Datum|01.09.2003|02.09.2003|03.09.2003|04.09.2003|05.09.2003|06.09.2003|07.09.2003|08.09.2003|09.09.2003|10.09.2003|11.09.2003|12.09.2003|13.09.2003|14.09.2003|15.09.2003|16.09.2003|17.09.2003|18.09.2003|19.09.2003|20.09.2003|21.09.2003|22.09.2003

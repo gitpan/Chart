@@ -95,6 +95,18 @@ Also available these special options:
                   which means that the x-axis is also numeric if set to 'true'. 
                   Very useful for plots of mathematical functions. Defaults to 'false'.
 
+\item['xlabels', 'xrange'] Allows the arbitrary positioning of the labels at the
+                  x-axis. The option 'xy\_plot' must be defined to let this
+                  options work. An example is
+                  \begin{verbatim}
+@labels = (['Jan', 'Feb','Mar'], 
+           ['10','40','70']); 
+
+$chart->set( xlabels => \@labels, 
+             xrange => [0,100] 
+           ); 
+                   \end{verbatim}
+
 \item['sort'] Sorts the data of a x-y-graph ascending if set to 'true'. 
               Should be set if the added data isn't sorted. Defaults to 'false'.  
               

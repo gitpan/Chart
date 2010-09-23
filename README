@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.4
+Chart version 2.4.2
 ------------------------------------------------------------------------
 
 
@@ -22,12 +22,52 @@ put samples of the different charts in the samples/ directory.
 PREREQUISITES
 -------------
 
-Lincoln Stein's GD module version 1.20 or higher.
+Lincoln Stein's GD module version 2.0.36 or higher.
 
 -------
 CHANGES
 -------
-2.4  Changes done by Christine Zilker, Gerhard Stuhlpfarrer, R. Dassing
+2.4.2 Changes done by R. Dassing, Michael Potter
+      Base.pm:
+      The values for 'true' resp. 'false' may be of the following
+      true: TRUE, true, T, t, 1 and defined
+      false: FALSE, false, F, f, 0 or undefined
+      
+      Base.pm:
+      Added new options xlabel and xrange which is valid for xy_plot
+      and Chart::Lines, Chart::Points, Chart::LinesPoints,
+      Chart::Split, Chart::ErrorBars.
+      
+      In order to use the labels, the chart module needs to have 'xlabels' 
+      AND 'xrange' set. Below is some example code for use: 
+      @labels = (['Jan', 'Feb','Mar'], 
+                 ['10','40','70']); 
+      $chart->set( xlabels => \@labels, 
+                   xrange => [0,100] ); 
+      This options allow to set and position labels at the x-axis arbitrary.
+
+      add_dataset() and app_pt() accepts now datasets as lists and as
+          references to list like already mentioned in the docs
+
+
+      Pie.pm: 
+      Optimized organisation of the placement of the labels.
+      Added flag to avoid plotting of legends at all
+      Using GD Version 2.0.36 as this version supports 'filledArc'
+
+      Composite.pm:
+      Correction due to Request 23166
+      write the endmost value of input array
+      in imagemap_data array
+      
+      Lines.pm:
+      Correction due to Request 23166: 
+      write the endmost value of input array
+      in imagemap_data array
+      
+      
+      
+2.4.1 Changes done by Christine Zilker, Gerhard Stuhlpfarrer, R. Dassing
         Added new Options:
              ring             Draw a ring instead of a Pie
              legend_lines     Connect Pie and the description with a line
@@ -196,7 +236,7 @@ CHANGES
 MAINTAINER
 ------
 
-Chart-Group (chart@wettzell.ifag.de)
+Chart-Group (chart@fs.wettzell.de)
 
 ---------
 COPYRIGHT
