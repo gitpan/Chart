@@ -6,25 +6,19 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2010-09-23
-# @version 2.4.2
+# @date 2011-11-25
+# @version 2.4.3
 #
 
-## @class Chart::LinesPoints
-# LinesPoints class derived from class Base.
-#
-# This class provides all functions which are specific to
-# lines where the values are plotted using points
-#
 package Chart::LinesPoints;
 
-use Chart::Base '2.4.2';
+use Chart::Base '2.4.3';
 use GD;
 use Carp;
 use strict;
 
 @Chart::LinesPoints::ISA     = qw(Chart::Base);
-$Chart::LinesPoints::VERSION = '2.4.2';
+$Chart::LinesPoints::VERSION = '2.4.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -371,11 +365,49 @@ sub _prepare_brush
     $newcolor = $brush->colorAllocate(@rgb);
     $brush->transparent($white);
 
-    # draw the circle
-    $brush->arc( $radius - 1, $radius - 1, $radius, $radius, 0, 360, $newcolor );
+    # draw a nice object
+    if ( $self->{'brushStyle'} eq 'OpenCircle' )
+    {
 
-    # fill it if we're using lines
-    $brush->fill( $radius - 1, $radius - 1, $newcolor );
+        # draw the circle
+        $brush->arc( $radius - 1, $radius - 1, $radius, $radius, 0, 360, $newcolor );
+    }
+    elsif ( $self->{'brushStyle'} eq 'FilledDiamond' )
+    {
+
+        # draw the diamond, using 1 oint less than maximum
+        my $R  = int( $radius + 0.5 );
+        my $R2 = $R * 2;
+        $brush->line( $R,  1,       $R2 - 1, $R,      $newcolor );
+        $brush->line( $R2, $R,      $R,      $R2 - 1, $newcolor );
+        $brush->line( $R,  $R2 - 1, 1,       $R,      $newcolor );
+        $brush->line( 1,   $R,      $R,      1,       $newcolor );
+
+        # and fill it
+        $brush->fill( $radius - 1, $radius - 1, $newcolor );
+    }
+    elsif ( $self->{'brushStyle'} eq 'OpenDiamond' )
+    {
+
+        # draw the diamond, using 1 oint less than maximum
+        my $R  = int( $radius + 0.5 );
+        my $R2 = $R * 2;
+        $brush->line( $R,  1,       $R2 - 1, $R,      $newcolor );
+        $brush->line( $R2, $R,      $R,      $R2 - 1, $newcolor );
+        $brush->line( $R,  $R2 - 1, 1,       $R,      $newcolor );
+        $brush->line( 1,   $R,      $R,      1,       $newcolor );
+    }
+    else
+    {
+
+        # in all other cases:
+
+        # draw the circle
+        $brush->arc( $radius - 1, $radius - 1, $radius, $radius, 0, 360, $newcolor );
+
+        # and fill it
+        $brush->fill( $radius - 1, $radius - 1, $newcolor );
+    }
 
     # set the new image as the main object's brush
     return $brush;

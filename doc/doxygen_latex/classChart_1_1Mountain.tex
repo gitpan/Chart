@@ -1,0 +1,77 @@
+\hypertarget{classChart_1_1Mountain}{
+\section{Chart::Mountain Class Reference}
+\label{classChart_1_1Mountain}\index{Chart::Mountain@{Chart::Mountain}}
+}
+
+
+\hyperlink{classChart_1_1Mountain}{Mountain} class derived class for Chart to implement mountain type of plots.  
+
+
+
+
+Inheritance diagram for Chart::Mountain:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=166pt]{classChart_1_1Mountain__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Chart::Mountain:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=268pt]{classChart_1_1Mountain__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Private Functions}
+\label{_amgrp8d29cff216bafa3117e21883ea7c6b5f}
+ \begin{DoxyCompactItemize}
+\item 
+\hypertarget{classChart_1_1Mountain_aaa146080e4c657cd36cfa2a233955e35}{
+private \hyperlink{classChart_1_1Mountain_aaa146080e4c657cd36cfa2a233955e35}{\_\-draw\_\-data}}
+\label{classChart_1_1Mountain_aaa146080e4c657cd36cfa2a233955e35}
+
+\begin{DoxyCompactList}\small\item\em draw the data \item\end{DoxyCompactList}\item 
+private array \hyperlink{classChart_1_1Mountain_a1da3590b6cb7bc51b8c192e1141a6fa3}{\_\-find\_\-y\_\-range} ()
+\begin{DoxyCompactList}\small\item\em Find minimum and maximum value of y data sets. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classChart_1_1Mountain}{Mountain} class derived class for Chart to implement mountain type of plots. Some \hyperlink{classChart_1_1Mountain}{Mountain} chart details:
+
+The effective y data value for a given x point and dataset is the sum of the actual y data values of that dataset and all datasets \char`\"{}below\char`\"{} it (i.e., with higher dataset indexes).
+
+If the y data value in any dataset is undef or negative for a given x, then all datasets are treated as missing for that x.
+
+The y minimum is always forced to zero.
+
+To avoid a dataset area \char`\"{}cutting into\char`\"{} the area of the dataset below it, the y pixel for each dataset point will never be below the y pixel for the same point in the dataset below the dataset. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classChart_1_1Mountain_a1da3590b6cb7bc51b8c192e1141a6fa3}{
+\index{Chart::Mountain@{Chart::Mountain}!\_\-find\_\-y\_\-range@{\_\-find\_\-y\_\-range}}
+\index{\_\-find\_\-y\_\-range@{\_\-find\_\-y\_\-range}!Chart::Mountain@{Chart::Mountain}}
+\subsubsection[{\_\-find\_\-y\_\-range}]{\setlength{\rightskip}{0pt plus 5cm}private array Chart::Mountain::\_\-find\_\-y\_\-range (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Mountain_a1da3590b6cb7bc51b8c192e1141a6fa3}
+
+
+Find minimum and maximum value of y data sets. 
+
+\begin{DoxyReturn}{Returns}
+( min, max, flag\_\-all\_\-integers ) 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classChart_1_1Base_ad28e18fc86eebc6846785580977532ca}{Chart::Base}.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+Chart/\hyperlink{Mountain_8pm}{Mountain.pm}\end{DoxyCompactItemize}

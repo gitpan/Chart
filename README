@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.4.2
+Chart version 2.4.3
 ------------------------------------------------------------------------
 
 
@@ -27,6 +27,8 @@ Lincoln Stein's GD module version 2.0.36 or higher.
 -------
 CHANGES
 -------
+2.4.3 Corrections to imagemap production in Composite.pm and Lines.pm
+
 2.4.2 Changes done by R. Dassing, Michael Potter
       Base.pm:
       The values for 'true' resp. 'false' may be of the following

@@ -1,0 +1,1451 @@
+\hypertarget{classChart_1_1Base}{
+\section{Chart::Base Class Reference}
+\label{classChart_1_1Base}\index{Chart::Base@{Chart::Base}}
+}
+
+
+\hyperlink{classChart_1_1Base}{Base} class for Chart; all other classes derived from here.  
+
+
+
+
+Inheritance diagram for Chart::Base:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=600pt]{classChart_1_1Base__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Chart::Base:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=247pt]{classChart_1_1Base__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Hash \hyperlink{classChart_1_1Base_a38c2792df08724efa7c4e1b9194cbe6e}{named\_\-colors}
+\begin{DoxyCompactList}\small\item\em RGB values of named colors. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Private Functions}
+\label{_amgrp8d29cff216bafa3117e21883ea7c6b5f}
+ \begin{DoxyCompactItemize}
+\item 
+private int \hyperlink{classChart_1_1Base_a13296be5b92a9880851977fe0abfdf01}{\_\-check\_\-data}
+\begin{DoxyCompactList}\small\item\em Check the internal data to be displayed. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_ab021c0dceb1ae55e1697bbee667480fa}{\_\-draw}
+\begin{DoxyCompactList}\small\item\em Plot the chart to the gd object\par
+ Calls: \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_addecc110eb46a126acaad69e113d06ea}{\_\-set\_\-colors}
+\begin{DoxyCompactList}\small\item\em specify my colors \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_aa3467472a4c4a598c5a2f64de8c438c1}{\_\-draw\_\-title}
+\begin{DoxyCompactList}\small\item\em draw the title for the chart \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a060d522a2f0240cad4c746891d488f80}{\_\-default\_\-f\_\-tick}
+\begin{DoxyCompactList}\small\item\em default tick conversion function This function is pointed to be \$self-\/$>$\{f\_\-x\_\-tick\} resp. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a0803aa94dabfc982195cab15392ba7bc}{\_\-init} (scalar x, scalar y)
+\begin{DoxyCompactList}\small\item\em Initialize all default options here. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_ac704c89b5b4b3f3f0e6fa35d6c5ca6c3}{\_\-copy\_\-data} (scalar extern\_\-ref)
+\begin{DoxyCompactList}\small\item\em Copy external data via a reference to internal memory. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}{\_\-color\_\-role\_\-to\_\-index} ($\backslash$list list\_\-of\_\-roles)
+\item 
+private array \hyperlink{classChart_1_1Base_a6a97b446c6c2f646dddd7f2a0076ba2e}{\_\-color\_\-spec\_\-to\_\-rgb} (scalar role, scalar spec)
+\begin{DoxyCompactList}\small\item\em Return an array (list of) rgb values for spec. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_afd4f3ee3925d1e765e099c80e6c98da7}{\_\-draw\_\-sub\_\-title} ()
+\begin{DoxyCompactList}\small\item\em draw the sub-\/title for the chart \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_ade88df5ecdc74e50ea683b63424ba84a}{\_\-sort\_\-data} ()
+\begin{DoxyCompactList}\small\item\em sort the data nicely (mostly for the pareto charts and xy-\/plots) \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a694b293ee3d92e706b1743cb1fa9d09d}{\_\-find\_\-x\_\-scale} ()
+\begin{DoxyCompactList}\small\item\em For a xy-\/plot do the same for the x values, as '\_\-find\_\-y\_\-scale' does for the y values! \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_acb2fe91b2d57e43d84b1bc6f092ac68d}{\_\-find\_\-y\_\-scale} ()
+\begin{DoxyCompactList}\small\item\em find good values for the minimum and maximum y-\/value on the chart \item\end{DoxyCompactList}\item 
+private \hyperlink{classChart_1_1Base_a23f7394cb8c7bbe6a5d0e05582e038c9}{\_\-calcTickInterval} (scalar dataset\_\-min, scalar dataset\_\-max, scalar flag\_\-fixed\_\-min, scalar flag\_\-fixed\_\-max, scalar minTicks, scalar maxTicks)
+\begin{DoxyCompactList}\small\item\em Calculate the Interval between ticks in y direction. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_abc810d13339a6b0ab2f08ff8a96b82cb}{\_\-calcXTickInterval} (scalar min, scalar max, scalar minF, scalar maxF, scalar minTicks, scalar maxTicks)
+\begin{DoxyCompactList}\small\item\em Calculate the Interval between ticks in x direction. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_afb289639a7016adabc1cb03ae7851269}{\_\-countTicks} (scalar min, scalar max, scalar interval)
+\begin{DoxyCompactList}\small\item\em Works out how many ticks would be displayed at that interval. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_afaa4e9e29bc7fb9df56e9c7cd168e79b}{\_\-round2Tick} (scalar input, scalar interval, scalar roundUP)
+\begin{DoxyCompactList}\small\item\em Rounds up or down to the next tick of interval size. \item\end{DoxyCompactList}\item 
+private array \hyperlink{classChart_1_1Base_ab1f985ad443c2f1d1bf3ef86e9382346}{\_\-sepFP} (scalar num)
+\begin{DoxyCompactList}\small\item\em Seperates a number into it's base 10 floating point exponent \& mantisa. \item\end{DoxyCompactList}\item 
+private array \hyperlink{classChart_1_1Base_ad28e18fc86eebc6846785580977532ca}{\_\-find\_\-y\_\-range} ()
+\begin{DoxyCompactList}\small\item\em Find minimum and maximum value of y data sets. \item\end{DoxyCompactList}\item 
+private array \hyperlink{classChart_1_1Base_ab5b79dbb6f086902396bf5fd4c2248ef}{\_\-find\_\-x\_\-range} ()
+\begin{DoxyCompactList}\small\item\em Find minimum and maximum value of x data sets. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_aa13b0e86a933ce6b865c098fd0bdb37d}{\_\-plot} ()
+\begin{DoxyCompactList}\small\item\em main sub that controls all the plotting of the actual chart \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a530e742ca18ce2e89f177d367964277f}{\_\-draw\_\-legend} ()
+\begin{DoxyCompactList}\small\item\em let the user know what all the pretty colors mean. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a863d96ec45b7fbd5ff05194f4eb827d0}{\_\-draw\_\-bottom\_\-legend} ()
+\begin{DoxyCompactList}\small\item\em put the legend on the bottom of the chart \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a39f25b556f2d82e176fc6b0ccfc6da17}{\_\-draw\_\-right\_\-legend} ()
+\begin{DoxyCompactList}\small\item\em put the legend on the right of the chart \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a2f3f15efadc46484126c94780748a534}{\_\-draw\_\-top\_\-legend} ()
+\begin{DoxyCompactList}\small\item\em put the legend on top of the chart \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a39bad67aecd83bf523bc27d397256480}{\_\-draw\_\-left\_\-legend} ()
+\begin{DoxyCompactList}\small\item\em put the legend on the left of the chart \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a2ec9e89bd6719e178877577a72750cb7}{\_\-draw\_\-none\_\-legend} ()
+\begin{DoxyCompactList}\small\item\em no legend to draw. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a5ad71ca4e51c7d4876561737f048a6e7}{\_\-draw\_\-x\_\-label} ()
+\begin{DoxyCompactList}\small\item\em draw the label for the x-\/axis \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a6aafcea3c04d6a030a29892f04b25c1f}{\_\-draw\_\-y\_\-label} ()
+\begin{DoxyCompactList}\small\item\em draw the label for the y-\/axis \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a26f0a0f81ae5e6082c2e7f7c00981dac}{\_\-draw\_\-ticks} ()
+\begin{DoxyCompactList}\small\item\em draw the ticks and tick labels \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a4f10e76a428b6b09c7ac17a8d8212701}{\_\-draw\_\-x\_\-number\_\-ticks} ()
+\begin{DoxyCompactList}\small\item\em draw the ticks and tick labels \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a64a81b266a528e24e5547ac504c1fc78}{\_\-draw\_\-x\_\-ticks} ()
+\begin{DoxyCompactList}\small\item\em draw the x-\/ticks and their labels \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a46852297ab12aaf10546e63dd7eab462}{\_\-draw\_\-y\_\-ticks} ()
+\begin{DoxyCompactList}\small\item\em draw the y-\/ticks and their labels \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a8bae7e38a6e77c0696f2ef8b06791caa}{\_\-grey\_\-background} ()
+\begin{DoxyCompactList}\small\item\em put a grey background on the plot of the data itself \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a379e60b338fb8858ce705bdc0e5630fb}{\_\-draw\_\-grid\_\-lines} ()
+\begin{DoxyCompactList}\small\item\em draw grid\_\-lines \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_afb41d27247195ea502c6f5a2d8e21eb6}{\_\-draw\_\-x\_\-grid\_\-lines} ()
+\begin{DoxyCompactList}\small\item\em draw grid\_\-lines for x \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_aac178efe7b3c275cd18fe3c86b4d7a6f}{\_\-draw\_\-y\_\-grid\_\-lines} ()
+\begin{DoxyCompactList}\small\item\em draw grid\_\-lines for y \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_af174cccca9ebbc23f588b6587e88fa1b}{\_\-draw\_\-y2\_\-grid\_\-lines} ()
+\begin{DoxyCompactList}\small\item\em draw grid\_\-lines for y \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a29c5e6856ca3df71719dc01eff7d1de8}{\_\-prepare\_\-brush} (scalar color, scalar type, scalar typeStyle)
+\begin{DoxyCompactList}\small\item\em draw grid\_\-lines for y \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Class Methods}
+\label{_amgrp76489900c371cf7d2ca502e43fa26e8e}
+ \begin{DoxyCompactItemize}
+\item 
+object \hyperlink{classChart_1_1Base_a73931fdf090999a07299c1b42d23ae9d}{new} ()
+\begin{DoxyCompactList}\small\item\em Standard normal constructor.\par
+ Calls. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Object Methods}
+\label{_amgrpfb74d91261823cc595bbeff1eff2b9d5}
+ \begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classChart_1_1Base_aadd99033eae9eab891cc2abdf7e4b74d}{set} (hash opts)
+\begin{DoxyCompactList}\small\item\em Set all options. \item\end{DoxyCompactList}\item 
+hash \hyperlink{classChart_1_1Base_a91b33c2a7d570aac658b2660a4d7b809}{getopts} ()
+\begin{DoxyCompactList}\small\item\em get all options \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_ac68c2d5654211e9e5c36674324fe0451}{add\_\-pt} (list data)
+\begin{DoxyCompactList}\small\item\em Graph API\par
+ Add one dataset (as a list) to the dataref. \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_a080e4b93239edf6886745c59506c14e5}{add\_\-pt} ($\backslash$list data)
+\begin{DoxyCompactList}\small\item\em Graph API\par
+ Add one dataset (as a reference to a list) to the dataref via. \item\end{DoxyCompactList}\item 
+\hypertarget{classChart_1_1Base_a1e5c4d17a66458070368d3f68b542c3e}{
+retval {\bfseries add\_\-pt} ()}
+\label{classChart_1_1Base_a1e5c4d17a66458070368d3f68b542c3e}
+
+\item 
+int \hyperlink{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{add\_\-dataset} (list data)
+\begin{DoxyCompactList}\small\item\em Graph API\par
+ Add many datasets (implemented as a list) to the dataref,. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_aa56e6de915dcdc29d00f66d9326b6503}{add\_\-dataset} ($\backslash$list data)
+\begin{DoxyCompactList}\small\item\em Graph API\par
+ Add many datasets (implemented as a references to alist) to the dataref,. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Functions}
+\label{_amgrpda6bc86800313ecde6e56bd1b41a7c55}
+ \begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classChart_1_1Base_a57eedac06ec67f93222bbe1a2930b606}{add\_\-datafile} (scalar filename, scalar format)
+\begin{DoxyCompactList}\small\item\em Graph API\par
+ it's also possible to add a complete datafile\par
+ Uses. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_a99372014f79c259968b77c93eaddaf1a}{clear\_\-data} ()
+\begin{DoxyCompactList}\small\item\em Clear Graph API (by undefining 'dataref'. \item\end{DoxyCompactList}\item 
+arrayref \hyperlink{classChart_1_1Base_abafa3dfccde44d267a6aea07ad2a1274}{get\_\-data} ()
+\begin{DoxyCompactList}\small\item\em Get array of data of the last graph. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_ac6b44856256fb2aa1bb40ee716431028}{png} (scalar file, scalar dataref)
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in png format. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_a887fdd48d80d348d6a38ad799356b0ec}{cgi\_\-png} (scalar dataref)
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in png format to be directly written for CGI. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_ad6bc3855bdc31bc6e264e390f5e660c2}{scalar\_\-png} (scalar dataref)
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in png format to be directly written for CGI. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_aa9791b8cc8b287fa966402574afaf03f}{jpeg} (scalar file, scalar dataref)
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in JPG format to be directly. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_a4bb21f030ba3e48a8a1086634595a9cf}{cgi\_\-jpeg} (scalar dataref)
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in JPG format to be directly for CGI. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_ac5d9aee386bf811e2770574fba85ec66}{scalar\_\-jpeg} (scalar dataref)
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in JPG format to be directly. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Base_aee48a95d2dbc344911ee9a4cba3b51b0}{make\_\-gd} (scalar dataref)
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in GD format to be directly. \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_af9fec7910f7254177a81252a03a0f587}{imagemap\_\-dump} ()
+\begin{DoxyCompactList}\small\item\em get the information to turn the chart into an imagemap \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_ae65cef86e6b2f279b9446b01a9bea088}{minimum} (list array)
+\begin{DoxyCompactList}\small\item\em determine minimum of an array of values \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_a3dd0d7d961b05b92020c476958b8e0a0}{maximum} (list array)
+\begin{DoxyCompactList}\small\item\em determine maximum of an array of values \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_a97d3b67d31850ded3a7406a18c464ec9}{arccos} (scalar a)
+\begin{DoxyCompactList}\small\item\em Function arccos(a). \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_a7da994b0d4ecf66262b4119745e38123}{arcsin} (scalar a)
+\begin{DoxyCompactList}\small\item\em Function arcsin(a). \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_a9687d15b6d69b6a950f2b545940e62cd}{true} (scalar b)
+\begin{DoxyCompactList}\small\item\em determine true value of argument \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1Base_a72935251f89ad5d823649db7e07a3103}{false} (scalar b)
+\begin{DoxyCompactList}\small\item\em determine false value of argument \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classChart_1_1Base}{Base} class for Chart; all other classes derived from here. \hyperlink{classChart_1_1Base}{Base} class from which all other classes are derived. This class provides all functions which are common for all classes 
+
+\subsection{Member Function Documentation}
+\hypertarget{classChart_1_1Base_a23f7394cb8c7bbe6a5d0e05582e038c9}{
+\index{Chart::Base@{Chart::Base}!\_\-calcTickInterval@{\_\-calcTickInterval}}
+\index{\_\-calcTickInterval@{\_\-calcTickInterval}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-calcTickInterval}]{\setlength{\rightskip}{0pt plus 5cm}private Chart::Base::\_\-calcTickInterval (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ dataset\_\-min, }
+\item[{scalar}]{ dataset\_\-max, }
+\item[{scalar}]{ flag\_\-fixed\_\-min, }
+\item[{scalar}]{ flag\_\-fixed\_\-max, }
+\item[{scalar}]{ minTicks, }
+\item[{scalar}]{ maxTicks}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a23f7394cb8c7bbe6a5d0e05582e038c9}
+
+
+Calculate the Interval between ticks in y direction. 
+
+Calculate the Interval between ticks in y direction and compare the number of ticks to the user's given values min\_\-y\_\-ticks, max\_\-y\_\-ticks.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$dataset\_\-min}]Minimal value in y direction \item[\mbox{\tt[in]} {\em \$dataset\_\-max}]Maximal value in y direction \item[\mbox{\tt[in]} {\em \$flag\_\-fixed\_\-min}]Indicator whether the dataset\_\-min value is fixed \item[\mbox{\tt[in]} {\em \$flag\_\-fixed\_\-max}]Indicator whether the dataset\_\-max value is fixed \item[\mbox{\tt[in]} {\em \$minTicks}]Minimal number of ticks wanted \item[\mbox{\tt[in]} {\em \$maxTicks}]Maximal number of ticks wanted \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Array of (\$tickInterval, \$tickCount, \$pMin, \$pMax) 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Direction_a6766001399b56ba88e61f7ca0db50922}{Chart::Direction}.
+
+\hypertarget{classChart_1_1Base_abc810d13339a6b0ab2f08ff8a96b82cb}{
+\index{Chart::Base@{Chart::Base}!\_\-calcXTickInterval@{\_\-calcXTickInterval}}
+\index{\_\-calcXTickInterval@{\_\-calcXTickInterval}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-calcXTickInterval}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-calcXTickInterval (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ min, }
+\item[{scalar}]{ max, }
+\item[{scalar}]{ minF, }
+\item[{scalar}]{ maxF, }
+\item[{scalar}]{ minTicks, }
+\item[{scalar}]{ maxTicks}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_abc810d13339a6b0ab2f08ff8a96b82cb}
+
+
+Calculate the Interval between ticks in x direction. 
+
+Calculate the Interval between ticks in x direction and compare the number of ticks to the user's given values minTicks, maxTicks.
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$min}]Minimal value of dataset in x direction \item[\mbox{\tt[in]} {\em \$max}]Maximal value of dataset in x direction \item[\mbox{\tt[in]} {\em \$minF}]Inddicator if those min value is fixed \item[\mbox{\tt[in]} {\em \$maxF}]Inddicator if those max value is fixed \item[\mbox{\tt[in]} {\em \$minTicks}]Minimal number of tick in x direction \item[\mbox{\tt[in]} {\em \$maxTicks}]Maximal number of tick in x direction \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\$tickInterval, \$tickCount, \$pMin, \$pMax 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}{
+\index{Chart::Base@{Chart::Base}!\_\-color\_\-role\_\-to\_\-index@{\_\-color\_\-role\_\-to\_\-index}}
+\index{\_\-color\_\-role\_\-to\_\-index@{\_\-color\_\-role\_\-to\_\-index}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-color\_\-role\_\-to\_\-index}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-color\_\-role\_\-to\_\-index (
+\begin{DoxyParamCaption}
+\item[{$\backslash$list}]{ list\_\-of\_\-roles}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em $\backslash$@list\_\-of\_\-roles}]List of roles \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a (list of) color index(es) corresponding to the (list of) role(s) in @\_\-. 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a6a97b446c6c2f646dddd7f2a0076ba2e}{
+\index{Chart::Base@{Chart::Base}!\_\-color\_\-spec\_\-to\_\-rgb@{\_\-color\_\-spec\_\-to\_\-rgb}}
+\index{\_\-color\_\-spec\_\-to\_\-rgb@{\_\-color\_\-spec\_\-to\_\-rgb}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-color\_\-spec\_\-to\_\-rgb}]{\setlength{\rightskip}{0pt plus 5cm}private array Chart::Base::\_\-color\_\-spec\_\-to\_\-rgb (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ role, }
+\item[{scalar}]{ spec}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a6a97b446c6c2f646dddd7f2a0076ba2e}
+
+
+Return an array (list of) rgb values for spec. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$role}]name of a role \item[\mbox{\tt[in]} {\em \$spec}]\mbox{[}r,g,b\mbox{]} or name \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+array of rgb values as a list (i.e., @rgb) 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ac704c89b5b4b3f3f0e6fa35d6c5ca6c3}{
+\index{Chart::Base@{Chart::Base}!\_\-copy\_\-data@{\_\-copy\_\-data}}
+\index{\_\-copy\_\-data@{\_\-copy\_\-data}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-copy\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-copy\_\-data (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ extern\_\-ref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ac704c89b5b4b3f3f0e6fa35d6c5ca6c3}
+
+
+Copy external data via a reference to internal memory. 
+
+Remember the external reference.\par
+ Therefore, this function can anly be called once! 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$extern\_\-ref}]Reference to external data space \end{DoxyParams}
+\hypertarget{classChart_1_1Base_afb289639a7016adabc1cb03ae7851269}{
+\index{Chart::Base@{Chart::Base}!\_\-countTicks@{\_\-countTicks}}
+\index{\_\-countTicks@{\_\-countTicks}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-countTicks}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-countTicks (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ min, }
+\item[{scalar}]{ max, }
+\item[{scalar}]{ interval}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_afb289639a7016adabc1cb03ae7851269}
+
+
+Works out how many ticks would be displayed at that interval. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$min}]Minimal value \item[{\em \$max}]Maximal value \item[{\em \$interval}]value \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(\$tickCount, \$minR, \$maxR)
+\end{DoxyReturn}
+e.g min=2, max=5, interval=1, result is 4 ticks.\par
+ written by David Pottage of Tao Group.\par
+ \$minR = \$self-\/$>$\_\-round2Tick( \$min, \$interval, -\/1);\par
+ \$maxR = \$self-\/$>$\_\-round2Tick( \$max, \$interval, 1);\par
+ \$tickCount = ( \$maxR/\$interval ) -\/ ( \$minR/\$interval ) +1; \hypertarget{classChart_1_1Base_a863d96ec45b7fbd5ff05194f4eb827d0}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-bottom\_\-legend@{\_\-draw\_\-bottom\_\-legend}}
+\index{\_\-draw\_\-bottom\_\-legend@{\_\-draw\_\-bottom\_\-legend}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-bottom\_\-legend}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-bottom\_\-legend (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a863d96ec45b7fbd5ff05194f4eb827d0}
+
+
+put the legend on the bottom of the chart 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a91f9c46886e61ae81057a7489632f366}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_a379e60b338fb8858ce705bdc0e5630fb}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-grid\_\-lines@{\_\-draw\_\-grid\_\-lines}}
+\index{\_\-draw\_\-grid\_\-lines@{\_\-draw\_\-grid\_\-lines}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-grid\_\-lines}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-grid\_\-lines (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a379e60b338fb8858ce705bdc0e5630fb}
+
+
+draw grid\_\-lines 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a39bad67aecd83bf523bc27d397256480}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-left\_\-legend@{\_\-draw\_\-left\_\-legend}}
+\index{\_\-draw\_\-left\_\-legend@{\_\-draw\_\-left\_\-legend}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-left\_\-legend}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-left\_\-legend (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a39bad67aecd83bf523bc27d397256480}
+
+
+put the legend on the left of the chart 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_aaf2a13312cf3fda279eb6b7e37188027}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_a530e742ca18ce2e89f177d367964277f}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-legend@{\_\-draw\_\-legend}}
+\index{\_\-draw\_\-legend@{\_\-draw\_\-legend}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-legend}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-legend (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a530e742ca18ce2e89f177d367964277f}
+
+
+let the user know what all the pretty colors mean. 
+
+\par
+ The user define the position of the legend by setting option 'legend' to 'top', 'bottom', 'left', 'right' or 'none'. The legend is positioned at the defined place, respectively. \begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_afcfacbb3cf9fde5a3d9debd6daca3291}{Chart::Composite}, \hyperlink{classChart_1_1Direction_a47ab5b61307d24d038ae77e62e269099}{Chart::Direction}, and \hyperlink{classChart_1_1ErrorBars_a6e1e40b048bbc13bead8449c2b78750a}{Chart::ErrorBars}.
+
+\hypertarget{classChart_1_1Base_a2ec9e89bd6719e178877577a72750cb7}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-none\_\-legend@{\_\-draw\_\-none\_\-legend}}
+\index{\_\-draw\_\-none\_\-legend@{\_\-draw\_\-none\_\-legend}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-none\_\-legend}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-none\_\-legend (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a2ec9e89bd6719e178877577a72750cb7}
+
+
+no legend to draw. 
+
+Just return in this case. This routine may be overwritten by subclasses. \begin{DoxyReturn}{Returns}
+1 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a1f58fe4c7a6db069a7f4e173ac76a961}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_a39f25b556f2d82e176fc6b0ccfc6da17}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-right\_\-legend@{\_\-draw\_\-right\_\-legend}}
+\index{\_\-draw\_\-right\_\-legend@{\_\-draw\_\-right\_\-legend}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-right\_\-legend}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-right\_\-legend (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a39f25b556f2d82e176fc6b0ccfc6da17}
+
+
+put the legend on the right of the chart 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_ae2376bb07ec85374f24b76ac0dbc813a}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_afd4f3ee3925d1e765e099c80e6c98da7}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-sub\_\-title@{\_\-draw\_\-sub\_\-title}}
+\index{\_\-draw\_\-sub\_\-title@{\_\-draw\_\-sub\_\-title}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-sub\_\-title}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-sub\_\-title (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_afd4f3ee3925d1e765e099c80e6c98da7}
+
+
+draw the sub-\/title for the chart 
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_aa3467472a4c4a598c5a2f64de8c438c1}{\_\-draw\_\-title}\par
+ \hyperlink{classChart_1_1Base_afd4f3ee3925d1e765e099c80e6c98da7}{\_\-draw\_\-sub\_\-title()} is more or less obsolete as \hyperlink{classChart_1_1Base_aa3467472a4c4a598c5a2f64de8c438c1}{\_\-draw\_\-title()} does the same by writing more than one line as the title. Both use decreased width and height of the font by one. 
+\end{DoxySeeAlso}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a26f0a0f81ae5e6082c2e7f7c00981dac}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-ticks@{\_\-draw\_\-ticks}}
+\index{\_\-draw\_\-ticks@{\_\-draw\_\-ticks}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-ticks}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-ticks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a26f0a0f81ae5e6082c2e7f7c00981dac}
+
+
+draw the ticks and tick labels 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a7851868c22518f010a467689cec79b93}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_a2f3f15efadc46484126c94780748a534}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-top\_\-legend@{\_\-draw\_\-top\_\-legend}}
+\index{\_\-draw\_\-top\_\-legend@{\_\-draw\_\-top\_\-legend}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-top\_\-legend}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-top\_\-legend (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a2f3f15efadc46484126c94780748a534}
+
+
+put the legend on top of the chart 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a844a6a68ef755e13236e013decf9cddf}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_afb41d27247195ea502c6f5a2d8e21eb6}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-x\_\-grid\_\-lines@{\_\-draw\_\-x\_\-grid\_\-lines}}
+\index{\_\-draw\_\-x\_\-grid\_\-lines@{\_\-draw\_\-x\_\-grid\_\-lines}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-x\_\-grid\_\-lines}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-x\_\-grid\_\-lines (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_afb41d27247195ea502c6f5a2d8e21eb6}
+
+
+draw grid\_\-lines for x 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a5ad71ca4e51c7d4876561737f048a6e7}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-x\_\-label@{\_\-draw\_\-x\_\-label}}
+\index{\_\-draw\_\-x\_\-label@{\_\-draw\_\-x\_\-label}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-x\_\-label}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-x\_\-label (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a5ad71ca4e51c7d4876561737f048a6e7}
+
+
+draw the label for the x-\/axis 
+
+Get font for labels\par
+ Get the color of x\_\-label or text\par
+ Get size of font\par
+ and write x-\/Label
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a4f10e76a428b6b09c7ac17a8d8212701}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-x\_\-number\_\-ticks@{\_\-draw\_\-x\_\-number\_\-ticks}}
+\index{\_\-draw\_\-x\_\-number\_\-ticks@{\_\-draw\_\-x\_\-number\_\-ticks}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-x\_\-number\_\-ticks}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-x\_\-number\_\-ticks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a4f10e76a428b6b09c7ac17a8d8212701}
+
+
+draw the ticks and tick labels 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a64a81b266a528e24e5547ac504c1fc78}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-x\_\-ticks@{\_\-draw\_\-x\_\-ticks}}
+\index{\_\-draw\_\-x\_\-ticks@{\_\-draw\_\-x\_\-ticks}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-x\_\-ticks}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-x\_\-ticks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a64a81b266a528e24e5547ac504c1fc78}
+
+
+draw the x-\/ticks and their labels 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a346409df6cbd56dae5206294a8e9edcb}{Chart::Composite}, \hyperlink{classChart_1_1Direction_a4803bef9580feed235401ff290459cce}{Chart::Direction}, \hyperlink{classChart_1_1HorizontalBars_aabe5236ec45ce98269d60ea17944e283}{Chart::HorizontalBars}, and \hyperlink{classChart_1_1HorizontalBars_aabe5236ec45ce98269d60ea17944e283}{Chart::HorizontalBars}.
+
+\hypertarget{classChart_1_1Base_af174cccca9ebbc23f588b6587e88fa1b}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-y2\_\-grid\_\-lines@{\_\-draw\_\-y2\_\-grid\_\-lines}}
+\index{\_\-draw\_\-y2\_\-grid\_\-lines@{\_\-draw\_\-y2\_\-grid\_\-lines}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-y2\_\-grid\_\-lines}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-y2\_\-grid\_\-lines (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_af174cccca9ebbc23f588b6587e88fa1b}
+
+
+draw grid\_\-lines for y 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a37406d5ce28e2e8a0465eeff8bfd6911}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_aac178efe7b3c275cd18fe3c86b4d7a6f}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-y\_\-grid\_\-lines@{\_\-draw\_\-y\_\-grid\_\-lines}}
+\index{\_\-draw\_\-y\_\-grid\_\-lines@{\_\-draw\_\-y\_\-grid\_\-lines}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-y\_\-grid\_\-lines}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-y\_\-grid\_\-lines (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_aac178efe7b3c275cd18fe3c86b4d7a6f}
+
+
+draw grid\_\-lines for y 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a6a727845be209cb4d9cb825ab6c5ffb1}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_a6aafcea3c04d6a030a29892f04b25c1f}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-y\_\-label@{\_\-draw\_\-y\_\-label}}
+\index{\_\-draw\_\-y\_\-label@{\_\-draw\_\-y\_\-label}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-y\_\-label}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-y\_\-label (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a6aafcea3c04d6a030a29892f04b25c1f}
+
+
+draw the label for the y-\/axis 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a46852297ab12aaf10546e63dd7eab462}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-y\_\-ticks@{\_\-draw\_\-y\_\-ticks}}
+\index{\_\-draw\_\-y\_\-ticks@{\_\-draw\_\-y\_\-ticks}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-y\_\-ticks}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-draw\_\-y\_\-ticks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a46852297ab12aaf10546e63dd7eab462}
+
+
+draw the y-\/ticks and their labels 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a62fd62f54c05506571d4603e5618af30}{Chart::Composite}, \hyperlink{classChart_1_1Direction_aae701e9961733ae43e068acbad3e139a}{Chart::Direction}, and \hyperlink{classChart_1_1HorizontalBars_afb085d5cca48ae94538f345945212a82}{Chart::HorizontalBars}.
+
+\hypertarget{classChart_1_1Base_ab5b79dbb6f086902396bf5fd4c2248ef}{
+\index{Chart::Base@{Chart::Base}!\_\-find\_\-x\_\-range@{\_\-find\_\-x\_\-range}}
+\index{\_\-find\_\-x\_\-range@{\_\-find\_\-x\_\-range}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-find\_\-x\_\-range}]{\setlength{\rightskip}{0pt plus 5cm}private array Chart::Base::\_\-find\_\-x\_\-range (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ab5b79dbb6f086902396bf5fd4c2248ef}
+
+
+Find minimum and maximum value of x data sets. 
+
+\begin{DoxyReturn}{Returns}
+( min, max ) 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a694b293ee3d92e706b1743cb1fa9d09d}{
+\index{Chart::Base@{Chart::Base}!\_\-find\_\-x\_\-scale@{\_\-find\_\-x\_\-scale}}
+\index{\_\-find\_\-x\_\-scale@{\_\-find\_\-x\_\-scale}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-find\_\-x\_\-scale}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-find\_\-x\_\-scale (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a694b293ee3d92e706b1743cb1fa9d09d}
+
+
+For a xy-\/plot do the same for the x values, as '\_\-find\_\-y\_\-scale' does for the y values! 
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_acb2fe91b2d57e43d84b1bc6f092ac68d}{\_\-find\_\-y\_\-scale} 
+\end{DoxySeeAlso}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ad28e18fc86eebc6846785580977532ca}{
+\index{Chart::Base@{Chart::Base}!\_\-find\_\-y\_\-range@{\_\-find\_\-y\_\-range}}
+\index{\_\-find\_\-y\_\-range@{\_\-find\_\-y\_\-range}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-find\_\-y\_\-range}]{\setlength{\rightskip}{0pt plus 5cm}private array Chart::Base::\_\-find\_\-y\_\-range (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ad28e18fc86eebc6846785580977532ca}
+
+
+Find minimum and maximum value of y data sets. 
+
+\begin{DoxyReturn}{Returns}
+( min, max, flag\_\-all\_\-integers ) 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Direction_a8f408c9fa61c3ee5f87a19c1f42d94c7}{Chart::Direction}, \hyperlink{classChart_1_1ErrorBars_aa303b7b246e29f54626fecebfe6cf15c}{Chart::ErrorBars}, and \hyperlink{classChart_1_1Mountain_a1da3590b6cb7bc51b8c192e1141a6fa3}{Chart::Mountain}.
+
+\hypertarget{classChart_1_1Base_acb2fe91b2d57e43d84b1bc6f092ac68d}{
+\index{Chart::Base@{Chart::Base}!\_\-find\_\-y\_\-scale@{\_\-find\_\-y\_\-scale}}
+\index{\_\-find\_\-y\_\-scale@{\_\-find\_\-y\_\-scale}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-find\_\-y\_\-scale}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-find\_\-y\_\-scale (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_acb2fe91b2d57e43d84b1bc6f092ac68d}
+
+
+find good values for the minimum and maximum y-\/value on the chart 
+
+\begin{DoxyReturn}{Returns}
+status
+\end{DoxyReturn}
+New version, re-\/written by David Pottage of Tao Group.\par
+ This code is $\ast$AS IS$\ast$ and comes with $\ast$NO WARRANTY$\ast$\par
+
+
+This Sub calculates correct values for the following class local variables, if they have not been set by the user.
+
+max\_\-val, min\_\-val: The maximum and minimum values for the y axis.\par
+ y\_\-ticks: The number of ticks to plot on the y scale, including the end points. e.g. If the scale runs from 0 to 50, with ticks every 10, y\_\-ticks will have the value of 6.\par
+ y\_\-tick\_\-labels: An array of strings, each is a label for the y axis.\par
+ y\_\-tick\_\-labels\_\-length: The length to allow for B tick labels. (How long is the longest?) 
+
+Reimplemented in \hyperlink{classChart_1_1Direction_ad33ea739bd5ceb8b48809028c489f119}{Chart::Direction}, and \hyperlink{classChart_1_1HorizontalBars_acec45b0698c777d244fb6f6dd1202e20}{Chart::HorizontalBars}.
+
+\hypertarget{classChart_1_1Base_a8bae7e38a6e77c0696f2ef8b06791caa}{
+\index{Chart::Base@{Chart::Base}!\_\-grey\_\-background@{\_\-grey\_\-background}}
+\index{\_\-grey\_\-background@{\_\-grey\_\-background}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-grey\_\-background}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-grey\_\-background (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a8bae7e38a6e77c0696f2ef8b06791caa}
+
+
+put a grey background on the plot of the data itself 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a0803aa94dabfc982195cab15392ba7bc}{
+\index{Chart::Base@{Chart::Base}!\_\-init@{\_\-init}}
+\index{\_\-init@{\_\-init}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-init (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ x, }
+\item[{scalar}]{ y}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a0803aa94dabfc982195cab15392ba7bc}
+
+
+Initialize all default options here. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$x}]Width of the final image in pixels (Default: 400) \item[\mbox{\tt[in]} {\em \$y}]Height of the final image in pixels (Default: 300) \end{DoxyParams}
+\hypertarget{classChart_1_1Base_aa13b0e86a933ce6b865c098fd0bdb37d}{
+\index{Chart::Base@{Chart::Base}!\_\-plot@{\_\-plot}}
+\index{\_\-plot@{\_\-plot}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-plot}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-plot (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_aa13b0e86a933ce6b865c098fd0bdb37d}
+
+
+main sub that controls all the plotting of the actual chart 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a29c5e6856ca3df71719dc01eff7d1de8}{
+\index{Chart::Base@{Chart::Base}!\_\-prepare\_\-brush@{\_\-prepare\_\-brush}}
+\index{\_\-prepare\_\-brush@{\_\-prepare\_\-brush}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-prepare\_\-brush}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-prepare\_\-brush (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ color, }
+\item[{scalar}]{ type, }
+\item[{scalar}]{ typeStyle}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a29c5e6856ca3df71719dc01eff7d1de8}
+
+
+draw grid\_\-lines for y 
+
+set the gdBrush object to trick GD into drawing fat lines \& points of interesting shapes Needed by \char`\"{}Lines\char`\"{}, \char`\"{}Points\char`\"{} and \char`\"{}LinesPoints\char`\"{} All hacked up by Richard Dice $<$\href{mailto:rdice@pobox.com}{\tt rdice@pobox.com}$>$ Sunday 16 May 1999
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$color}]\item[{\em \$type}]'line','point' \item[{\em \$typeStyle}]one of 'circle', 'donut', 'triangle', 'upsidedownTriangle', 'square', 'hollowSquare', 'fatPlus' \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_afaa4e9e29bc7fb9df56e9c7cd168e79b}{
+\index{Chart::Base@{Chart::Base}!\_\-round2Tick@{\_\-round2Tick}}
+\index{\_\-round2Tick@{\_\-round2Tick}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-round2Tick}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-round2Tick (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ input, }
+\item[{scalar}]{ interval, }
+\item[{scalar}]{ roundUP}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_afaa4e9e29bc7fb9df56e9c7cd168e79b}
+
+
+Rounds up or down to the next tick of interval size. 
+
+\$roundUP can be +1 or -\/1 to indicate if rounding should be up or down.\par
+ written by David Pottage of Tao Group.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$input}]\item[{\em \$interval}]\item[{\em \$roundUP}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+retN$\ast$interval 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ab1f985ad443c2f1d1bf3ef86e9382346}{
+\index{Chart::Base@{Chart::Base}!\_\-sepFP@{\_\-sepFP}}
+\index{\_\-sepFP@{\_\-sepFP}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-sepFP}]{\setlength{\rightskip}{0pt plus 5cm}private array Chart::Base::\_\-sepFP (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ num}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ab1f985ad443c2f1d1bf3ef86e9382346}
+
+
+Seperates a number into it's base 10 floating point exponent \& mantisa. 
+
+written by David Pottage of Tao Group.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$num}]Floating point number \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+( exponent, mantissa) 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ade88df5ecdc74e50ea683b63424ba84a}{
+\index{Chart::Base@{Chart::Base}!\_\-sort\_\-data@{\_\-sort\_\-data}}
+\index{\_\-sort\_\-data@{\_\-sort\_\-data}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-sort\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-sort\_\-data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ade88df5ecdc74e50ea683b63424ba84a}
+
+
+sort the data nicely (mostly for the pareto charts and xy-\/plots) 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a57eedac06ec67f93222bbe1a2930b606}{
+\index{Chart::Base@{Chart::Base}!add\_\-datafile@{add\_\-datafile}}
+\index{add\_\-datafile@{add\_\-datafile}!Chart::Base@{Chart::Base}}
+\subsubsection[{add\_\-datafile}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::add\_\-datafile (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ filename, }
+\item[{scalar}]{ format}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a57eedac06ec67f93222bbe1a2930b606}
+
+
+Graph API\par
+ it's also possible to add a complete datafile\par
+ Uses. 
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_ac68c2d5654211e9e5c36674324fe0451}{add\_\-pt} 
+
+\hyperlink{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{add\_\-dataset}
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$filename}]Name of file which contents is to be added \item[\mbox{\tt[in]} {\em \$format}]'pt' or 'set' to distiguish between function add\_\-pt() in case of 'pt' or function \hyperlink{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{add\_\-dataset()} in case of 'set' \end{DoxyParams}
+\hypertarget{classChart_1_1Base_aa56e6de915dcdc29d00f66d9326b6503}{
+\index{Chart::Base@{Chart::Base}!add\_\-dataset@{add\_\-dataset}}
+\index{add\_\-dataset@{add\_\-dataset}!Chart::Base@{Chart::Base}}
+\subsubsection[{add\_\-dataset}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::add\_\-dataset (
+\begin{DoxyParamCaption}
+\item[{$\backslash$list}]{ data}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_aa56e6de915dcdc29d00f66d9326b6503}
+
+
+Graph API\par
+ Add many datasets (implemented as a references to alist) to the dataref,. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em $\backslash$@data}]Dataset (reference to a list) to add \end{DoxyParams}
+\hypertarget{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{
+\index{Chart::Base@{Chart::Base}!add\_\-dataset@{add\_\-dataset}}
+\index{add\_\-dataset@{add\_\-dataset}!Chart::Base@{Chart::Base}}
+\subsubsection[{add\_\-dataset}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::add\_\-dataset (
+\begin{DoxyParamCaption}
+\item[{list}]{ data}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}
+
+
+Graph API\par
+ Add many datasets (implemented as a list) to the dataref,. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em @data}]Dataset (list) to add \end{DoxyParams}
+
+
+Reimplemented in \hyperlink{classChart_1_1Direction_a50b338ce75f7e6ab339b5f587a4e933b}{Chart::Direction}.
+
+\hypertarget{classChart_1_1Base_a080e4b93239edf6886745c59506c14e5}{
+\index{Chart::Base@{Chart::Base}!add\_\-pt@{add\_\-pt}}
+\index{add\_\-pt@{add\_\-pt}!Chart::Base@{Chart::Base}}
+\subsubsection[{add\_\-pt}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::add\_\-pt (
+\begin{DoxyParamCaption}
+\item[{$\backslash$list}]{ data}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a080e4b93239edf6886745c59506c14e5}
+
+
+Graph API\par
+ Add one dataset (as a reference to a list) to the dataref via. 
+
+
+\begin{DoxyPre}
+for ( 0 .. \$data )
+\{
+   push $self->\{'dataref'\}->[$\_] \}, $data[$\_];
+\}
+\end{DoxyPre}
+
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em $\backslash$@data}]Dataset to add \end{DoxyParams}
+\hypertarget{classChart_1_1Base_ac68c2d5654211e9e5c36674324fe0451}{
+\index{Chart::Base@{Chart::Base}!add\_\-pt@{add\_\-pt}}
+\index{add\_\-pt@{add\_\-pt}!Chart::Base@{Chart::Base}}
+\subsubsection[{add\_\-pt}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::add\_\-pt (
+\begin{DoxyParamCaption}
+\item[{list}]{ data}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ac68c2d5654211e9e5c36674324fe0451}
+
+
+Graph API\par
+ Add one dataset (as a list) to the dataref. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em @data}]Dataset to add \end{DoxyParams}
+\hypertarget{classChart_1_1Base_a97d3b67d31850ded3a7406a18c464ec9}{
+\index{Chart::Base@{Chart::Base}!arccos@{arccos}}
+\index{arccos@{arccos}!Chart::Base@{Chart::Base}}
+\subsubsection[{arccos}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::arccos (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ a}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a97d3b67d31850ded3a7406a18c464ec9}
+
+
+Function arccos(a). 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$a}]Value \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+arccos(a) 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a7da994b0d4ecf66262b4119745e38123}{
+\index{Chart::Base@{Chart::Base}!arcsin@{arcsin}}
+\index{arcsin@{arcsin}!Chart::Base@{Chart::Base}}
+\subsubsection[{arcsin}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::arcsin (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ a}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a7da994b0d4ecf66262b4119745e38123}
+
+
+Function arcsin(a). 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$a}]Value \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+arcsin(a) 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a4bb21f030ba3e48a8a1086634595a9cf}{
+\index{Chart::Base@{Chart::Base}!cgi\_\-jpeg@{cgi\_\-jpeg}}
+\index{cgi\_\-jpeg@{cgi\_\-jpeg}!Chart::Base@{Chart::Base}}
+\subsubsection[{cgi\_\-jpeg}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::cgi\_\-jpeg (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ dataref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a4bb21f030ba3e48a8a1086634595a9cf}
+
+
+Produce the graph of options set in JPG format to be directly for CGI. 
+
+called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$dataref}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Status of the plot 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a887fdd48d80d348d6a38ad799356b0ec}{
+\index{Chart::Base@{Chart::Base}!cgi\_\-png@{cgi\_\-png}}
+\index{cgi\_\-png@{cgi\_\-png}!Chart::Base@{Chart::Base}}
+\subsubsection[{cgi\_\-png}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::cgi\_\-png (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ dataref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a887fdd48d80d348d6a38ad799356b0ec}
+
+
+Produce the graph of options set in png format to be directly written for CGI. 
+
+called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$dataref}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Status of the plot 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a99372014f79c259968b77c93eaddaf1a}{
+\index{Chart::Base@{Chart::Base}!clear\_\-data@{clear\_\-data}}
+\index{clear\_\-data@{clear\_\-data}!Chart::Base@{Chart::Base}}
+\subsubsection[{clear\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::clear\_\-data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a99372014f79c259968b77c93eaddaf1a}
+
+
+Clear Graph API (by undefining 'dataref'. 
+
+\begin{DoxyReturn}{Returns}
+Status of function 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a72935251f89ad5d823649db7e07a3103}{
+\index{Chart::Base@{Chart::Base}!false@{false}}
+\index{false@{false}!Chart::Base@{Chart::Base}}
+\subsubsection[{false}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::false (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ b}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a72935251f89ad5d823649db7e07a3103}
+
+
+determine false value of argument 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$b}]Bool value to check for true \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if argument is equal to false, FALSE, 0, f, F or undefined 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_abafa3dfccde44d267a6aea07ad2a1274}{
+\index{Chart::Base@{Chart::Base}!get\_\-data@{get\_\-data}}
+\index{get\_\-data@{get\_\-data}!Chart::Base@{Chart::Base}}
+\subsubsection[{get\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}arrayref Chart::Base::get\_\-data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_abafa3dfccde44d267a6aea07ad2a1274}
+
+
+Get array of data of the last graph. 
+
+\begin{DoxyReturn}{Returns}
+Reference to data set of the last graph 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a91b33c2a7d570aac658b2660a4d7b809}{
+\index{Chart::Base@{Chart::Base}!getopts@{getopts}}
+\index{getopts@{getopts}!Chart::Base@{Chart::Base}}
+\subsubsection[{getopts}]{\setlength{\rightskip}{0pt plus 5cm}hash Chart::Base::getopts (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a91b33c2a7d570aac658b2660a4d7b809}
+
+
+get all options 
+
+\begin{DoxyReturn}{Returns}
+hash of all set options so far
+\end{DoxyReturn}
+Return the set options as a hash \hypertarget{classChart_1_1Base_af9fec7910f7254177a81252a03a0f587}{
+\index{Chart::Base@{Chart::Base}!imagemap\_\-dump@{imagemap\_\-dump}}
+\index{imagemap\_\-dump@{imagemap\_\-dump}!Chart::Base@{Chart::Base}}
+\subsubsection[{imagemap\_\-dump}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::imagemap\_\-dump (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_af9fec7910f7254177a81252a03a0f587}
+
+
+get the information to turn the chart into an imagemap 
+
+\begin{DoxyReturn}{Returns}
+Reference to an array of the image 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_ab8dbbeec3544f8e9b1b10486aa46459d}{Chart::Composite}.
+
+\hypertarget{classChart_1_1Base_aa9791b8cc8b287fa966402574afaf03f}{
+\index{Chart::Base@{Chart::Base}!jpeg@{jpeg}}
+\index{jpeg@{jpeg}!Chart::Base@{Chart::Base}}
+\subsubsection[{jpeg}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::jpeg (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ file, }
+\item[{scalar}]{ dataref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_aa9791b8cc8b287fa966402574afaf03f}
+
+
+Produce the graph of options set in JPG format to be directly. 
+
+called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$file}]Name of file to write graph into \item[{\em \$dataref}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Status of the plot 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_aee48a95d2dbc344911ee9a4cba3b51b0}{
+\index{Chart::Base@{Chart::Base}!make\_\-gd@{make\_\-gd}}
+\index{make\_\-gd@{make\_\-gd}!Chart::Base@{Chart::Base}}
+\subsubsection[{make\_\-gd}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::make\_\-gd (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ dataref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_aee48a95d2dbc344911ee9a4cba3b51b0}
+
+
+Produce the graph of options set in GD format to be directly. 
+
+called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$dataref}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Status of the plot 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a3dd0d7d961b05b92020c476958b8e0a0}{
+\index{Chart::Base@{Chart::Base}!maximum@{maximum}}
+\index{maximum@{maximum}!Chart::Base@{Chart::Base}}
+\subsubsection[{maximum}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::maximum (
+\begin{DoxyParamCaption}
+\item[{list}]{ array}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a3dd0d7d961b05b92020c476958b8e0a0}
+
+
+determine maximum of an array of values 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em @array}]List of numerical values \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Maximal value of list of values 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ae65cef86e6b2f279b9446b01a9bea088}{
+\index{Chart::Base@{Chart::Base}!minimum@{minimum}}
+\index{minimum@{minimum}!Chart::Base@{Chart::Base}}
+\subsubsection[{minimum}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::minimum (
+\begin{DoxyParamCaption}
+\item[{list}]{ array}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ae65cef86e6b2f279b9446b01a9bea088}
+
+
+determine minimum of an array of values 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em @array}]List of numerical values \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Minimal value of list of values 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a73931fdf090999a07299c1b42d23ae9d}{
+\index{Chart::Base@{Chart::Base}!new@{new}}
+\index{new@{new}!Chart::Base@{Chart::Base}}
+\subsubsection[{new}]{\setlength{\rightskip}{0pt plus 5cm}object Chart::Base::new (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a73931fdf090999a07299c1b42d23ae9d}
+
+
+Standard normal constructor.\par
+ Calls. 
+
+\begin{DoxyReturn}{Returns}
+A new object.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_a0803aa94dabfc982195cab15392ba7bc}{\_\-init} 
+\end{DoxySeeAlso}
+\hypertarget{classChart_1_1Base_ac6b44856256fb2aa1bb40ee716431028}{
+\index{Chart::Base@{Chart::Base}!png@{png}}
+\index{png@{png}!Chart::Base@{Chart::Base}}
+\subsubsection[{png}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::png (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ file, }
+\item[{scalar}]{ dataref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ac6b44856256fb2aa1bb40ee716431028}
+
+
+Produce the graph of options set in png format. 
+
+called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data \begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_addecc110eb46a126acaad69e113d06ea}{\_\-set\_\-colors} 
+
+\hyperlink{classChart_1_1Base_ac704c89b5b4b3f3f0e6fa35d6c5ca6c3}{\_\-copy\_\-data} 
+
+\hyperlink{classChart_1_1Base_a13296be5b92a9880851977fe0abfdf01}{\_\-check\_\-data} 
+
+\hyperlink{classChart_1_1Base_ab021c0dceb1ae55e1697bbee667480fa}{\_\-draw} 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$file}]Name of file to write graph to \item[\mbox{\tt[in]} {\em \$dataref}]Reference to external data space \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Status of the plot 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ac5d9aee386bf811e2770574fba85ec66}{
+\index{Chart::Base@{Chart::Base}!scalar\_\-jpeg@{scalar\_\-jpeg}}
+\index{scalar\_\-jpeg@{scalar\_\-jpeg}!Chart::Base@{Chart::Base}}
+\subsubsection[{scalar\_\-jpeg}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::scalar\_\-jpeg (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ dataref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ac5d9aee386bf811e2770574fba85ec66}
+
+
+Produce the graph of options set in JPG format to be directly. 
+
+called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$dataref}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Status of the plot 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ad6bc3855bdc31bc6e264e390f5e660c2}{
+\index{Chart::Base@{Chart::Base}!scalar\_\-png@{scalar\_\-png}}
+\index{scalar\_\-png@{scalar\_\-png}!Chart::Base@{Chart::Base}}
+\subsubsection[{scalar\_\-png}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::scalar\_\-png (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ dataref}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_ad6bc3855bdc31bc6e264e390f5e660c2}
+
+
+Produce the graph of options set in png format to be directly written for CGI. 
+
+\par
+ Called after the options are set, \par
+ this method invokes all my private methods to actually draw the chart and plot the data 
+\begin{DoxyParams}{Parameters}
+\item[{\em \$dataref}]Reference to the data to be plotted \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Status of the plot 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_aadd99033eae9eab891cc2abdf7e4b74d}{
+\index{Chart::Base@{Chart::Base}!set@{set}}
+\index{set@{set}!Chart::Base@{Chart::Base}}
+\subsubsection[{set}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Base::set (
+\begin{DoxyParamCaption}
+\item[{hash}]{ opts}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_aadd99033eae9eab891cc2abdf7e4b74d}
+
+
+Set all options. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \%opts}]Hash of options to the Chart \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+ok or croak
+\end{DoxyReturn}
+main method for customizing the chart, lets users specify values for different parameters\par
+ The options are saved locally to be able to output them via \begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_a91b33c2a7d570aac658b2660a4d7b809}{getopts()} 
+\end{DoxySeeAlso}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a00e87797c96ce57efc6b066cbe7d6333}{Chart::Composite}, and \hyperlink{classChart_1_1Direction_ab7104b48aa4219a995656088c121078d}{Chart::Direction}.
+
+\hypertarget{classChart_1_1Base_a9687d15b6d69b6a950f2b545940e62cd}{
+\index{Chart::Base@{Chart::Base}!true@{true}}
+\index{true@{true}!Chart::Base@{Chart::Base}}
+\subsubsection[{true}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::true (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ b}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Base_a9687d15b6d69b6a950f2b545940e62cd}
+
+
+determine true value of argument 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$b}]Bool value to check for true \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if argument is equal to TRUE, true, 1, t, T, and defined 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classChart_1_1Base_a13296be5b92a9880851977fe0abfdf01}{
+\index{Chart::Base@{Chart::Base}!\_\-check\_\-data@{\_\-check\_\-data}}
+\index{\_\-check\_\-data@{\_\-check\_\-data}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-check\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}private int {\bf Chart::Base::\_\-check\_\-data}}}
+\label{classChart_1_1Base_a13296be5b92a9880851977fe0abfdf01}
+
+
+Check the internal data to be displayed. 
+
+Make sure the data isn't really weird and collect some basic info about it\par
+ Not logical data is 'carp'ed.\par
+ \begin{DoxyReturn}{Returns}
+status of check 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classChart_1_1Composite_a67af0ad77d0c1f4f74da434ceb9cf53c}{Chart::Composite}, and \hyperlink{classChart_1_1StackedBars_a8d772463780f75cc985ae890ad8a94d1}{Chart::StackedBars}.
+
+\hypertarget{classChart_1_1Base_a060d522a2f0240cad4c746891d488f80}{
+\index{Chart::Base@{Chart::Base}!\_\-default\_\-f\_\-tick@{\_\-default\_\-f\_\-tick}}
+\index{\_\-default\_\-f\_\-tick@{\_\-default\_\-f\_\-tick}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-default\_\-f\_\-tick}]{\setlength{\rightskip}{0pt plus 5cm}private int {\bf Chart::Base::\_\-default\_\-f\_\-tick}}}
+\label{classChart_1_1Base_a060d522a2f0240cad4c746891d488f80}
+
+
+default tick conversion function This function is pointed to be \$self-\/$>$\{f\_\-x\_\-tick\} resp. 
+
+\$self-\/$>$\{f\_\-y\_\-tick\} if the user does not provide another function
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ab021c0dceb1ae55e1697bbee667480fa}{
+\index{Chart::Base@{Chart::Base}!\_\-draw@{\_\-draw}}
+\index{\_\-draw@{\_\-draw}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw}]{\setlength{\rightskip}{0pt plus 5cm}private int {\bf Chart::Base::\_\-draw}}}
+\label{classChart_1_1Base_ab021c0dceb1ae55e1697bbee667480fa}
+
+
+Plot the chart to the gd object\par
+ Calls: 
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_aa3467472a4c4a598c5a2f64de8c438c1}{\_\-draw\_\-title} 
+
+\hyperlink{classChart_1_1Base_afd4f3ee3925d1e765e099c80e6c98da7}{\_\-draw\_\-sub\_\-title} 
+
+\hyperlink{classChart_1_1Base_ade88df5ecdc74e50ea683b63424ba84a}{\_\-sort\_\-data} 
+
+\hyperlink{classChart_1_1Base_aa13b0e86a933ce6b865c098fd0bdb37d}{\_\-plot}
+\end{DoxySeeAlso}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_aa3467472a4c4a598c5a2f64de8c438c1}{
+\index{Chart::Base@{Chart::Base}!\_\-draw\_\-title@{\_\-draw\_\-title}}
+\index{\_\-draw\_\-title@{\_\-draw\_\-title}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-draw\_\-title}]{\setlength{\rightskip}{0pt plus 5cm}private int {\bf Chart::Base::\_\-draw\_\-title}}}
+\label{classChart_1_1Base_aa3467472a4c4a598c5a2f64de8c438c1}
+
+
+draw the title for the chart 
+
+The title was defined by the user in set('title' =$>$ ....)\par
+ The user may define some title lines by separating them via character '$\backslash$n';\par
+ The used font is taken from 'title\_\-font';\par
+ The used color is calculated by function '\_\-color\_\-role\_\-to\_\-index' based on 'title' or 'text'\par
+ \begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}{\_\-color\_\-role\_\-to\_\-index} 
+\end{DoxySeeAlso}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_addecc110eb46a126acaad69e113d06ea}{
+\index{Chart::Base@{Chart::Base}!\_\-set\_\-colors@{\_\-set\_\-colors}}
+\index{\_\-set\_\-colors@{\_\-set\_\-colors}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-set\_\-colors}]{\setlength{\rightskip}{0pt plus 5cm}private int {\bf Chart::Base::\_\-set\_\-colors}}}
+\label{classChart_1_1Base_addecc110eb46a126acaad69e113d06ea}
+
+
+specify my colors 
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a38c2792df08724efa7c4e1b9194cbe6e}{
+\index{Chart::Base@{Chart::Base}!named\_\-colors@{named\_\-colors}}
+\index{named\_\-colors@{named\_\-colors}!Chart::Base@{Chart::Base}}
+\subsubsection[{named\_\-colors}]{\setlength{\rightskip}{0pt plus 5cm}Hash {\bf Chart::Base::named\_\-colors}}}
+\label{classChart_1_1Base_a38c2792df08724efa7c4e1b9194cbe6e}
+
+
+RGB values of named colors. 
+
+see URL \href{http://en.wikipedia.org/wiki/Web_colors#X11_color_names}{\tt http://en.wikipedia.org/wiki/Web\_\-colors\#X11\_\-color\_\-names} 
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+Chart/\hyperlink{Base_8pm}{Base.pm}\end{DoxyCompactItemize}

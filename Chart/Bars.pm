@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2010-09-23
-# @version 2.4.2
+# @date 2011-11-25
+# @version 2.4.3
 #
 #
 
@@ -19,13 +19,13 @@
 #
 package Chart::Bars;
 
-use Chart::Base '2.4.2';
+use Chart::Base '2.4.3';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Bars::ISA     = qw(Chart::Base);
-$Chart::Bars::VERSION = '2.4.2';
+$Chart::Bars::VERSION = '2.4.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

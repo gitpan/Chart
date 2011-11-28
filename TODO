@@ -17,13 +17,10 @@ Short term:
 - Add chart type candlestick
 
 - Correct pie chart:
-  - Add new options percent_only and value_only to
-    remove the normally attached label text from the pie segment labels.
   - Add a flat pie chart where the legend appears on the left
     of the chart, and the chart itself is about 50% smaller
 
 - Base class:
-  - scalar_png lacks _set_colors() call
   - Some labels on the top of each axis not printed: i.e.,
       the graph goes to 100.6 but 100.6 is not printed. 
   - Define an option to force the first point sits at the left border of
@@ -44,8 +41,6 @@ Short term:
   by itsself.
   
 - Add output for gif again as the new GD module defines it again.
-
-- Add horizontal stacked bars plot.
 
 Long term:
 ----------

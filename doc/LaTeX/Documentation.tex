@@ -1,77 +1,78 @@
 % Documentation.tex
 %
-\documentclass[11pt]{article}
-
-%\usepackage{a4}     % DIN A4
-
-%\usepackage[latin1]{inputenc}
-%\usepackage[T1]{fontenc}
-
+\documentclass[11pt,titlepage]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{ifthen}
 \usepackage[pdftex]{graphicx}
 \usepackage{makeidx}
+\usepackage{rotating}
+\usepackage{xspace}
+%\usepackage{colortbl}
 \makeindex
 
-
-%\includeonly{definitions,base}
-%\includeonly{definitions,bars}
-%\includeonly{definitions,composite}
-%\includeonly{definitions,direction}
-%\includeonly{definitions,error}
-%\includeonly{definitions,hbars}
-%\includeonly{definitions,lines}
-%\includeonly{definitions,linespoints}
-%\includeonly{definitions,mountain}
-%\includeonly{definitions,pareto}
-%\includeonly{definitions,pie}
-%\includeonly{definitions,points}
-%\includeonly{definitions,split}
-%\includeonly{definitions,stacked}
+\include{definitions}
+%\includeonly{definitions,Base}
+%\includeonly{definitions,Bars}
+%\includeonly{definitions,Composite}
+%\includeonly{definitions,Direction}
+%\includeonly{definitions,ErrorBars}
+%\includeonly{definitions,HorizontalBars}
+%\includeonly{definitions,Lines}
+%\includeonly{definitions,LinesPoints}
+%\includeonly{definitions,Mountain}
+%\includeonly{definitions,Pareto}
+%\includeonly{definitions,Pie}
+%\includeonly{definitions,Points}
+%\includeonly{definitions,Split}
+%\includeonly{definitions,Stacked}
 
 % Hyphenations
 \hyphenation{init dataref}
+\sloppy
 
+\title{Documentation for Perl Package \textbf{Chart}\\
+{\Large Version 2.4.3}
+}
+
+%% Name der Autoren
+%% Die Adressenangaben werden mit \thanks{} eingeschlossen
+%% Name des ersten Autors
+\author{Chart Group\thanks{Bundesamt f\"ur Kartographie und Geod\"asie,
+Geod\"atisches Observatorium Wettzell, Sackenrieder Strasse 25,
+D-93444 Bad K\"otzting, E-mail: chart@fs.wettzell.de}}
+\date{Last change: 2010-10-17}
 
 \begin{document}
 
-\pagenumbering{Roman} 
-\title{Documentation of the Perl Package \textbf{Chart}}
-
-%% Name der Autoren 
-%% Die Adressenangaben werden mit \thanks{} eingeschlossen
-%% Name des ersten Autors
-\author{Chart Group\thanks{Bundesamt für Kartographie und Geodäsie, 
-Geodätisches Observatorium Wettzell, Sackenrieder Straße 25, 
-D-93444 Bad Kötzting, E-mail: chart@fs.wettzell.de}}
-
 \maketitle
-\begin{center}
-\Large Version 2.4.2
-\end{center}
 
-\clearpage
-\texttt{\ttfamily}
+\pagenumbering{roman}
 \tableofcontents
+\newpage
+\listoffigures
 
 % Einleitung
+\newpage
 \pagenumbering{arabic}
-\include{definitions}
+
 \include{description}
 %\include{example}
-\include{base}
-\include{bars}
-\include{composite}
-\include{direction}
-\include{error}
-\include{hbars}
-\include{lines}
-\include{linespoints}
-\include{mountain}
-\include{pareto}
-\include{pie}
-\include{points}
-\include{split}
-\include{stacked}
-\listoffigures
+\include{Base}
+\include{Bars}
+\include{Composite}
+\include{Direction}
+\include{ErrorBars}
+\include{HorizontalBars}
+\include{Lines}
+\include{LinesPoints}
+\include{Mountain}
+\include{Pareto}
+\include{Pie}
+\include{Points}
+\include{Split}
+\include{Stacked}
+
+\clearpage
 \printindex
 
 \end{document}

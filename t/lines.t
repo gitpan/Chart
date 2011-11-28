@@ -24,5 +24,50 @@ $g->set(%hash);
 $g->png("samples/lines.png");
 print "ok 1\n";
 
-exit(0);
-
+#
+#use Data::Dumper;
+#my %hopts = $g->getopts();
+##    print Dumper(\%hopts);
+#
+#
+## OO Approach
+#print "Key\tContents\n";
+#foreach (keys %hopts )
+#{
+#    print "$_\t";
+#    myDumpIt(\$hopts{$_});
+#    print "\n";
+#    my $i=1;
+#}
+#exit(0);
+#
+#sub myPrint
+#{
+#    my $val = shift;
+#    if ( ref(\$val) eq 'SCALAR' )
+#    {
+#        print $val;
+#    }
+#    elsif ( ref($val) eq 'HASH' )
+#    {
+#
+#    }
+#}
+#
+#sub myDumpit
+#{
+#    my $rsomething = shift;  ## Reference
+#    if ( ref $rsomething eq 'REF' )
+#    {
+#        myDumpIt($$rsomething);
+#    }
+#    if ( ref $rsomething eq 'ARRAY' )
+#    {
+#        print "[";
+#        foreach my $val (@$rsomething)
+#        {
+#
+#        }
+#    }
+#}
+#

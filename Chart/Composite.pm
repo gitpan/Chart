@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2010-09-23
-# @version 2.4.2
+# @date 2011-11-25
+# @version 2.4.3
 #
 #---------------------------------------------------------------------
 # History:
@@ -20,13 +20,13 @@
 
 package Chart::Composite;
 
-use Chart::Base '2.4.2';
+use Chart::Base '2.4.3';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Composite::ISA     = qw(Chart::Base);
-$Chart::Composite::VERSION = '2.4.2';
+$Chart::Composite::VERSION = '2.4.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -107,7 +107,7 @@ sub imagemap_dump
     #and add the data of the second component
     for $i ( 1 .. $#{ $self->{'sub_1'}->{'imagemap_data'} } )
     {
-        for $j ( 0 .. $#{ $self->{'sub_1'}->{'imagemap_data'}->[$i] } - 1 )
+        for $j ( 0 .. $#{ $self->{'sub_1'}->{'imagemap_data'}->[$i] } )
         {
             $map[ $i + $dataset_count ][$j] = \@{ $self->{'sub_1'}->{'imagemap_data'}->[$i][$j] };
         }

@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2010-09-23
-# @version 2.4.2
+# @date 2011-11-25
+# @version 2.4.3
 #
 
 ## @mainpage Chart::Base
@@ -32,7 +32,7 @@ use strict;
 use Carp;
 use FileHandle;
 
-$Chart::Base::VERSION = '2.4.2';
+$Chart::Base::VERSION = '2.4.3';
 
 use vars qw(%named_colors);
 
@@ -97,9 +97,31 @@ sub set
             {
                 if ( $key =~ /^grid_lines$/ )
                 {
-                    $self->{'colors'}{'y_grid_lines'}    = $hash{'grid_lines'},
-                      $self->{'colors'}{'x_grid_lines'}  = $hash{'grid_lines'},
-                      $self->{'colors'}{'y2_grid_lines'} = $hash{'grid_lines'};
+
+                    # ORIG:
+                    #$self->{'colors'}{'y_grid_lines'}    = $hash{'grid_lines'},
+                    #  $self->{'colors'}{'x_grid_lines'}  = $hash{'grid_lines'},
+                    #  $self->{'colors'}{'y2_grid_lines'} = $hash{'grid_lines'};
+                    #
+                    # NEW!!!!!!!!!!!!!!!!!!
+                    if ( ref( $hash{'grid_lines'} ) eq 'ARRAY' )
+                    {
+                        my @aLocal = ( $hash{'grid_lines'}[0], $hash{'grid_lines'}[1], $hash{'grid_lines'}[2] );
+                        $self->{'colors'}{'y_grid_lines'}  = [@aLocal];
+                        $self->{'colors'}{'x_grid_lines'}  = [@aLocal];
+                        $self->{'colors'}{'y2_grid_lines'} = [@aLocal];
+                    }
+                    elsif ( ref( \$hash{'grid_lines'} ) eq 'SCALAR' )
+                    {
+                        my $sLocal = $hash{'grid_lines'};
+                        $self->{'colors'}{'y_grid_lines'}  = $sLocal;
+                        $self->{'colors'}{'x_grid_lines'}  = $sLocal;
+                        $self->{'colors'}{'y2_grid_lines'} = $sLocal;
+                    }
+                    else
+                    {
+                        carp "colors{'grid_lines'} is not SCALAR and not ARRAY\n";
+                    }
                 }
             }
         }
@@ -1032,6 +1054,9 @@ sub _init
         'y_grid_lines'  => 'grid_lines',
         'y2_grid_lines' => 'grid_lines',    # should be added by Char::Composite...
     };
+
+    # Define style to plot dots in Points and Lines
+    $self->{'brushStyle'} = 'FilledCircle';
 
     # and return
     return 1;
@@ -2711,7 +2736,8 @@ sub _draw_right_legend
         $self->{'gd_obj'}->line( $x2, $y2, $x3, $y2, $color );
 
         # reset the brush for points
-        $brush = $self->_prepare_brush( $color, 'point', $self->{ 'pointStyle' . $_ } );
+        my $offset = 0;
+        ( $brush, $offset ) = $self->_prepare_brush( $color, 'point', $self->{ 'pointStyle' . $_ } );
         $self->{'gd_obj'}->setBrush($brush);
 
         # draw the point
@@ -3992,8 +4018,8 @@ sub _draw_y2_grid_lines
 #  All hacked up by Richard Dice <rdice@pobox.com> Sunday 16 May 1999
 #
 # @param $color
-# @param $type
-# @param $typeStyle
+# @param $type    'line','point'
+# @param $typeStyle one of 'circle', 'donut', 'triangle', 'upsidedownTriangle', 'square', 'hollowSquare', 'fatPlus'
 # @return status
 sub _prepare_brush
 {
@@ -4006,6 +4032,8 @@ sub _prepare_brush
     # passed -- this is necessary to preserve backward compatibility
     # with apps that use this module prior to putting _prepare_brush
     # in with Base.pm
+    if ( !defined($type) ) { $type = 'point'; }
+
     if (   ( !length($type) )
         || ( !grep { $type eq $_ } ( 'line', 'point' ) ) )
     {
@@ -4064,7 +4092,7 @@ sub _prepare_brush
               ( 'circle', 'donut', 'triangle', 'upsidedownTriangle', 'square', 'hollowSquare', 'fatPlus' );
         $^W = 1;
 
-        my ( $xc, $yc ) = ( $radius - 1, $radius - 1 );
+        my ( $xc, $yc ) = ( $radius, $radius );
 
         # Note that 'default' will produce the same effect
         # as a 'circle' typeStyle

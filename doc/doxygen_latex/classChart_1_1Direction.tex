@@ -1,0 +1,280 @@
+\hypertarget{classChart_1_1Direction}{
+\section{Chart::Direction Class Reference}
+\label{classChart_1_1Direction}\index{Chart::Direction@{Chart::Direction}}
+}
+
+
+\hyperlink{classChart_1_1Direction}{Direction} class derived class for Chart to implement direction charts.  
+
+
+
+
+Inheritance diagram for Chart::Direction:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=164pt]{classChart_1_1Direction__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Chart::Direction:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=267pt]{classChart_1_1Direction__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Private Functions}
+\label{_amgrp8d29cff216bafa3117e21883ea7c6b5f}
+ \begin{DoxyCompactItemize}
+\item 
+\hypertarget{classChart_1_1Direction_af97c0fecf23820586656d100aed65008}{
+private \hyperlink{classChart_1_1Direction_af97c0fecf23820586656d100aed65008}{\_\-draw\_\-data}}
+\label{classChart_1_1Direction_af97c0fecf23820586656d100aed65008}
+
+\begin{DoxyCompactList}\small\item\em finally get around to plotting the data for direction charts \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Direction_ad33ea739bd5ceb8b48809028c489f119}{\_\-find\_\-y\_\-scale} ()
+\begin{DoxyCompactList}\small\item\em we use the find\_\-y\_\-scale methode to determine the labels of the circles and the amount of them \item\end{DoxyCompactList}\item 
+private \hyperlink{classChart_1_1Direction_a6766001399b56ba88e61f7ca0db50922}{\_\-calcTickInterval} (scalar dataset\_\-min, scalar dataset\_\-max, scalar flag\_\-fixed\_\-min, scalar flag\_\-fixed\_\-max, scalar minTicks, scalar maxTicks)
+\begin{DoxyCompactList}\small\item\em Calculates the ticks for direction in normalised units. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Direction_aae701e9961733ae43e068acbad3e139a}{\_\-draw\_\-y\_\-ticks} ()
+\begin{DoxyCompactList}\small\item\em draw the circles and the axes \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Direction_a4803bef9580feed235401ff290459cce}{\_\-draw\_\-x\_\-ticks} ()
+\begin{DoxyCompactList}\small\item\em We don't need x ticks, it's all done in \_\-draw\_\-y\_\-ticks. \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Direction_aa40aa25ffd6c9005303642e1d0ce1ae6}{\_\-prepare\_\-brush} (scalar color, scalar type)
+\begin{DoxyCompactList}\small\item\em set the gdBrush object to trick GD into drawing fat lines \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Direction_a47ab5b61307d24d038ae77e62e269099}{\_\-draw\_\-legend} ()
+\begin{DoxyCompactList}\small\item\em let them know what all the pretty colors mean \item\end{DoxyCompactList}\item 
+private array \hyperlink{classChart_1_1Direction_a8f408c9fa61c3ee5f87a19c1f42d94c7}{\_\-find\_\-y\_\-range} ()
+\begin{DoxyCompactList}\small\item\em Find minimum and maximum value of y data sets. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Object Methods}
+\label{_amgrpfb74d91261823cc595bbeff1eff2b9d5}
+\begin{Desc}
+\item[\hyperlink{todo__todo000001}{Todo}]calculate the width of the labels \end{Desc}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classChart_1_1Direction_ab7104b48aa4219a995656088c121078d}{set} (hash opts)
+\begin{DoxyCompactList}\small\item\em Set all options. \item\end{DoxyCompactList}\item 
+int \hyperlink{classChart_1_1Direction_a50b338ce75f7e6ab339b5f587a4e933b}{add\_\-dataset} (list data)
+\begin{DoxyCompactList}\small\item\em Add many datasets to the dataref. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Object Methods}
+\label{_amgrp06e02ce997685862181738d6a83b6f25}
+ \begin{DoxyCompactItemize}
+\item 
+\hypertarget{classChart_1_1Direction_a9e77fdb40ac62f9a18becd46fd1923ce}{
+protected retval {\bfseries \_\-calcTickInterval} ()}
+\label{classChart_1_1Direction_a9e77fdb40ac62f9a18becd46fd1923ce}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classChart_1_1Direction}{Direction} class derived class for Chart to implement direction charts. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classChart_1_1Direction_a6766001399b56ba88e61f7ca0db50922}{
+\index{Chart::Direction@{Chart::Direction}!\_\-calcTickInterval@{\_\-calcTickInterval}}
+\index{\_\-calcTickInterval@{\_\-calcTickInterval}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{\_\-calcTickInterval}]{\setlength{\rightskip}{0pt plus 5cm}private Chart::Direction::\_\-calcTickInterval (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ dataset\_\-min, }
+\item[{scalar}]{ dataset\_\-max, }
+\item[{scalar}]{ flag\_\-fixed\_\-min, }
+\item[{scalar}]{ flag\_\-fixed\_\-max, }
+\item[{scalar}]{ minTicks, }
+\item[{scalar}]{ maxTicks}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_a6766001399b56ba88e61f7ca0db50922}
+
+
+Calculates the ticks for direction in normalised units. 
+
+Calculate the Interval between ticks in y direction and compare the number of ticks to the user given values min\_\-y\_\-ticks, max\_\-y\_\-ticks
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \$dataset\_\-min}]Minimal value in y direction \item[\mbox{\tt[in]} {\em \$dataset\_\-max}]Maximal value in y direction \item[\mbox{\tt[in]} {\em \$flag\_\-fixed\_\-min}]Indicator whether the dataset\_\-min value is fixed \item[\mbox{\tt[in]} {\em \$flag\_\-fixed\_\-max}]Indicator whether the dataset\_\-max value is fixed \item[\mbox{\tt[in]} {\em \$minTicks}]Minimal number of ticks wanted \item[\mbox{\tt[in]} {\em \$maxTicks}]Maximal number of ticks wanted \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\$tickInterval, \$tickCount, \$pMin, \$pMax 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classChart_1_1Base_a23f7394cb8c7bbe6a5d0e05582e038c9}{Chart::Base}.
+
+\hypertarget{classChart_1_1Direction_a47ab5b61307d24d038ae77e62e269099}{
+\index{Chart::Direction@{Chart::Direction}!\_\-draw\_\-legend@{\_\-draw\_\-legend}}
+\index{\_\-draw\_\-legend@{\_\-draw\_\-legend}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{\_\-draw\_\-legend}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Direction::\_\-draw\_\-legend (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_a47ab5b61307d24d038ae77e62e269099}
+
+
+let them know what all the pretty colors mean 
+
+\begin{DoxyReturn}{Returns}
+status
+\end{DoxyReturn}
+Overwrite corresponding function of \hyperlink{classChart_1_1Base}{Base} 
+
+Reimplemented from \hyperlink{classChart_1_1Base_a530e742ca18ce2e89f177d367964277f}{Chart::Base}.
+
+\hypertarget{classChart_1_1Direction_a4803bef9580feed235401ff290459cce}{
+\index{Chart::Direction@{Chart::Direction}!\_\-draw\_\-x\_\-ticks@{\_\-draw\_\-x\_\-ticks}}
+\index{\_\-draw\_\-x\_\-ticks@{\_\-draw\_\-x\_\-ticks}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{\_\-draw\_\-x\_\-ticks}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Direction::\_\-draw\_\-x\_\-ticks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_a4803bef9580feed235401ff290459cce}
+
+
+We don't need x ticks, it's all done in \_\-draw\_\-y\_\-ticks. 
+
+\begin{DoxyReturn}{Returns}
+status
+\end{DoxyReturn}
+Overwrites the corresponding function in \hyperlink{classChart_1_1Base}{Base} 
+
+Reimplemented from \hyperlink{classChart_1_1Base_a64a81b266a528e24e5547ac504c1fc78}{Chart::Base}.
+
+\hypertarget{classChart_1_1Direction_aae701e9961733ae43e068acbad3e139a}{
+\index{Chart::Direction@{Chart::Direction}!\_\-draw\_\-y\_\-ticks@{\_\-draw\_\-y\_\-ticks}}
+\index{\_\-draw\_\-y\_\-ticks@{\_\-draw\_\-y\_\-ticks}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{\_\-draw\_\-y\_\-ticks}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Direction::\_\-draw\_\-y\_\-ticks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_aae701e9961733ae43e068acbad3e139a}
+
+
+draw the circles and the axes 
+
+Overwrites \hyperlink{classChart_1_1Direction_aae701e9961733ae43e068acbad3e139a}{\_\-draw\_\-y\_\-ticks()} of \hyperlink{classChart_1_1Base}{Base} class
+
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classChart_1_1Base_a46852297ab12aaf10546e63dd7eab462}{Chart::Base}.
+
+\hypertarget{classChart_1_1Direction_a8f408c9fa61c3ee5f87a19c1f42d94c7}{
+\index{Chart::Direction@{Chart::Direction}!\_\-find\_\-y\_\-range@{\_\-find\_\-y\_\-range}}
+\index{\_\-find\_\-y\_\-range@{\_\-find\_\-y\_\-range}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{\_\-find\_\-y\_\-range}]{\setlength{\rightskip}{0pt plus 5cm}private array Chart::Direction::\_\-find\_\-y\_\-range (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_a8f408c9fa61c3ee5f87a19c1f42d94c7}
+
+
+Find minimum and maximum value of y data sets. 
+
+\begin{DoxyReturn}{Returns}
+( min, max, flag\_\-all\_\-integers )
+\end{DoxyReturn}
+Overwrites corresponding \hyperlink{classChart_1_1Base}{Base} function 
+
+Reimplemented from \hyperlink{classChart_1_1Base_ad28e18fc86eebc6846785580977532ca}{Chart::Base}.
+
+\hypertarget{classChart_1_1Direction_ad33ea739bd5ceb8b48809028c489f119}{
+\index{Chart::Direction@{Chart::Direction}!\_\-find\_\-y\_\-scale@{\_\-find\_\-y\_\-scale}}
+\index{\_\-find\_\-y\_\-scale@{\_\-find\_\-y\_\-scale}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{\_\-find\_\-y\_\-scale}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Direction::\_\-find\_\-y\_\-scale (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_ad33ea739bd5ceb8b48809028c489f119}
+
+
+we use the find\_\-y\_\-scale methode to determine the labels of the circles and the amount of them 
+
+\begin{DoxyReturn}{Returns}
+status
+\end{DoxyReturn}
+This function is an overwrite to the same function found in the base class \hyperlink{classChart_1_1Base}{Chart::Base} 
+
+Reimplemented from \hyperlink{classChart_1_1Base_acb2fe91b2d57e43d84b1bc6f092ac68d}{Chart::Base}.
+
+\hypertarget{classChart_1_1Direction_aa40aa25ffd6c9005303642e1d0ce1ae6}{
+\index{Chart::Direction@{Chart::Direction}!\_\-prepare\_\-brush@{\_\-prepare\_\-brush}}
+\index{\_\-prepare\_\-brush@{\_\-prepare\_\-brush}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{\_\-prepare\_\-brush}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Direction::\_\-prepare\_\-brush (
+\begin{DoxyParamCaption}
+\item[{scalar}]{ color, }
+\item[{scalar}]{ type}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_aa40aa25ffd6c9005303642e1d0ce1ae6}
+
+
+set the gdBrush object to trick GD into drawing fat lines 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em \$color}]\item[{\em \$type}]\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Direction_a50b338ce75f7e6ab339b5f587a4e933b}{
+\index{Chart::Direction@{Chart::Direction}!add\_\-dataset@{add\_\-dataset}}
+\index{add\_\-dataset@{add\_\-dataset}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{add\_\-dataset}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Direction::add\_\-dataset (
+\begin{DoxyParamCaption}
+\item[{list}]{ data}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_a50b338ce75f7e6ab339b5f587a4e933b}
+
+
+Add many datasets to the dataref. 
+
+Graph API\par
+ Overwrite \hyperlink{classChart_1_1Base}{Base} method
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em @data}]Dataset to add \end{DoxyParams}
+
+
+Reimplemented from \hyperlink{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{Chart::Base}.
+
+\hypertarget{classChart_1_1Direction_ab7104b48aa4219a995656088c121078d}{
+\index{Chart::Direction@{Chart::Direction}!set@{set}}
+\index{set@{set}!Chart::Direction@{Chart::Direction}}
+\subsubsection[{set}]{\setlength{\rightskip}{0pt plus 5cm}int Chart::Direction::set (
+\begin{DoxyParamCaption}
+\item[{hash}]{ opts}
+\end{DoxyParamCaption}
+)}}
+\label{classChart_1_1Direction_ab7104b48aa4219a995656088c121078d}
+
+
+Set all options. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em \%opts}]Hash of options to the Chart \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+ok or croak
+\end{DoxyReturn}
+main method for customizing the chart, lets users specify values for different parameters\par
+ dont check the number of points in the added datasets in a polarplot\par
+ overwrite \hyperlink{classChart_1_1Base}{Base} method 
+
+Reimplemented from \hyperlink{classChart_1_1Base_aadd99033eae9eab891cc2abdf7e4b74d}{Chart::Base}.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+Chart/\hyperlink{Direction_8pm}{Direction.pm}\end{DoxyCompactItemize}

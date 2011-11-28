@@ -1,0 +1,190 @@
+\hypertarget{classChart_1_1BrushStyles}{
+\section{Chart::BrushStyles Class Reference}
+\label{classChart_1_1BrushStyles}\index{Chart::BrushStyles@{Chart::BrushStyles}}
+}
+
+
+Define styles for \hyperlink{classChart_1_1Points}{Points} and \hyperlink{classChart_1_1LinesPoints}{LinesPoints} classes.  
+
+
+
+
+Inheritance diagram for Chart::BrushStyles:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=178pt]{classChart_1_1BrushStyles__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Chart::BrushStyles:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=247pt]{classChart_1_1BrushStyles__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Functions}
+\label{_amgrpda6bc86800313ecde6e56bd1b41a7c55}
+ \begin{DoxyCompactItemize}
+\item 
+\hyperlink{classChart_1_1BrushStyles_adbd59ea91ba902a765fce4297a69b151}{OpenCircle}
+\begin{DoxyCompactList}\small\item\em Set the gdBrush object to have nice brushed object representing a circle of the size \$radius. \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1BrushStyles_af84643e28b62d5ddefaf36db4632824a}{FilledCircle}
+\begin{DoxyCompactList}\small\item\em Set the gdBrush object to have nice brushed object representing a point of the size \$radius. \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1BrushStyles_ae2f9c23e20ca5e9b329d5fe3630fc790}{Star}
+\begin{DoxyCompactList}\small\item\em Set the gdBrush object to have nice brushed object representing a star of the size \$radius. \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1BrushStyles_a2c807213b768f1a0941cbd7aebee7642}{FilledDiamond}
+\begin{DoxyCompactList}\small\item\em Set the gdBrush object to have nice brushed object representing a filled diamond of the size \$radius. \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1BrushStyles_affdd85acc56b6be6068c5cc960f9857c}{OpenDiamond}
+\begin{DoxyCompactList}\small\item\em Set the gdBrush object to have nice brushed object representing a diamond of the size \$radius-\/1. \item\end{DoxyCompactList}\item 
+\hyperlink{classChart_1_1BrushStyles_a3d17237567c35f8844e29e2bc7b03609}{OpenRectangle}
+\begin{DoxyCompactList}\small\item\em Set the gdBrush object to have nice brushed object representing a rectangle of the height \$radius-\/1 and width of \$radius/2. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Define styles for \hyperlink{classChart_1_1Points}{Points} and \hyperlink{classChart_1_1LinesPoints}{LinesPoints} classes. This class provides functions which define different brush styles to extend the previous point as the only design for \hyperlink{Points_8pm}{Points.pm} or \hyperlink{LinesPoints_8pm}{LinesPoints.pm}\par
+\par
+ The different brush styles are:\par
+ \begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1BrushStyles_adbd59ea91ba902a765fce4297a69b151}{OpenCircle}\par
+ 
+
+\hyperlink{classChart_1_1BrushStyles_af84643e28b62d5ddefaf36db4632824a}{FilledCircle}\par
+ 
+
+\hyperlink{classChart_1_1BrushStyles_ae2f9c23e20ca5e9b329d5fe3630fc790}{Star}\par
+ 
+
+\hyperlink{classChart_1_1BrushStyles_affdd85acc56b6be6068c5cc960f9857c}{OpenDiamond}\par
+ 
+
+\hyperlink{classChart_1_1BrushStyles_a2c807213b768f1a0941cbd7aebee7642}{FilledDiamond}\par
+ 
+
+\hyperlink{classChart_1_1BrushStyles_a3d17237567c35f8844e29e2bc7b03609}{OpenRectangle}\par
+ 
+
+FilledRectangle\par
+ 
+\end{DoxySeeAlso}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classChart_1_1BrushStyles_af84643e28b62d5ddefaf36db4632824a}{
+\index{Chart::BrushStyles@{Chart::BrushStyles}!FilledCircle@{FilledCircle}}
+\index{FilledCircle@{FilledCircle}!Chart::BrushStyles@{Chart::BrushStyles}}
+\subsubsection[{FilledCircle}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Chart::BrushStyles::FilledCircle}}}
+\label{classChart_1_1BrushStyles_af84643e28b62d5ddefaf36db4632824a}
+
+
+Set the gdBrush object to have nice brushed object representing a point of the size \$radius. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em $\ast$GD::Image}]\$rbrush Reference to GD::Image \item[\mbox{\tt[in]} {\em int}]\$radius Radius of the point in pixels \item[\mbox{\tt[in]} {\em int}]\$color Color of the filled point \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing
+\end{DoxyReturn}
+Called by\par
+ use \hyperlink{classChart_1_1BrushStyles}{Chart::BrushStyles};\par
+ @Chart::Points::ISA = qw(Chart::BrushStyles);\par
+ \$self-\/$>$FilledCircle($\backslash$\$rbrush,\$radius, \$color);\par
+ to plot the GD::Image representing a filled circle as the point \hypertarget{classChart_1_1BrushStyles_a2c807213b768f1a0941cbd7aebee7642}{
+\index{Chart::BrushStyles@{Chart::BrushStyles}!FilledDiamond@{FilledDiamond}}
+\index{FilledDiamond@{FilledDiamond}!Chart::BrushStyles@{Chart::BrushStyles}}
+\subsubsection[{FilledDiamond}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Chart::BrushStyles::FilledDiamond}}}
+\label{classChart_1_1BrushStyles_a2c807213b768f1a0941cbd7aebee7642}
+
+
+Set the gdBrush object to have nice brushed object representing a filled diamond of the size \$radius. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em $\ast$GD::Image}]\$rbrush Reference to GD::Image \item[\mbox{\tt[in]} {\em int}]\$radius Radius of the diamond in pixels \item[\mbox{\tt[in]} {\em int}]\$color Color of the filled diamond \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing
+\end{DoxyReturn}
+Called by\par
+ use \hyperlink{classChart_1_1BrushStyles}{Chart::BrushStyles};\par
+ @Chart::Points::ISA = qw(Chart::BrushStyles);\par
+ \$self-\/$>$FilledDiamond($\backslash$\$rbrush,\$radius, \$color);\par
+ to get back an GD::Image representing a filled diamond as the point \hypertarget{classChart_1_1BrushStyles_adbd59ea91ba902a765fce4297a69b151}{
+\index{Chart::BrushStyles@{Chart::BrushStyles}!OpenCircle@{OpenCircle}}
+\index{OpenCircle@{OpenCircle}!Chart::BrushStyles@{Chart::BrushStyles}}
+\subsubsection[{OpenCircle}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Chart::BrushStyles::OpenCircle}}}
+\label{classChart_1_1BrushStyles_adbd59ea91ba902a765fce4297a69b151}
+
+
+Set the gdBrush object to have nice brushed object representing a circle of the size \$radius. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em $\ast$GD::Image}]\$rbrush Reference to GD::Image \item[\mbox{\tt[in]} {\em int}]\$radius Radius of the point in pixels \item[\mbox{\tt[in]} {\em int}]\$color Color of the not filled point\end{DoxyParams}
+Called by\par
+ use \hyperlink{classChart_1_1BrushStyles}{Chart::BrushStyles};\par
+ @Chart::Points::ISA = qw(Chart::BrushStyles);\par
+ \$self-\/$>$OpenCircle($\backslash$\$rbrush,\$radius, \$newcolor);\par
+ to plot the GD::Image representing an open circle as the point \hypertarget{classChart_1_1BrushStyles_affdd85acc56b6be6068c5cc960f9857c}{
+\index{Chart::BrushStyles@{Chart::BrushStyles}!OpenDiamond@{OpenDiamond}}
+\index{OpenDiamond@{OpenDiamond}!Chart::BrushStyles@{Chart::BrushStyles}}
+\subsubsection[{OpenDiamond}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Chart::BrushStyles::OpenDiamond}}}
+\label{classChart_1_1BrushStyles_affdd85acc56b6be6068c5cc960f9857c}
+
+
+Set the gdBrush object to have nice brushed object representing a diamond of the size \$radius-\/1. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em $\ast$GD::Image}]\$rbrush Reference to GD::Image \item[\mbox{\tt[in]} {\em int}]\$radius Radius of the diamond in pixels \item[\mbox{\tt[in]} {\em int}]\$color Color of the diamond \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing
+\end{DoxyReturn}
+Called by\par
+ use \hyperlink{classChart_1_1BrushStyles}{Chart::BrushStyles};\par
+ @Chart::Points::ISA = qw(Chart::BrushStyles);\par
+ \$self-\/$>$OpenDiamond($\backslash$\$rbrush,\$radius, \$color);\par
+ to get back an GD::Image representing a diamond as the point \hypertarget{classChart_1_1BrushStyles_a3d17237567c35f8844e29e2bc7b03609}{
+\index{Chart::BrushStyles@{Chart::BrushStyles}!OpenRectangle@{OpenRectangle}}
+\index{OpenRectangle@{OpenRectangle}!Chart::BrushStyles@{Chart::BrushStyles}}
+\subsubsection[{OpenRectangle}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Chart::BrushStyles::OpenRectangle}}}
+\label{classChart_1_1BrushStyles_a3d17237567c35f8844e29e2bc7b03609}
+
+
+Set the gdBrush object to have nice brushed object representing a rectangle of the height \$radius-\/1 and width of \$radius/2. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em $\ast$GD::Image}]\$rbrush Reference to GD::Image \item[\mbox{\tt[in]} {\em int}]\$radius Radius of the rectangle in pixels \item[\mbox{\tt[in]} {\em int}]\$color Color of the rectangle \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing
+\end{DoxyReturn}
+Called by\par
+ use \hyperlink{classChart_1_1BrushStyles}{Chart::BrushStyles};\par
+ @Chart::Points::ISA = qw(Chart::BrushStyles);\par
+ \$self-\/$>$OpenDiamond($\backslash$\$rbrush,\$radius, \$color);\par
+ to get back an GD::Image representing a rectangle as the point \hypertarget{classChart_1_1BrushStyles_ae2f9c23e20ca5e9b329d5fe3630fc790}{
+\index{Chart::BrushStyles@{Chart::BrushStyles}!Star@{Star}}
+\index{Star@{Star}!Chart::BrushStyles@{Chart::BrushStyles}}
+\subsubsection[{Star}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Chart::BrushStyles::Star}}}
+\label{classChart_1_1BrushStyles_ae2f9c23e20ca5e9b329d5fe3630fc790}
+
+
+Set the gdBrush object to have nice brushed object representing a star of the size \$radius. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[\mbox{\tt[in]} {\em $\ast$GD::Image}]\$rbrush Reference to GD::Image \item[\mbox{\tt[in]} {\em int}]\$radius Radius of the star in pixels \item[\mbox{\tt[in]} {\em int}]\$color Color of the star \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+nothing
+\end{DoxyReturn}
+Called by\par
+ use \hyperlink{classChart_1_1BrushStyles}{Chart::BrushStyles};\par
+ @Chart::Points::ISA = qw(Chart::BrushStyles);\par
+ \$self-\/$>$Star($\backslash$\$rbrush,\$radius, \$color);\par
+ to get back an GD::Image representing a star as the point 
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+Chart/\hyperlink{BrushStyles_8pm}{BrushStyles.pm}\end{DoxyCompactItemize}

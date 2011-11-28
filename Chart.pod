@@ -31,16 +31,16 @@ Chart - a series of charting modules
     $obj->png ( FILEHANDLE );
     $obj->cgi_png ();
 
-    The similiar functions are available for jpeg
+    The similar functions are available for j-peg
 
-    # Retrieve imagemap information
+    # Retrieve image map information
     $obj->set ( 'imagemap' => 'true' );
     $imagemap_ref = $obj->imagemap_dump ();
 
 
 =head1 DESCRIPTION
 
-These manpages give you the most important information about Chart.
+These man-pages give you the most important information about Chart.
 There is also a complete documentation (Documentation.pdf) within
 the Chart package. Look at it to get more information.
 This module is an attempt to build a general purpose graphing module
@@ -104,7 +104,7 @@ for making web page images.  Default is 'false'.
 =item 'png_border'
 
 Sets the number of pixels used as a border between the graph
-and the edges of the png/jpeg.  Defaults to 10.
+and the edges of the png/j-peg.  Defaults to 10.
 
 =item 'graph_border'
 
@@ -120,8 +120,8 @@ readable.  Defaults to 2.
 
 Tells GD graph what to use for the title of the graph.  If empty,
 no title is drawn.  It recognizes '\n' as a newline, and acts accordingly.
-Remember, if you want to use normal quotation marks insted of single 
-quotation marks then you have to qoute "\\n". Default is empty.
+Remember, if you want to use normal quotation marks instead of single 
+quotation marks then you have to quote "\\n". Default is empty.
 
 =item 'sub_title'
 
@@ -145,7 +145,7 @@ legend.  Default is 'right'.
 
 =item 'legend_labels'
 
-Sets the values for the labels for the different datasets.  Should
+Sets the values for the labels for the different data sets.  Should
 be assigned a reference to an array of labels.  For example,
 
   @labels = ('foo', 'bar');
@@ -168,7 +168,7 @@ labels are draw upwards).  Default is 'normal'.
 =item 'xy_plot'
 
 Forces Chart to plot a x-y-graph, which means, that the x-axis is also
-numeric if set to 'true'. Very usefull for mathematical graphs.
+numeric if set to 'true'. Very useful for mathematical graphs.
 Works for Lines, Points, LinesPoints and ErrorBars. Split makes always a 
 xy_plot. Defaults to 'false'.
 
@@ -180,7 +180,7 @@ Default is 6, The minimum is 2.
 =item 'max_y_ticks'
 
 Sets the maximum number of y_ticks to draw when generating a scale.
-Default is 100. This limit is used to avoid ploting an unreasonably
+Default is 100. This limit is used to avoid plotting an unreasonable
 large number of ticks if non-round values are used for the min_val
 and max_val.
 
@@ -200,7 +200,7 @@ Specifies how to draw the x- and y-ticks: as floating point
 =item 'skip_int_ticks'
 
 If 'integer_ticks_only' was set to 'true' the labels and ticks will 
-be drawn every nth tick. Of course in horizontalBars it affects th
+be drawn every nth tick. Of course in horizontalBars it affects the
 x-axis. Default to 1, no skipping. 
 
 =item 'precision'
@@ -224,13 +224,13 @@ point or non-round numbers. This is because the scale must start & end
 on a tick, ticks must have round-number intervals, and include round
 numbers.
 
-Example: Suppose your dataset has a range of 35-114 units, If you specify
-them as the 'min_val' & 'max_val', The y_axis will be ploted with 80 ticks
-every 1 unit.. If no 'min_val' & 'max_val', the system will autoscale the
+Example: Suppose your data set has a range of 35-114 units. If you specify
+them as the 'min_val' & 'max_val', the y_axis will be plotted with 80 ticks
+every 1 unit.. If no 'min_val' & 'max_val', the system will auto scale the
 range to 30-120 with 10 ticks every 10 units.
 
-If the 'min_val' & 'max_val' are specifed to exesive precision, they may
-be overiden by the system, ploting a maximum 'max_y_ticks' ticks.
+If the 'min_val' & 'max_val' are specified to excessive precision, they may
+be overridden by the system, plotting a maximum 'max_y_ticks' ticks.
 
 =item 'include_zero'
 
@@ -238,7 +238,7 @@ If 'true', forces the y-axis to include zero if it is not in the dataset
 range. Default is 'false'.
 
 In general, it is better to use this, than to set the 'min_val' if that
-is all you want to acheve.
+is all you want to achieve.
 
 =item 'pt_size'
 
@@ -259,7 +259,7 @@ and x-tick label).  Default is undef.
 =item 'custom_x_ticks'
 
 Used in points, lines, linespoints, errorbars and bars charts, this option
-allows you to specify exatly which x-ticks and x-tick labels should
+allows you to you to specify exactly which x-ticks and x-tick labels should
 be drawn.  It should be assigned a reference to an array of desired
 ticks.  Just remember that I'm counting from the 0th element of the
 array.  (ie., if 'custom_x_ticks' is assigned [0,3,4], then the 0th,
@@ -274,7 +274,7 @@ the labels. For instance
    $obj -> set ('f_x_tick' => \&formatter );
 
 An example for the function formatter: x labels are seconds since an event. 
-The referenced function can transformat this seconds to hour, minutes and seconds.
+The referenced function can transform this seconds to hour, minutes and seconds.
  
 =item 'f_y_tick'
 
@@ -452,7 +452,7 @@ Tells a pie chart what labels to draw beside the pie. Valid values are
 
 =item 'legend_label_values'
 
-Tells a pie chart what labels to draw in the legende. Valid values are
+Tells a pie chart what labels to draw in the legend. Valid values are
 'percent', 'value', 'both' and 'none'. Defaults to 'value'.
 
 =item 'start'
@@ -484,7 +484,7 @@ Defaults to 'true'.
 
 =item 'line'
 
-If you turn this optin to 'true', then direction will connect the points 
+If you turn this option to 'true', then direction will connect the points 
 with lines. Defaults to 'false'.
 
 =item 'arrow'
@@ -495,7 +495,7 @@ will draw a arrow from the center to the point. Defaults to 'false'.
 =item 'angle_interval'
 
 This option tells direction, how many angle lines should be drawn. The
-default value is 30, which means that a line will be drawn eyery
+default value is 30, which means that a line will be drawn every
 30 degrees. Valid Values are: 0, 5, 10, 15, 20, 30, 45 and 60. If you
 choose 0, direction will draw no line.
 
@@ -517,7 +517,7 @@ Only used for direction how to handle more datasets.
                If 'pairs' is set to 'true', 
                Chart uses the first dataset as a set of degrees and 
                the second dataset as a set of values. 
-               Then, the third set is a set of degrees und the fourth a set of values \dots. \\
+               Then, the third set is a set of degrees and the fourth a set of values \dots. \\
                If 'pairs' is set to 'false', 
                Chart uses the first dataset as a set of angels 
                and all following datasets as sets of values.
@@ -619,14 +619,14 @@ file can be the name of the data file or a filehandle.
 'set' or 'pt is the type of the datafile. 
 If the parameter is 'set' then each line in the data file
 has to be a complete data set. The value of the set has to be 
-seperated by whitespaces. For example the file looks like this:
+separated by white spaces. For example the file looks like this:
 
 	'foo'  'bar'
 	30     16
 	25     32
 
 If the parameter is 'pt', one line has to include all values
-of one data point seperated by whitespaces. For example:
+of one data point separated by white spaces. For example:
 
 	'foo'  30  25
 	'bar'  16  32
@@ -741,7 +741,7 @@ David Bonner (dbonner@cs.bu.edu)
 
 =head1 MAINTAINER
 
-Chart Group (Chart@wettzell.ifag.de)
+Chart Group (Chart@fs.wettzell.de)
 
 =head1 COPYRIGHT
 

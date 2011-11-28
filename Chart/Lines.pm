@@ -7,8 +7,8 @@
 #  maintained by the Chart Group at Geodetic Fundamental Station Wettzell
 #  Chart@fs.wettzell.de
 # @author Chart Group (Chart@fs.wettzell.de)
-# @date 2010-09-23
-# @version 2.4.2
+# @date 2011-11-25
+# @version 2.4.3
 
 ## @class Chart::Lines
 # Bars class derived from class Base.
@@ -18,13 +18,13 @@
 #
 package Chart::Lines;
 
-use Chart::Base '2.4.2';
+use Chart::Base '2.4.3';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Lines::ISA     = qw(Chart::Base);
-$Chart::Lines::VERSION = '2.4.2';
+$Chart::Lines::VERSION = '2.4.3';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -106,6 +106,7 @@ sub _draw_data
     }
 
     # draw the lines
+
     for $i ( 1 .. $self->{'num_datasets'} )
     {
 
