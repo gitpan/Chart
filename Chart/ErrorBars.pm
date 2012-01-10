@@ -6,19 +6,19 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
+# @date 2012-01-06
+# @version 2.4.4
 #
 
 package Chart::ErrorBars;
 
-use Chart::Base '2.4.3';
+use Chart::Base '2.4.4';
 use GD;
 use Carp;
 use strict;
 
 @Chart::ErrorBars::ISA     = qw(Chart::Base);
-$Chart::ErrorBars::VERSION = '2.4.3';
+$Chart::ErrorBars::VERSION = '2.4.4';
 
 ## @class Chart::ErrorBars
 # ErrorBars class derived from class Base.

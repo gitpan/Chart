@@ -3,24 +3,24 @@
 #
 # maintained and written by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
+# @date 2012-01-06
+# @version 2.4.4
 
 ## @class Chart::HorizontalBars
-# Bars class derived from class Base.
+# HorizontalBars class derived from class Base.
 #
 # This class provides all functions which are specific to
 # horizontal bars
 #
 package Chart::HorizontalBars;
 
-use Chart::Base '2.4.3';
+use Chart::Base '2.4.4';
 use GD;
 use Carp;
 use strict;
 
 @Chart::HorizontalBars::ISA     = qw(Chart::Base);
-$Chart::HorizontalBars::VERSION = '2.4.3';
+$Chart::HorizontalBars::VERSION = '2.4.4';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -30,11 +30,11 @@ $Chart::HorizontalBars::VERSION = '2.4.3';
 #  private methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
-## @fn private int _draw_x_ticks()
+## @method private int _draw_x_ticks()
 # draw the x-ticks and their labels
 # Overwrites this function of Chart::Base
 # @return status
-
+#
 sub _draw_x_ticks
 {
     my $self      = shift;

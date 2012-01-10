@@ -7,24 +7,24 @@
 #  maintained by the Chart Group at Geodetic Fundamental Station Wettzell
 #  Chart@fs.wettzell.de
 # @author Chart Group (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
+# @date 2012-01-06
+# @version 2.4.4
 
 ## @class Chart::Lines
-# Bars class derived from class Base.
+# Lines class derived from class Base.
 #
 # This class provides all functions which are specific to
 # lines
 #
 package Chart::Lines;
 
-use Chart::Base '2.4.3';
+use Chart::Base '2.4.4';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Lines::ISA     = qw(Chart::Base);
-$Chart::Lines::VERSION = '2.4.3';
+$Chart::Lines::VERSION = '2.4.4';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -34,7 +34,7 @@ $Chart::Lines::VERSION = '2.4.3';
 #  private methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
-## @fn private _draw_data
+## @method private _draw_data
 # finally get around to plotting the data for lines
 sub _draw_data
 {

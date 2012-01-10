@@ -73,6 +73,33 @@ sub formatter {
 Sets the width of the lines in pixels. Default is 6.
 \end{AttrDecl}
 
+\begin{AttrDecl}{brushStyle}
+Define the share of the points. The share may be specified to each dataset.\\
+The possible shapes of the 'points' are
+\begin{itemize}
+\item FilledCircle (default),
+\item circle,
+\item donut,
+\item OpenCircle,
+\item triangle,
+\item upsidedownTriangle,
+\item square,
+\item hollowSquare,
+\item OpenRectangle,
+\item fatPlus,
+\item Star,
+\item OpenStar,
+\item FilledDiamond, 
+\item OpenDiamond
+\end{itemize} 
+To apply a different brush style to different data sets the following
+example of code can be used:
+\begin{verbatim}
+$g->set(brushStyles => { dataset0 => 'fatPlus', dataset1 => 'hollowSquare' });
+\end{verbatim}
+\end{AttrDecl}
+
+
 \begin{AttrDecl}{pt\_size}
 Sets the radius of the points in pixels. Default is 18.
 \end{AttrDecl}
@@ -123,3 +150,4 @@ Tells \thisclass where to place the $y$ axis. Valid
 values are \literal{left}, \literal{right} and \literal{both}. Defaults
 to \literal{left}.
 \end{AttrDecl}
+

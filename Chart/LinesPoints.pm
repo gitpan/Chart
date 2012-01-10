@@ -6,19 +6,26 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
+# @date 2012-01-06
+# @version 2.4.4
+#
+
+## @class Chart::LinesPoints
+# LinesPoints class connect the given x-/y-values by straight lines and the x-/y-values are plotted by points.
+#
+# This class provides all functions which are specific to
+# lines
 #
 
 package Chart::LinesPoints;
 
-use Chart::Base '2.4.3';
+use Chart::Base '2.4.4';
 use GD;
 use Carp;
 use strict;
 
 @Chart::LinesPoints::ISA     = qw(Chart::Base);
-$Chart::LinesPoints::VERSION = '2.4.3';
+$Chart::LinesPoints::VERSION = '2.4.4';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -110,7 +117,7 @@ sub _draw_data
 
         # get the color for this dataset, and set the brush
         $color = $self->_color_role_to_index( 'dataset' . ( $i - 1 ) );
-        $brush = $self->_prepare_brush( $color, 'line' );
+        $brush = $self->_prepare_brush( $color, 'line', 'dataset' . ( $i - 1 ) );
         $self->{'gd_obj'}->setBrush($brush);
 
         # draw every line for this dataset
@@ -178,7 +185,7 @@ sub _draw_data
         }
 
         # reset the brush for points
-        $brush = $self->_prepare_brush( $color, 'point' );
+        $brush = $self->_prepare_brush( $color, 'point', 'dataset' . ( $i - 1 ) );
         $self->{'gd_obj'}->setBrush($brush);
 
         # draw every point for this dataset
@@ -333,84 +340,6 @@ sub _draw_data
 
     return;
 
-}
-
-## @fn private _prepare_brush
-#  set the gdBrush object to trick GD into drawing fat lines
-sub _prepare_brush
-{
-    my $self  = shift;
-    my $color = shift;
-    my $type  = shift;
-    my ( $radius, @rgb, $brush, $white, $newcolor );
-
-    # get the rgb values for the desired color
-    @rgb = $self->{'gd_obj'}->rgb($color);
-
-    # get the appropriate brush size
-    if ( $type eq 'line' )
-    {
-        $radius = $self->{'brush_size'} / 2;
-    }
-    elsif ( $type eq 'point' )
-    {
-        $radius = $self->{'pt_size'} / 2;
-    }
-
-    # create the new image
-    $brush = GD::Image->new( $radius * 2, $radius * 2 );
-
-    # get the colors, make the background transparent
-    $white = $brush->colorAllocate( 255, 255, 255 );
-    $newcolor = $brush->colorAllocate(@rgb);
-    $brush->transparent($white);
-
-    # draw a nice object
-    if ( $self->{'brushStyle'} eq 'OpenCircle' )
-    {
-
-        # draw the circle
-        $brush->arc( $radius - 1, $radius - 1, $radius, $radius, 0, 360, $newcolor );
-    }
-    elsif ( $self->{'brushStyle'} eq 'FilledDiamond' )
-    {
-
-        # draw the diamond, using 1 oint less than maximum
-        my $R  = int( $radius + 0.5 );
-        my $R2 = $R * 2;
-        $brush->line( $R,  1,       $R2 - 1, $R,      $newcolor );
-        $brush->line( $R2, $R,      $R,      $R2 - 1, $newcolor );
-        $brush->line( $R,  $R2 - 1, 1,       $R,      $newcolor );
-        $brush->line( 1,   $R,      $R,      1,       $newcolor );
-
-        # and fill it
-        $brush->fill( $radius - 1, $radius - 1, $newcolor );
-    }
-    elsif ( $self->{'brushStyle'} eq 'OpenDiamond' )
-    {
-
-        # draw the diamond, using 1 oint less than maximum
-        my $R  = int( $radius + 0.5 );
-        my $R2 = $R * 2;
-        $brush->line( $R,  1,       $R2 - 1, $R,      $newcolor );
-        $brush->line( $R2, $R,      $R,      $R2 - 1, $newcolor );
-        $brush->line( $R,  $R2 - 1, 1,       $R,      $newcolor );
-        $brush->line( 1,   $R,      $R,      1,       $newcolor );
-    }
-    else
-    {
-
-        # in all other cases:
-
-        # draw the circle
-        $brush->arc( $radius - 1, $radius - 1, $radius, $radius, 0, 360, $newcolor );
-
-        # and fill it
-        $brush->fill( $radius - 1, $radius - 1, $newcolor );
-    }
-
-    # set the new image as the main object's brush
-    return $brush;
 }
 
 ## be a good module and return 1

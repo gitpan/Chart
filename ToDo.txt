@@ -21,6 +21,7 @@ Any easy way to do this? Thanks!
 
      Points.pm:
      New option (default): brushStyle => 'FilledCircle'
+     # brushStyle => 'donut'
      #brushStyle => 'fatPlus'
      #brushStyle => OpenCircle
      #brushStyle => FilledDiamond

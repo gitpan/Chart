@@ -6,14 +6,12 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
-#
+# @date 2012-01-06
+# @version 2.4.4
 
 ## @mainpage Chart::Base
 #
 # Basic Class of Chart from which all the other classes are derived.
-#
 
 ## @class Chart::Base
 # @brief Base class for Chart; all other classes derived from here
@@ -23,18 +21,19 @@
 # all classes
 package Chart::Base;
 
-## Uses
+# Uses
 # GD
 # Carp
 # FileHandle
 use GD;
-use strict;
 use Carp;
 use FileHandle;
+use Chart::Constants;
 
-$Chart::Base::VERSION = '2.4.3';
+$Chart::Base::VERSION = '2.4.4';
 
 use vars qw(%named_colors);
+use strict;
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -60,17 +59,17 @@ sub new
 }
 
 ## @method int set(%opts)
-# @param[in] %opts Hash of options to the Chart
-# @return ok or croak
-#
-# @brief
 # Set all options
 #
 # @details
 #  main method for customizing the chart, lets users
 #  specify values for different parameters\n
-# The options are saved locally to be able to output them
-# via @see getopts()
+#  The options are saved locally to be able to output them
+#  via @see getopts()
+#
+# @param[in] %opts Hash of options to the Chart
+# @return ok or croak
+#
 sub set
 {
     my $self = shift;
@@ -138,7 +137,7 @@ sub set
 # get all options
 #
 # @details
-# Return the set options as a hash
+# @return set options as a hash
 sub getopts
 {
     my $self = shift;
@@ -169,7 +168,7 @@ sub getopts
 # </pre>
 #
 # @param \@data Dataset to add
-
+#
 sub add_pt
 {
     my $self = shift;
@@ -258,7 +257,7 @@ sub add_dataset
     return 1;
 }
 
-## @fn int add_datafile($filename,$format)
+## @method int add_datafile($filename,$format)
 #  Graph API\n
 # it's also possible to add a complete datafile\n
 # Uses
@@ -317,7 +316,7 @@ sub add_datafile
     close($File);
 }
 
-## @fn int clear_data()
+## @method int clear_data()
 # Clear Graph API (by undefining 'dataref'
 # @return Status of function
 sub clear_data
@@ -331,7 +330,7 @@ sub clear_data
     return 1;
 }
 
-## @fn arrayref get_data()
+## @method arrayref get_data()
 #  Get array of data of the last graph
 # @return Reference to data set of the last graph
 sub get_data
@@ -354,7 +353,7 @@ sub get_data
     return $ref;
 }
 
-## @fn int png($file, $dataref)
+## @method int png($file, $dataref)
 # Produce the graph of options set in png format.
 #
 # called after the options are set, this method
@@ -429,7 +428,7 @@ sub png
     return 1;
 }
 
-## @fn int cgi_png($dataref)
+## @method int cgi_png($dataref)
 # Produce the graph of options set in png format to be directly
 # written for CGI.
 #
@@ -474,14 +473,14 @@ sub cgi_png
     return 1;
 }
 
-## @fn int scalar_png($dataref)
+## @method int scalar_png($dataref)
 # Produce the graph of options set in png format to be directly
-# written for CGI.\n
+# written for CGI.
+#
 # Called after the options are set, \n
-# this method
-# invokes all my private methods to actually
+# this method invokes all my private methods to actually
 # draw the chart and plot the data
-# @param $dataref Reference to the data to be plotted
+# @param[in] $dataref Reference to the data to be plotted
 # @return Status of the plot
 sub scalar_png
 {
@@ -502,20 +501,30 @@ sub scalar_png
     $self->_draw();
 
     # returns the png image as a scalar value, so that
-    # the programmer-user can do whatever the heck
-    # s/he wants to with it
+    # the programmer/user can do whatever the she/he wants to with it
     $self->{'gd_obj'}->png();
+    return 1;
 }
 
-## @fn int jpeg($file,$dataref)
-# Produce the graph of options set in JPG format to be directly
+## @method int jpeg($file,$dataref)
+# Produce the graph of options set in JPG format to be directly plotted.\n
 #
-# called after the options are set, this method
+# Called after the options are set, this method
 # invokes all my private methods to actually
-# draw the chart and plot the data
-# @param $file Name of file to write graph into
-# @param $dataref
+# draw the chart and plot the data.
+# The output has the jpeg format in opposite to png format produced by
+# @see png
+#
+# Uses the following private functions:\n
+# @see _set_colors
+# @see _copy_data
+# @see _check_data
+# @see _draw
+#
+# @param[in] $file Name of file to write graph to
+# @param[in] $dataref Reference to external data space
 # @return Status of the plot
+#
 sub jpeg
 {
     my $self    = shift;
@@ -577,7 +586,7 @@ sub jpeg
     return 1;
 }
 
-## @fn int cgi_jpeg($dataref)
+## @method int cgi_jpeg($dataref)
 # Produce the graph of options set in JPG format to be directly
 # for CGI.
 #
@@ -622,7 +631,7 @@ sub cgi_jpeg
     return 1;
 }
 
-## @fn int scalar_jpeg($dataref)
+## @method int scalar_jpeg($dataref)
 # Produce the graph of options set in JPG format to be directly
 #
 # called after the options are set, this method
@@ -654,7 +663,7 @@ sub scalar_jpeg
     $self->{'gd_obj'}->jpeg( [100] );
 }
 
-## @fn int make_gd($dataref)
+## @method int make_gd($dataref)
 # Produce the graph of options set in GD format to be directly
 #
 # called after the options are set, this method
@@ -684,7 +693,7 @@ sub make_gd
     return $self->{'gd_obj'};
 }
 
-## @fn imagemap_dump()
+## @method imagemap_dump()
 #  get the information to turn the chart into an imagemap
 #
 # @return Reference to an array of the image
@@ -714,7 +723,7 @@ sub imagemap_dump
     return $ref;
 }
 
-## @fn minimum(@array)
+## @method minimum(@array)
 # determine minimum of an array of values
 # @param @array List of numerical values
 # @return Minimal value of list of values
@@ -732,7 +741,7 @@ sub minimum
     $min;
 }
 
-## @fn maximum(@array)
+## @method maximum(@array)
 # determine maximum of an array of values
 # @param @array List of numerical values
 # @return Maximal value of list of values
@@ -750,7 +759,7 @@ sub maximum
     $max;
 }
 
-## @fn arccos($a)
+## @method arccos($a)
 # Function arccos(a)
 # @param $a Value
 # @return arccos(a)
@@ -762,7 +771,7 @@ sub arccos
     return ( atan2( sqrt( 1 - $a * $a ), $a ) );
 }
 
-## @fn arcsin($a)
+## @method arcsin($a)
 # Function arcsin(a)
 # @param $a Value
 # @return arcsin(a)
@@ -774,7 +783,7 @@ sub arcsin
     return ( atan2( $a, sqrt( 1 - $a * $a ) ) );
 }
 
-## @fn true($b)
+## @method true($b)
 # determine true value of argument
 # @param[in] $b Bool value to check for true
 # @return 1 if argument is equal to TRUE, true, 1, t, T, and defined
@@ -800,7 +809,7 @@ sub true
     return 0;
 }
 
-## @fn false($b)
+## @method false($b)
 # determine false value of argument
 # @param[in] $b Bool value to check for true
 # @return 1 if argument is equal to false, FALSE, 0, f, F or undefined
@@ -943,8 +952,6 @@ sub _init
 
     # default for no_cache is false.  (it breaks netscape 4.5)
     $self->{no_cache} = 'false';
-
-    $self->{typeStyle} = 'default';
 
     # default value for skip_y_ticks for the labels
     $self->{skip_y_ticks} = 1;
@@ -1270,101 +1277,6 @@ our %named_colors = (
     'RoyalBlue'    => [ 65,  105, 225 ],
 );
 
-## No Longer needed.
-##  let the user specify their own colors in $self->{'colors'}
-# sub _set_user_colors {
-#   my $self = shift;
-#   my $color_table = {};
-#   my @rgb;
-#
-#   # see if they want a different background
-#   if (($self->{'colors'}{'background'}) &&
-#       (scalar(@{$self->{'colors'}{'background'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'background'}};
-#     $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#   else { # make sure white becomes the background color
-#     @rgb = (255, 255, 255);
-#     $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # make the background transparent if they asked nicely
-#   if ($self->{'transparent'} =~ /^true$/i) {
-#     $self->{'gd_obj'}->transparent ($color_table->{'background'});
-#   }
-#
-#   # next check for the color for the miscellaneous stuff
-#   # (the axes on the plot, the box around the legend, etc.)
-#   if (($self->{'colors'}{'misc'}) &&
-#       (scalar(@{$self->{'colors'}{'misc'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'misc'}};
-#     $color_table->{'misc'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # what about the text?
-#   if (($self->{'colors'}{'text'}) &&
-#       (scalar(@{$self->{'colors'}{'text'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'text'}};
-#     $color_table->{'text'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # and how about y_labels?
-#   if (($self->{'colors'}{'y_label'}) &&
-#       (scalar(@{$self->{'colors'}{'y_label'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'y_label'}};
-#     $color_table->{'y_label'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   if (($self->{'colors'}{'y_label2'}) &&
-#       (scalar(@{$self->{'colors'}{'y_label2'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'y_label2'}};
-#     $color_table->{'y_label2'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # set user-specified "default" grid_lines color
-#   if (($self->{'colors'}{'grid_lines'}) &&
-#       (scalar(@{$self->{'colors'}{'grid_lines'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'grid_lines'}};
-#     $color_table->{'grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # x_grid_lines color
-#   if (($self->{'colors'}{'x_grid_lines'}) &&
-#       (scalar(@{$self->{'colors'}{'x_grid_lines'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'x_grid_lines'}};
-#     $color_table->{'x_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # y_grid_lines color
-#   if (($self->{'colors'}{'y_grid_lines'}) &&
-#       (scalar(@{$self->{'colors'}{'y_grid_lines'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'y_grid_lines'}};
-#     $color_table->{'y_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # y2_grid_lines color
-#   if (($self->{'colors'}{'y2_grid_lines'}) &&
-#       (scalar(@{$self->{'colors'}{'y2_grid_lines'}}) == 3)) {
-#     @rgb = @{$self->{'colors'}{'y2_grid_lines'}};
-#     $color_table->{'y2_grid_lines'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # okay, now go for the data sets
-#   for (keys(%{$self->{'colors'}})) {
-#     if (($_ =~ /^dataset/i) &&
-#         (scalar(@{$self->{'colors'}{$_}}) == 3)) {
-#       @rgb = @{$self->{'colors'}{$_}};
-#       $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#     }
-#   }
-#
-#   # stick the color table in the object
-#   $self->{'color_table'} = $color_table;
-#
-#   # and return
-#   return 1;
-# }
-
 ## @fn private int _set_colors
 #  specify my colors
 # @return status
@@ -1380,84 +1292,22 @@ sub _set_colors
 
     # all other roles are initialized by calling $self->_color_role_to_index(ROLENAME);
 
-## Replaced by above, and calls to _color_role_to_index method elsewhere.
-#   my ($color_table, @rgb, @colors);
-#
-#   # check to see if they specified colors
-#   if ($self->{'color_table'}) {
-#     $color_table = $self->{'color_table'};
-#   }
-#   else {
-#     $color_table = {};
-#   }
-#
-#   # put the background in first
-#   unless ($color_table->{'background'}) {
-#     @rgb = @{$colors{'white'}};
-#     $color_table->{'background'} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # make the background transparent if they asked for it
-#   if ($self->{'transparent'} =~ /^true$/i) {
-#     $self->{'gd_obj'}->transparent ($color_table->{'background'});
-#   }
-#
-#   # now get all my named colors
-#   for (keys (%colors)) {
-#     @rgb = @{$colors{$_}};
-#     $color_table->{$_} = $self->{'gd_obj'}->colorAllocate(@rgb);
-#   }
-#
-#   # set up the datatset* colors
-#   @colors = qw (red green blue purple peach orange mauve olive pink light_purple light_blue plum yellow turquoise light_green brown);
-#   for (0..$#colors) {
-#     unless ($color_table->{'dataset'.$_}) { # don't override their colors
-#       $color_table->{'dataset'.$_} = $color_table->{$colors[$_]};
-#     }
-#   }
-#
-#   # set up the miscellaneous color
-#   unless ($color_table->{'misc'}) {
-#     $color_table->{'misc'} = $color_table->{'black'};
-#   }
-#
-#   # and the text color
-#   unless ($color_table->{'text'}) {
-#     $color_table->{'text'} = $color_table->{'black'};
-#   }
-#
-#   unless ($color_table->{'y_label'}) {
-#     $color_table->{'y_label'} = $color_table->{'black'};
-#   }
-#   unless ($color_table->{'y_label2'}) {
-#     $color_table->{'y_label2'} = $color_table->{'black'};
-#   }
-#
-#   unless ($color_table->{'grid_lines'}) {
-#     $color_table->{'grid_lines'} = $color_table->{'black'};
-#   }
-#
-#   unless ($color_table->{'x_grid_lines'}) {
-#     $color_table->{'x_grid_lines'} = $color_table->{'grid_lines'};
-#   }
-#
-#   unless ($color_table->{'y_grid_lines'}) {
-#     $color_table->{'y_grid_lines'} = $color_table->{'grid_lines'};
-#   }
-#
-#   unless ($color_table->{'y2_grid_lines'}) {
-#     $color_table->{'y2_grid_lines'} = $color_table->{'grid_lines'};
-#   }
-#
-#   # put the color table back in the object
-#   $self->{'color_table'} = $color_table;
-#
-# and return
+    # and return
     return 1;
 }
 
-## @fn private int _color_role_to_index(\@list_of_roles)
-# @param \@list_of_roles List of roles
+## @fn private int _color_role_to_index
+# return a (list of) color index(es) corresponding to the (list of) role(s)
+#
+# @details wantarray
+# is a special keyword which returns a flag indicating
+# which context your subroutine has been called in.
+# It will return one of three values.
+#
+# @li true: If your subroutine has been called in list context
+# @li false: If your subroutine has been called in scalar context
+# @li undef: If your subroutine has been called in void context
+#
 # @return a (list of) color index(es) corresponding to the (list of) role(s) in \@_.
 #
 sub _color_role_to_index
@@ -1496,6 +1346,7 @@ sub _color_role_to_index
         $index;
     } @_;
 
+
     #print STDERR "Result= ".$result[0]."\n";
     ( wantarray && @_ > 1 ? @result : $result[0] );
 }
@@ -1531,6 +1382,31 @@ sub _color_spec_to_rgb
         croak "Unrecognized color for $role\n";
     }
     @rgb;
+}
+
+## @fn private int _brushStyles_of_roles
+# return a (list of) brushStyles corresponding to the (list of) role(s)
+#
+# @param \@list_of_roles List of roles
+# @return (list of) brushStyle(s) corresponding to the (list of) role(s) in \@_.
+#
+sub _brushStyles_of_roles
+{
+    my $self  = shift;
+    my @roles = @_;
+
+    my @results = ();
+    foreach my $role (@roles)
+    {
+        my $brushStyle = $self->{'brushStyles'}->{$role};
+
+        if ( !defined($brushStyle) )
+        {
+            $brushStyle = $self->{'brushStyle'};
+        }
+        push( @results, $brushStyle );
+    }
+    @results;
 }
 
 ## @fn private int _draw_title
@@ -2646,7 +2522,7 @@ sub _draw_bottom_legend
                 $self->{'gd_obj'}->line( $x, $y, $x + $self->{'legend_example_size'}, $y, $color );
 
                 # reset the brush for points
-                $brush = $self->_prepare_brush( $color, 'point', $self->{ 'pointStyle' . $index } );
+                $brush = $self->_prepare_brush( $color, 'point', 'dataset' . $index );
                 $self->{'gd_obj'}->setBrush($brush);
 
                 # draw the point
@@ -2737,7 +2613,7 @@ sub _draw_right_legend
 
         # reset the brush for points
         my $offset = 0;
-        ( $brush, $offset ) = $self->_prepare_brush( $color, 'point', $self->{ 'pointStyle' . $_ } );
+        ( $brush, $offset ) = $self->_prepare_brush( $color, 'point', 'dataset' . $_ );
         $self->{'gd_obj'}->setBrush($brush);
 
         # draw the point
@@ -2850,7 +2726,7 @@ sub _draw_top_legend
                 $self->{'gd_obj'}->line( $x, $y, $x + $self->{'legend_example_size'}, $y, $color );
 
                 # reset the brush for points
-                $brush = $self->_prepare_brush( $color, 'point', $self->{ 'pointStyle' . $index } );
+                $brush = $self->_prepare_brush( $color, 'point', 'dataset' . $index );
                 $self->{'gd_obj'}->setBrush($brush);
 
                 # draw the point
@@ -2938,7 +2814,7 @@ sub _draw_left_legend
         $self->{'gd_obj'}->line( $x2, $y2, $x3, $y2, $color );
 
         # reset the brush for points
-        $brush = $self->_prepare_brush( $color, 'point', $self->{ 'pointStyle' . $_ } );
+        $brush = $self->_prepare_brush( $color, 'point', 'dataset' . $_ );
         $self->{'gd_obj'}->setBrush($brush);
 
         # draw the point
@@ -4008,25 +3884,35 @@ sub _draw_y2_grid_lines
     return 1;
 }
 
-## @fn private int _prepare_brush($color,$type,$typeStyle)
-# draw grid_lines for y
+## @fn private int _prepare_brush($color,$type,$role)
+# prepare brush
 #
 # @details
-#  set the gdBrush object to trick GD into drawing fat lines & points
+#  set the gdBrush object to tick GD into drawing fat lines & points
 #  of interesting shapes
 #  Needed by "Lines", "Points" and "LinesPoints"
 #  All hacked up by Richard Dice <rdice@pobox.com> Sunday 16 May 1999
 #
 # @param $color
 # @param $type    'line','point'
-# @param $typeStyle one of 'circle', 'donut', 'triangle', 'upsidedownTriangle', 'square', 'hollowSquare', 'fatPlus'
+# @param $role
+#
 # @return status
 sub _prepare_brush
 {
-    my $self      = shift;
-    my $color     = shift;
-    my $type      = shift;
-    my $typeStyle = shift;
+    my $self  = shift;
+    my $color = shift;
+    my $type  = shift;
+    my $role  = shift || 'default';
+
+    my $brushStyle = $self->{'brushStyle'};
+    if ( defined $role )
+    {
+        my (@brushStyles) = $self->_brushStyles_of_roles($role);
+        $brushStyle = $brushStyles[0];
+    }
+
+    #print STDERR "role=$role\n";
 
     # decide what $type should be in the event that a param isn't
     # passed -- this is necessary to preserve backward compatibility
@@ -4037,11 +3923,9 @@ sub _prepare_brush
     if (   ( !length($type) )
         || ( !grep { $type eq $_ } ( 'line', 'point' ) ) )
     {
-        $typeStyle = $type;
-        $type      = 'line' if ref $self eq 'Chart::Lines';
-        $type      = 'point' if ref $self eq 'Chart::Points';
-
-        # Chart::LinesPoints is expected to pass a $type param
+        $brushStyle = $self->{'brushStyle'};
+        $type       = 'line' if ref $self eq 'Chart::Lines';
+        $type       = 'point' if ref $self eq 'Chart::Points';
     }
 
     my ( $radius, @rgb, $brush, $white, $newcolor );
@@ -4078,7 +3962,7 @@ sub _prepare_brush
         # Does $brush->fill really have to be here?  Dunno... this
         # seems to be a relic from earlier code
         #
-        # Note that 'line's don't benefit from a $typeStyle... yet.
+        # Note that 'line's don't benefit from a $brushStyle... yet.
         # It shouldn't be too tough to hack this in by taking advantage
         # of GD's gdStyled facility
 
@@ -4086,17 +3970,17 @@ sub _prepare_brush
 
     if ( $type eq 'point' )
     {
-        $^W        = 0;
-        $typeStyle = 'default'
-          unless grep { $typeStyle eq $_ }
-              ( 'circle', 'donut', 'triangle', 'upsidedownTriangle', 'square', 'hollowSquare', 'fatPlus' );
-        $^W = 1;
+        $brushStyle = $self->{'brushStyle'}
+          unless grep { $brushStyle eq $_ } (
+            'FilledCircle',  'circle',             'donut',  'OpenCircle',
+            'triangle',      'upsidedownTriangle', 'square', 'hollowSquare',
+            'OpenRectangle', 'fatPlus',            'Star',   'OpenStar',
+            'FilledDiamond', 'OpenDiamond'
+          );
 
         my ( $xc, $yc ) = ( $radius, $radius );
 
-        # Note that 'default' will produce the same effect
-        # as a 'circle' typeStyle
-        if ( grep { $typeStyle eq $_ } ( 'default', 'circle', 'donut' ) )
+        if ( grep { $brushStyle eq $_ } ( 'default', 'circle', 'donut', 'OpenCircle', 'FilledCircle' ) )
         {
             $brush->arc( $xc, $yc, $radius, $radius, 0, 360, $newcolor );
             $brush->fill( $xc, $yc, $newcolor );
@@ -4104,18 +3988,18 @@ sub _prepare_brush
             # draw a white (and therefore transparent) circle in the middle
             # of the existing circle to make the "donut", if appropriate
 
-            if ( $typeStyle eq 'donut' )
+            if ( $brushStyle eq 'donut' || $brushStyle eq 'OpenCircle' )
             {
                 $brush->arc( $xc, $yc, int( $radius / 2 ), int( $radius / 2 ), 0, 360, $white );
                 $brush->fill( $xc, $yc, $white );
             }
         }
 
-        if ( grep { $typeStyle eq $_ } ( 'triangle', 'upsidedownTriangle' ) )
+        if ( grep { $brushStyle eq $_ } ( 'triangle', 'upsidedownTriangle' ) )
         {
             my $poly = new GD::Polygon;
-            my $sign = ( $typeStyle eq 'triangle' ) ? 1 : (-1);
-            my $z    = int( 0.8 * $radius );                      # scaling factor
+            my $sign = ( $brushStyle eq 'triangle' ) ? 1 : (-1);
+            my $z    = int( 0.8 * $radius );                       # scaling factor
 
             # co-ords are chosen to make an equilateral triangle
 
@@ -4126,7 +4010,7 @@ sub _prepare_brush
             $brush->filledPolygon( $poly, $newcolor );
         }
 
-        if ( $typeStyle eq 'fatPlus' )
+        if ( $brushStyle eq 'fatPlus' )
         {
             my $poly = new GD::Polygon;
 
@@ -4150,20 +4034,89 @@ sub _prepare_brush
             $brush->filledPolygon( $poly, $newcolor );
         }
 
-        if ( grep { $typeStyle eq $_ } ( 'square', 'hollowSquare' ) )
+        if ( $brushStyle eq 'Star' || $brushStyle eq 'OpenStar' )
         {
             my $poly = new GD::Polygon;
-            my $z    = int( 0.5 * $radius );
+
+            my $z  = int($radius);
+            my $sz = int( $z / 3 * 1.75 );    # small z
+
+            my $x1 = int( $xc + $z );
+            my $y1 = int($yc);
+            my ( $x2, $y2 );
+
+            my $xyRatio = $self->_xyRatio();
+
+            $poly->addPt( $x1, $y1 );
+
+            $x2 = $xc + int( $sz * 0.5 );
+            $y2 = $yc - int( $sz * 0.5 );
+            $poly->addPt( $x2, $y2 );
+
+            $x2 = $xc;
+            $y2 = $yc - $z;
+            $poly->addPt( $x2, $y2 );
+
+            $x2 = $xc - int( $sz * 0.5 );
+            $y2 = $yc - int( $sz * 0.5 );
+            $poly->addPt( $x2, $y2 );
+
+            $x2 = $xc - $z;
+            $y2 = $yc;
+            $poly->addPt( $x2, $y2 );
+
+            $x2 = $xc - int( $sz * 0.5 );
+            $y2 = $yc + int( $sz * 0.5 );
+            $poly->addPt( $x2, $y2 );
+
+            $x2 = $xc;
+            $y2 = $yc + $z;
+            $poly->addPt( $x2, $y2 );
+
+            $x2 = $xc + int( $sz * 0.5 );
+            $y2 = $yc + int( $sz * 0.5 );
+            $poly->addPt( $x2, $y2 );
+            if ( $brushStyle eq 'OpenStar' )
+            {
+                $brush->polygon( $poly, $newcolor );
+            }
+            else
+            {
+                $brush->filledPolygon( $poly, $newcolor );
+            }
+        }
+
+        if ( grep { $brushStyle eq $_ } ( 'square', 'hollowSquare', 'OpenRectangle' ) )
+        {
+            my $z = int( 0.5 * $radius );
 
             $brush->filledRectangle( $xc - $z, $yc - $z, $xc + $z, $yc + $z, $newcolor );
 
-            if ( $typeStyle eq 'hollowSquare' )
+            if ( $brushStyle eq 'hollowSquare' || $brushStyle eq 'OpenRectangle' )
             {
                 $z = int( $z / 2 );
 
                 $brush->filledRectangle( $xc - $z, $yc - $z, $xc + $z, $yc + $z, $white );
             }
         }
+
+        if ( grep { $brushStyle eq $_ } ( 'FilledDiamond', 'OpenDiamond' ) )
+        {
+            my $z = int( 0.75 * $radius );
+
+            $brush->line( $xc + $z, $yc,      $xc,      $yc + $z, $newcolor );
+            $brush->line( $xc,      $yc + $z, $xc - $z, $yc,      $newcolor );
+            $brush->line( $xc - $z, $yc,      $xc,      $yc - $z, $newcolor );
+            $brush->line( $xc,      $yc - $z, $xc + $z, $yc,      $newcolor );
+
+            if ( $brushStyle eq 'FilledDiamond' )
+            {
+
+                # and fill it
+                $brush->fill( $radius - 1, $radius - 1, $newcolor );
+            }
+        }
+
     }
 
     # set the new image as the main object's brush
@@ -4181,6 +4134,58 @@ sub _default_f_tick
     my $label = shift;
 
     return $label;
+}
+
+## @fn private float _xyRatio
+# Get ratio width_x/width_y
+#
+# @return ratio width_x and width_y
+sub _xyRatio
+{
+    my $self = shift;
+
+    my $width_x = $self->{'curr_x_max'} - $self->{'curr_x_min'} + 1;
+    my $width_y = $self->{'curr_y_max'} - $self->{'curr_y_min'} + 1;
+
+    my $ratio = $width_x / $width_y;
+
+    return $ratio;
+}
+
+## @fn private float _xPixelInReal
+# Get witdh of one Pixel in real coordinates in x-direction
+#
+#
+# @return width(interval) of reality in x direction
+#
+sub _xPixelInReal
+{
+    my $self = shift;
+
+    my $width_x = $self->{'curr_x_max'} - $self->{'curr_x_min'} + 1;
+    my ( $min, $max ) = $self->_find_x_range();
+    my $xRealWidth = $max - $min;
+    my $ratio      = $xRealWidth / $width_x;
+
+    return $ratio;
+}
+
+## @fn private float _yPixelInReal
+# Get witdh of one Pixel in real coordinates in y-direction
+#
+#
+# @return width(interval) of reality in y direction
+#
+sub _yPixelInReal
+{
+    my $self = shift;
+
+    my $width_y = $self->{'curr_y_max'} - $self->{'curr_y_min'} + 1;
+    my ( $min, $max, $flag_all_integers ) = $self->_find_y_range();
+    my $yRealWidth = $max - $min;
+    my $ratio      = $yRealWidth / $width_y;
+
+    return $ratio;
 }
 
 ## be a good module and return positive

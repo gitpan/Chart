@@ -6,26 +6,22 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
-#
-#
+# @date 2012-01-06
+# @version 2.4.4
 
 ## @class Chart::Bars
-# Bars class derived from class Base.
-#
-# This class provides all functions which are specific to
+# Bars class provides all functions which are specific to
 # vertical bars
-#
 package Chart::Bars;
 
-use Chart::Base '2.4.3';
+use Chart::Base '2.4.4';
 use GD;
 use Carp;
+
 use strict;
 
 @Chart::Bars::ISA     = qw(Chart::Base);
-$Chart::Bars::VERSION = '2.4.3';
+$Chart::Bars::VERSION = '2.4.4';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -35,11 +31,13 @@ $Chart::Bars::VERSION = '2.4.3';
 #  private methods go here  #
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
-## @fn private _draw_data
+## @method private _draw_data
 # finally get around to plotting the data for (vertical) bars
+#
 sub _draw_data
 {
-    my $self      = shift;
+    my $self = shift;
+
     my $data      = $self->{'dataref'};
     my $misccolor = $self->_color_role_to_index('misc');
     my ( $x1, $x2, $x3, $y1, $y2, $y3 );

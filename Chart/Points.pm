@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
+# @date 2012-01-06
+# @version 2.4.4
 #
 
 ## @class Chart::Points
@@ -18,14 +18,13 @@
 #
 package Chart::Points;
 
-use Chart::Base '2.4.3';
+use Chart::Base '2.4.4';
 use GD;
 use Carp;
 use strict;
-use Chart::BrushStyles;
 
-@Chart::Points::ISA     = qw(Chart::Base Chart::BrushStyles);
-$Chart::Points::VERSION = '2.4.3';
+@Chart::Points::ISA     = qw(Chart::Base);
+$Chart::Points::VERSION = '2.4.4';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -116,7 +115,7 @@ sub _draw_data
         # get the color for this dataset, and set the brush
         $color = $self->_color_role_to_index( 'dataset' . ( $i - 1 ) );
         my $offset = 0;
-        ( $brush, $offset ) = $self->_prepare_brush($color);
+        ( $brush, $offset ) = $self->_prepare_brush( $color, 'point', 'dataset' . ( $i - 1 ) );
         $self->{'gd_obj'}->setBrush($brush);
 
         # draw every point for this dataset
@@ -159,93 +158,6 @@ sub _draw_data
       ->rectangle( $self->{'curr_x_min'}, $self->{'curr_y_min'}, $self->{'curr_x_max'}, $self->{'curr_y_max'}, $misccolor );
     return;
 
-}
-
-## @fn private _prepare_brush
-#  set the gdBrush object to have nice brushed Objects.
-#  These objectes are define by the option brushStyle.
-# The size of the objects are defined by option 'pt_size',
-# i.e., the smaller 'pt_size' is defined, the smaller these objects are.
-#
-# @return (GD::Image,offset)
-sub _prepare_brush
-{
-    my $self  = shift;
-    my $color = shift;
-
-    #    my $radius = $self->maximum( 2, $self->{'pt_size'} / 2 );
-    #    my ( @rgb, $white, $newcolor );
-    my $brush;
-    my $type      = 'point';
-    my $typestyle = 'circle';
-
-    my @BRUSHSTYLES = ( 'fatPlus', 'circle' );
-
-    for ( my $idx = 0 ; $idx < $#BRUSHSTYLES ; $idx++ )
-    {
-        if ( $self->{'brushStyle'} eq $BRUSHSTYLES[$idx] )
-        {
-            $typestyle = $self->{'brushStyle'};
-            last;
-        }
-    }
-    return $self->SUPER::_prepare_brush( $color, $type, $typestyle );
-
-    #    my $offset=0;
-    #
-    #    # get the rgb values for the desired color
-    #    @rgb = $self->{'gd_obj'}->rgb($color);
-    #
-    #    # create the new image
-    #    $brush = GD::Image->new( $radius * 2, $radius * 2 );    # width, height
-    #
-    #    # get the colors, make the background transparent
-    #    # pay attention to background colors not being white!
-    #    $white = $brush->colorAllocate( 255, 255, 255 );
-    #    $newcolor = $brush->colorAllocate(@rgb);
-    #    $brush->transparent($white);
-    #
-    #    # draw a nice object
-    #    if ( $self->{'brushStyle'} eq 'OpenCircle' )
-    #    {
-    #
-    #        # draw the circle
-    #        $self->OpenCircle( \$brush, $radius, $newcolor );
-    #    }
-    #    elsif ( $self->{'brushStyle'} eq 'FilledDiamond' )
-    #    {
-    #
-    #        # draw the diamond, using 1 point less than maximum
-    #        $self->FilledDiamond( \$brush, $radius, $newcolor );
-    #    }
-    #    elsif ( $self->{'brushStyle'} eq 'OpenDiamond' )
-    #    {
-    #
-    #        # draw the diamond, using 1 point less than maximum
-    #        $self->OpenDiamond( \$brush, $radius, $newcolor );
-    #    }
-    #    elsif ( $self->{'brushStyle'} eq 'Star' )
-    #    {
-    #
-    #        # draw the star
-    #        $self->Star( \$brush, $radius, $newcolor );
-    #    }
-    #    elsif ( $self->{'brushStyle'} eq 'OpenRectangle' )
-    #    {
-    #
-    #        # draw the rectangle
-    #        $self->OpenRectangle( \$brush, $radius, $newcolor );
-    #        $offset=$radius;
-    #    }
-    #    else
-    #    {
-    #
-    #        # in all other cases:
-    #        $self->FilledCircle( \$brush, $radius, $newcolor );
-    #    }
-    #
-    #    # set the new image as the main object's brush
-    #    return ($brush,$offset);
 }
 
 ## be a good module and return 1

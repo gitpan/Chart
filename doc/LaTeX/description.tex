@@ -16,7 +16,7 @@
   $obj->set( $key_1 => $val_1, ... , $key_n => $val_n);
   $obj->set( %hash );
 
-  # GifGraph.pm-style API to produce PNG formatted charts:
+  # Graph.pm-style API to produce PNG formatted charts:
   @data = ( \@x_tick_labels, \@dataset_1, ... , \@dataset_n);
   $obj->png( "filename", \@data );
   $obj->png( $filehandle, \@data );
@@ -111,6 +111,9 @@ arrow                  &   &   & X &   &   &   &   &   &   &   &   &   &   \\
 brush\_size            &   &   & X & X &   & X & X &   &   &   &   &   &   \\
 brush\_size1           &   & X &   &   &   &   &   &   &   &   &   &   &   \\
 brush\_size2           &   & X &   &   &   &   &   &   &   &   &   &   &   \\
+brushStyle             &   &   &   &   &   &   & X &   &   &   & X &   &   \\
+brushStyle1            &   & X &   &   &   &   &   &   &   &   &   &   &   \\
+brushStyle2            &   & X &   &   &   &   &   &   &   &   &   &   &   \\
 colors                 & X & X & X & X & X & X & X & X & X & X & X & X & X \\
 composite\_info        &   & X &   &   &   &   &   &   &   &   &   &   &   \\
 custom\_x\_ticks       & X & X & X & X & X & X & X & X & X & X & X & X & X \\

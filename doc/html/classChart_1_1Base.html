@@ -47,7 +47,7 @@ Inheritance diagram for Chart::Base:</div>
 <div class="dyncontent">
 <div class="center"><img src="classChart_1_1Base__inherit__graph.png" border="0" usemap="#Chart_1_1Base_inherit__map" alt="Inheritance graph"/></div>
 <map name="Chart_1_1Base_inherit__map" id="Chart_1_1Base_inherit__map">
-<area shape="rect" id="node3" href="classChart_1_1Bars.html" title="Bars class derived from class Base." alt="" coords="173,5,261,35"/><area shape="rect" id="node5" href="classChart_1_1BrushStyles.html" title="Define styles for Points and LinesPoints classes." alt="" coords="152,58,283,89"/><area shape="rect" id="node7" href="classChart_1_1Points.html" title="Points class derived from class Base." alt="" coords="340,85,436,115"/><area shape="rect" id="node9" href="classChart_1_1Composite.html" title="Composite class derived from class Base." alt="" coords="156,162,279,193"/><area shape="rect" id="node11" href="classChart_1_1Direction.html" title="Direction class derived class for Chart to implement direction charts." alt="" coords="161,215,273,246"/><area shape="rect" id="node13" href="classChart_1_1ErrorBars.html" title="ErrorBars class derived from class Base." alt="" coords="160,269,275,299"/><area shape="rect" id="node15" href="classChart_1_1HorizontalBars.html" title="Bars class derived from class Base." alt="" coords="144,322,291,353"/><area shape="rect" id="node17" href="classChart_1_1Lines.html" title="Bars class derived from class Base." alt="" coords="172,375,263,406"/><area shape="rect" id="node19" href="classChart_1_1LinesPoints.html" title="Chart::LinesPoints" alt="" coords="153,429,281,459"/><area shape="rect" id="node21" href="classChart_1_1Mountain.html" title="Mountain class derived class for Chart to implement mountain type of plots." alt="" coords="160,482,275,513"/><area shape="rect" id="node23" href="classChart_1_1Pareto.html" title="Pareto class derived class for Chart to implement." alt="" coords="168,535,267,566"/><area shape="rect" id="node25" href="classChart_1_1Pie.html" title="Pie class derived class for Chart to implement pies." alt="" coords="177,589,257,619"/><area shape="rect" id="node28" href="classChart_1_1Split.html" title="Split class derived from class Base." alt="" coords="175,642,260,673"/><area shape="rect" id="node30" href="classChart_1_1StackedBars.html" title="StackedBars class derived from class Base." alt="" coords="149,695,285,726"/></map>
+<area shape="rect" id="node3" href="classChart_1_1Bars.html" title="Bars class provides all functions which are specific to vertical bars." alt="" coords="173,5,261,35"/><area shape="rect" id="node5" href="classChart_1_1BrushStyles.html" title="Define styles for Points and LinesPoints classes." alt="" coords="152,58,283,89"/><area shape="rect" id="node7" href="classChart_1_1Composite.html" title="Composite class derived from class Base." alt="" coords="156,111,279,142"/><area shape="rect" id="node9" href="classChart_1_1Direction.html" title="Direction class derived class for Chart to implement direction charts." alt="" coords="161,165,273,195"/><area shape="rect" id="node11" href="classChart_1_1ErrorBars.html" title="ErrorBars class derived from class Base." alt="" coords="160,218,275,249"/><area shape="rect" id="node13" href="classChart_1_1HorizontalBars.html" title="HorizontalBars class derived from class Base." alt="" coords="144,271,291,302"/><area shape="rect" id="node15" href="classChart_1_1Lines.html" title="Lines class derived from class Base." alt="" coords="172,325,263,355"/><area shape="rect" id="node17" href="classChart_1_1LinesPoints.html" title="LinesPoints class connect the given x&#45;/y&#45;values by straight lines and the x&#45;/y&#45;values are plotted by ..." alt="" coords="153,378,281,409"/><area shape="rect" id="node19" href="classChart_1_1Mountain.html" title="Mountain class derived class for Chart to implement mountain type of plots." alt="" coords="160,431,275,462"/><area shape="rect" id="node21" href="classChart_1_1Pareto.html" title="Pareto class derived class for Chart to implement." alt="" coords="168,485,267,515"/><area shape="rect" id="node23" href="classChart_1_1Pie.html" title="Pie class derived class for Chart to implement pies." alt="" coords="177,538,257,569"/><area shape="rect" id="node25" href="classChart_1_1Points.html" title="Points class derived from class Base." alt="" coords="169,591,265,622"/><area shape="rect" id="node27" href="classChart_1_1Split.html" title="Split class derived from class Base." alt="" coords="175,645,260,675"/><area shape="rect" id="node29" href="classChart_1_1StackedBars.html" title="StackedBars class derived from class Base." alt="" coords="149,698,285,729"/></map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for Chart::Base:</div>
@@ -72,15 +72,24 @@ Private Functions</h2></td></tr>
  Calls:  <a href="#ab021c0dceb1ae55e1697bbee667480fa"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#addecc110eb46a126acaad69e113d06ea">_set_colors</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">specify my colors  <a href="#addecc110eb46a126acaad69e113d06ea"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a14098e898b9f9b5dca8d7a39ab9d4d57">_color_role_to_index</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">return a (list of) color index(es) corresponding to the (list of) role(s)  <a href="#a14098e898b9f9b5dca8d7a39ab9d4d57"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a2c02f66668131d6567338965e821d87a">_brushStyles_of_roles</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">return a (list of) brushStyles corresponding to the (list of) role(s)  <a href="#a2c02f66668131d6567338965e821d87a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#aa3467472a4c4a598c5a2f64de8c438c1">_draw_title</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">draw the title for the chart  <a href="#aa3467472a4c4a598c5a2f64de8c438c1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a060d522a2f0240cad4c746891d488f80">_default_f_tick</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">default tick conversion function This function is pointed to be $self-&gt;{f_x_tick} resp.  <a href="#a060d522a2f0240cad4c746891d488f80"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">private float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a1f3ae34864bf296fafcab63416926b83">_xyRatio</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get ratio width_x/width_y.  <a href="#a1f3ae34864bf296fafcab63416926b83"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">private float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#ac21e93fb6498ea3137e15fd348e7b9ff">_xPixelInReal</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get witdh of one Pixel in real coordinates in x-direction.  <a href="#ac21e93fb6498ea3137e15fd348e7b9ff"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">private float&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#afe24ee8f28c900069e65ddd666a242ff">_yPixelInReal</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get witdh of one Pixel in real coordinates in y-direction.  <a href="#afe24ee8f28c900069e65ddd666a242ff"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a0803aa94dabfc982195cab15392ba7bc">_init</a> (scalar x, scalar y)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Initialize all default options here.  <a href="#a0803aa94dabfc982195cab15392ba7bc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#ac704c89b5b4b3f3f0e6fa35d6c5ca6c3">_copy_data</a> (scalar extern_ref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copy external data via a reference to internal memory.  <a href="#ac704c89b5b4b3f3f0e6fa35d6c5ca6c3"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a43111a8e1210740ebd3a6aa9f9567c82">_color_role_to_index</a> (\list list_of_roles)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private array&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a6a97b446c6c2f646dddd7f2a0076ba2e">_color_spec_to_rgb</a> (scalar role, scalar spec)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return an array (list of) rgb values for spec.  <a href="#a6a97b446c6c2f646dddd7f2a0076ba2e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#afd4f3ee3925d1e765e099c80e6c98da7">_draw_sub_title</a> ()</td></tr>
@@ -141,8 +150,8 @@ Private Functions</h2></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">draw grid_lines for y  <a href="#aac178efe7b3c275cd18fe3c86b4d7a6f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#af174cccca9ebbc23f588b6587e88fa1b">_draw_y2_grid_lines</a> ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">draw grid_lines for y  <a href="#af174cccca9ebbc23f588b6587e88fa1b"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a29c5e6856ca3df71719dc01eff7d1de8">_prepare_brush</a> (scalar color, scalar type, scalar typeStyle)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">draw grid_lines for y  <a href="#a29c5e6856ca3df71719dc01eff7d1de8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">private int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#ab86fa8ba6e10d109bd155bfefdb42ebf">_prepare_brush</a> (scalar color, scalar type, scalar role)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">prepare brush  <a href="#ab86fa8ba6e10d109bd155bfefdb42ebf"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="member-group"></a>
 Public Class Methods</h2></td></tr>
 <tr><td colspan="2"><p><a class="anchor" id="amgrp76489900c371cf7d2ca502e43fa26e8e"></a> </p>
@@ -164,18 +173,12 @@ Public Object Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a080e4b93239edf6886745c59506c14e5">add_pt</a> (\list data)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Graph API<br/>
  Add one dataset (as a reference to a list) to the dataref via.  <a href="#a080e4b93239edf6886745c59506c14e5"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1e5c4d17a66458070368d3f68b542c3e"></a><!-- doxytag: member="Chart::Base::add_pt" ref="a1e5c4d17a66458070368d3f68b542c3e" args="()" -->
-retval&nbsp;</td><td class="memItemRight" valign="bottom"><b>add_pt</b> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a43dcf87aa2b9fd362ba104923c3f3d51">add_dataset</a> (list data)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Graph API<br/>
  Add many datasets (implemented as a list) to the dataref,.  <a href="#a43dcf87aa2b9fd362ba104923c3f3d51"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#aa56e6de915dcdc29d00f66d9326b6503">add_dataset</a> (\list data)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Graph API<br/>
  Add many datasets (implemented as a references to alist) to the dataref,.  <a href="#aa56e6de915dcdc29d00f66d9326b6503"></a><br/></td></tr>
-<tr><td colspan="2"><h2><a name="member-group"></a>
-Public Functions</h2></td></tr>
-<tr><td colspan="2"><p><a class="anchor" id="amgrpda6bc86800313ecde6e56bd1b41a7c55"></a> </p>
-<br/><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a57eedac06ec67f93222bbe1a2930b606">add_datafile</a> (scalar filename, scalar format)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Graph API<br/>
  it's also possible to add a complete datafile<br/>
@@ -191,7 +194,7 @@ Public Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#ad6bc3855bdc31bc6e264e390f5e660c2">scalar_png</a> (scalar dataref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in png format to be directly written for CGI.  <a href="#ad6bc3855bdc31bc6e264e390f5e660c2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#aa9791b8cc8b287fa966402574afaf03f">jpeg</a> (scalar file, scalar dataref)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in JPG format to be directly.  <a href="#aa9791b8cc8b287fa966402574afaf03f"></a><br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in JPG format to be directly plotted.  <a href="#aa9791b8cc8b287fa966402574afaf03f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a4bb21f030ba3e48a8a1086634595a9cf">cgi_jpeg</a> (scalar dataref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in JPG format to be directly for CGI.  <a href="#a4bb21f030ba3e48a8a1086634595a9cf"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#ac5d9aee386bf811e2770574fba85ec66">scalar_jpeg</a> (scalar dataref)</td></tr>
@@ -348,31 +351,6 @@ Public Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>$tickInterval, $tickCount, $pMin, $pMax </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a43111a8e1210740ebd3a6aa9f9567c82"></a><!-- doxytag: member="Chart::Base::_color_role_to_index" ref="a43111a8e1210740ebd3a6aa9f9567c82" args="(\list list_of_roles)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">private int Chart::Base::_color_role_to_index </td>
-          <td>(</td>
-          <td class="paramtype">\list&nbsp;</td>
-          <td class="paramname"> <em>list_of_roles</em></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>\@list_of_roles</em>&nbsp;</td><td>List of roles </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>a (list of) color index(es) corresponding to the (list of) role(s) in @_. </dd></dl>
 
 </div>
 </div>
@@ -771,7 +749,7 @@ Public Functions</h2></td></tr>
 <p>draw the x-ticks and their labels </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>status </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classChart_1_1Composite.html#a346409df6cbd56dae5206294a8e9edcb">Chart::Composite</a>, <a class="el" href="classChart_1_1Direction.html#a4803bef9580feed235401ff290459cce">Chart::Direction</a>, <a class="el" href="classChart_1_1HorizontalBars.html#aabe5236ec45ce98269d60ea17944e283">Chart::HorizontalBars</a>, and <a class="el" href="classChart_1_1HorizontalBars.html#aabe5236ec45ce98269d60ea17944e283">Chart::HorizontalBars</a>.</p>
+<p>Reimplemented in <a class="el" href="classChart_1_1Composite.html#a346409df6cbd56dae5206294a8e9edcb">Chart::Composite</a>, <a class="el" href="classChart_1_1Direction.html#a4803bef9580feed235401ff290459cce">Chart::Direction</a>, and <a class="el" href="classChart_1_1HorizontalBars.html#aabe5236ec45ce98269d60ea17944e283">Chart::HorizontalBars</a>.</p>
 
 </div>
 </div>
@@ -1030,7 +1008,7 @@ Public Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a29c5e6856ca3df71719dc01eff7d1de8"></a><!-- doxytag: member="Chart::Base::_prepare_brush" ref="a29c5e6856ca3df71719dc01eff7d1de8" args="(scalar color, scalar type, scalar typeStyle)" -->
+<a class="anchor" id="ab86fa8ba6e10d109bd155bfefdb42ebf"></a><!-- doxytag: member="Chart::Base::_prepare_brush" ref="ab86fa8ba6e10d109bd155bfefdb42ebf" args="(scalar color, scalar type, scalar role)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1050,7 +1028,7 @@ Public Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">scalar&nbsp;</td>
-          <td class="paramname"> <em>typeStyle</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>role</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -1061,13 +1039,13 @@ Public Functions</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>draw grid_lines for y </p>
-<p>set the gdBrush object to trick GD into drawing fat lines &amp; points of interesting shapes Needed by "Lines", "Points" and "LinesPoints" All hacked up by Richard Dice &lt;<a href="mailto:rdice@pobox.com">rdice@pobox.com</a>&gt; Sunday 16 May 1999</p>
+<p>prepare brush </p>
+<p>set the gdBrush object to tick GD into drawing fat lines &amp; points of interesting shapes Needed by "Lines", "Points" and "LinesPoints" All hacked up by Richard Dice &lt;<a href="mailto:rdice@pobox.com">rdice@pobox.com</a>&gt; Sunday 16 May 1999</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>$color</em>&nbsp;</td><td></td></tr>
     <tr><td valign="top"></td><td valign="top"><em>$type</em>&nbsp;</td><td>'line','point' </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>$typeStyle</em>&nbsp;</td><td>one of 'circle', 'donut', 'triangle', 'upsidedownTriangle', 'square', 'hollowSquare', 'fatPlus' </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>$role</em>&nbsp;</td><td></td></tr>
   </table>
   </dd>
 </dl>
@@ -1203,7 +1181,7 @@ Public Functions</h2></td></tr>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>$filename</em>&nbsp;</td><td>Name of file which contents is to be added </td></tr>
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>$format</em>&nbsp;</td><td>'pt' or 'set' to distiguish between function add_pt() in case of 'pt' or function <a class="el" href="classChart_1_1Base.html#a43dcf87aa2b9fd362ba104923c3f3d51" title="Graph API  Add many datasets (implemented as a list) to the dataref,.">add_dataset()</a> in case of 'set' </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>$format</em>&nbsp;</td><td>'pt' or 'set' to distiguish between function <a class="el" href="classChart_1_1Base.html#ac68c2d5654211e9e5c36674324fe0451" title="Graph API  Add one dataset (as a list) to the dataref.">add_pt()</a> in case of 'pt' or function <a class="el" href="classChart_1_1Base.html#a43dcf87aa2b9fd362ba104923c3f3d51" title="Graph API  Add many datasets (implemented as a list) to the dataref,.">add_dataset()</a> in case of 'set' </td></tr>
   </table>
   </dd>
 </dl>
@@ -1518,8 +1496,9 @@ for ( 0 .. $data )
 <div class="memdoc">
 
 <p>get all options </p>
-<dl class="return"><dt><b>Returns:</b></dt><dd>hash of all set options so far</dd></dl>
-<p>Return the set options as a hash </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>hash of all set options so far</dd>
+<dd>
+set options as a hash </dd></dl>
 
 </div>
 </div>
@@ -1570,12 +1549,24 @@ for ( 0 .. $data )
 </div>
 <div class="memdoc">
 
-<p>Produce the graph of options set in JPG format to be directly. </p>
-<p>called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data </p>
+<p>Produce the graph of options set in JPG format to be directly plotted. </p>
+<p><br/>
+</p>
+<p>Called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data. The output has the jpeg format in opposite to png format produced by </p>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classChart_1_1Base.html#ac6b44856256fb2aa1bb40ee716431028" title="Produce the graph of options set in png format.">png</a></dd></dl>
+<p>Uses the following private functions:<br/>
+ </p>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classChart_1_1Base.html#addecc110eb46a126acaad69e113d06ea" title="specify my colors">_set_colors</a> </dd>
+<dd>
+<a class="el" href="classChart_1_1Base.html#ac704c89b5b4b3f3f0e6fa35d6c5ca6c3" title="Copy external data via a reference to internal memory.">_copy_data</a> </dd>
+<dd>
+<a class="el" href="classChart_1_1Base.html#a13296be5b92a9880851977fe0abfdf01" title="Check the internal data to be displayed.">_check_data</a> </dd>
+<dd>
+<a class="el" href="classChart_1_1Base.html#ab021c0dceb1ae55e1697bbee667480fa" title="Plot the chart to the gd object  Calls:">_draw</a></dd></dl>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>$file</em>&nbsp;</td><td>Name of file to write graph into </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>$dataref</em>&nbsp;</td><td></td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>$file</em>&nbsp;</td><td>Name of file to write graph to </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>$dataref</em>&nbsp;</td><td>Reference to external data space </td></tr>
   </table>
   </dd>
 </dl>
@@ -1777,12 +1768,11 @@ for ( 0 .. $data )
 <div class="memdoc">
 
 <p>Produce the graph of options set in png format to be directly written for CGI. </p>
-<p><br/>
- Called after the options are set, <br/>
+<p>Called after the options are set, <br/>
  this method invokes all my private methods to actually draw the chart and plot the data </p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>$dataref</em>&nbsp;</td><td>Reference to the data to be plotted </td></tr>
+    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>$dataref</em>&nbsp;</td><td>Reference to the data to be plotted </td></tr>
   </table>
   </dd>
 </dl>
@@ -1807,16 +1797,16 @@ for ( 0 .. $data )
 <div class="memdoc">
 
 <p>Set all options. </p>
+<p>main method for customizing the chart, lets users specify values for different parameters<br/>
+ The options are saved locally to be able to output them via </p>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classChart_1_1Base.html#a91b33c2a7d570aac658b2660a4d7b809" title="get all options">getopts()</a></dd></dl>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>%opts</em>&nbsp;</td><td>Hash of options to the Chart </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>ok or croak</dd></dl>
-<p>main method for customizing the chart, lets users specify values for different parameters<br/>
- The options are saved locally to be able to output them via </p>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classChart_1_1Base.html#a91b33c2a7d570aac658b2660a4d7b809" title="get all options">getopts()</a> </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>ok or croak </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classChart_1_1Composite.html#a00e87797c96ce57efc6b066cbe7d6333">Chart::Composite</a>, and <a class="el" href="classChart_1_1Direction.html#ab7104b48aa4219a995656088c121078d">Chart::Direction</a>.</p>
 
@@ -1850,6 +1840,28 @@ for ( 0 .. $data )
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
+<a class="anchor" id="a2c02f66668131d6567338965e821d87a"></a><!-- doxytag: member="Chart::Base::_brushStyles_of_roles" ref="a2c02f66668131d6567338965e821d87a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">private int <a class="el" href="classChart_1_1Base.html#a2c02f66668131d6567338965e821d87a">Chart::Base::_brushStyles_of_roles</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>return a (list of) brushStyles corresponding to the (list of) role(s) </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>\@list_of_roles</em>&nbsp;</td><td>List of roles </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>(list of) brushStyle(s) corresponding to the (list of) role(s) in @_. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a13296be5b92a9880851977fe0abfdf01"></a><!-- doxytag: member="Chart::Base::_check_data" ref="a13296be5b92a9880851977fe0abfdf01" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1868,6 +1880,28 @@ for ( 0 .. $data )
 <dl class="return"><dt><b>Returns:</b></dt><dd>status of check </dd></dl>
 
 <p>Reimplemented in <a class="el" href="classChart_1_1Composite.html#a67af0ad77d0c1f4f74da434ceb9cf53c">Chart::Composite</a>, and <a class="el" href="classChart_1_1StackedBars.html#a8d772463780f75cc985ae890ad8a94d1">Chart::StackedBars</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a14098e898b9f9b5dca8d7a39ab9d4d57"></a><!-- doxytag: member="Chart::Base::_color_role_to_index" ref="a14098e898b9f9b5dca8d7a39ab9d4d57" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">private int <a class="el" href="classChart_1_1Base.html#a14098e898b9f9b5dca8d7a39ab9d4d57">Chart::Base::_color_role_to_index</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>return a (list of) color index(es) corresponding to the (list of) role(s) </p>
+<p>wantarray is a special keyword which returns a flag indicating which context your subroutine has been called in. It will return one of three values.</p>
+<ul>
+<li>true: If your subroutine has been called in list context </li>
+<li>false: If your subroutine has been called in scalar context </li>
+<li>undef: If your subroutine has been called in void context</li>
+</ul>
+<dl class="return"><dt><b>Returns:</b></dt><dd>a (list of) color index(es) corresponding to the (list of) role(s) in @_. </dd></dl>
 
 </div>
 </div>
@@ -1929,7 +1963,7 @@ for ( 0 .. $data )
  The used font is taken from 'title_font';<br/>
  The used color is calculated by function '_color_role_to_index' based on 'title' or 'text'<br/>
  </p>
-<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classChart_1_1Base.html#a43111a8e1210740ebd3a6aa9f9567c82">_color_role_to_index</a> </dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classChart_1_1Base.html#a14098e898b9f9b5dca8d7a39ab9d4d57" title="return a (list of) color index(es) corresponding to the (list of) role(s)">_color_role_to_index</a> </dd></dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>status </dd></dl>
 
 </div>
@@ -1947,6 +1981,54 @@ for ( 0 .. $data )
 
 <p>specify my colors </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>status </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac21e93fb6498ea3137e15fd348e7b9ff"></a><!-- doxytag: member="Chart::Base::_xPixelInReal" ref="ac21e93fb6498ea3137e15fd348e7b9ff" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">private float <a class="el" href="classChart_1_1Base.html#ac21e93fb6498ea3137e15fd348e7b9ff">Chart::Base::_xPixelInReal</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Get witdh of one Pixel in real coordinates in x-direction. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>width(interval) of reality in x direction </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a1f3ae34864bf296fafcab63416926b83"></a><!-- doxytag: member="Chart::Base::_xyRatio" ref="a1f3ae34864bf296fafcab63416926b83" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">private float <a class="el" href="classChart_1_1Base.html#a1f3ae34864bf296fafcab63416926b83">Chart::Base::_xyRatio</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Get ratio width_x/width_y. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>ratio width_x and width_y </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="afe24ee8f28c900069e65ddd666a242ff"></a><!-- doxytag: member="Chart::Base::_yPixelInReal" ref="afe24ee8f28c900069e65ddd666a242ff" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">private float <a class="el" href="classChart_1_1Base.html#afe24ee8f28c900069e65ddd666a242ff">Chart::Base::_yPixelInReal</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Get witdh of one Pixel in real coordinates in y-direction. </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>width(interval) of reality in y direction </dd></dl>
 
 </div>
 </div>
@@ -1970,7 +2052,7 @@ for ( 0 .. $data )
 <li>Chart/<a class="el" href="Base_8pm.html">Base.pm</a></li>
 </ul>
 </div>
-<hr class="footer"/><address class="footer"><small>Generated on Fri Nov 25 2011 21:29:32 by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 6 2012 22:02:20 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

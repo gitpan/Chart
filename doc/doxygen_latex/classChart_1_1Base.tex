@@ -22,7 +22,7 @@ Collaboration diagram for Chart::Base:\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=247pt]{classChart_1_1Base__coll__graph}
+\includegraphics[width=288pt]{classChart_1_1Base__coll__graph}
 \end{center}
 \end{figure}
 \subsection*{Public Attributes}
@@ -41,16 +41,24 @@ private int \hyperlink{classChart_1_1Base_ab021c0dceb1ae55e1697bbee667480fa}{\_\
  Calls: \item\end{DoxyCompactList}\item 
 private int \hyperlink{classChart_1_1Base_addecc110eb46a126acaad69e113d06ea}{\_\-set\_\-colors}
 \begin{DoxyCompactList}\small\item\em specify my colors \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a14098e898b9f9b5dca8d7a39ab9d4d57}{\_\-color\_\-role\_\-to\_\-index}
+\begin{DoxyCompactList}\small\item\em return a (list of) color index(es) corresponding to the (list of) role(s) \item\end{DoxyCompactList}\item 
+private int \hyperlink{classChart_1_1Base_a2c02f66668131d6567338965e821d87a}{\_\-brushStyles\_\-of\_\-roles}
+\begin{DoxyCompactList}\small\item\em return a (list of) brushStyles corresponding to the (list of) role(s) \item\end{DoxyCompactList}\item 
 private int \hyperlink{classChart_1_1Base_aa3467472a4c4a598c5a2f64de8c438c1}{\_\-draw\_\-title}
 \begin{DoxyCompactList}\small\item\em draw the title for the chart \item\end{DoxyCompactList}\item 
 private int \hyperlink{classChart_1_1Base_a060d522a2f0240cad4c746891d488f80}{\_\-default\_\-f\_\-tick}
 \begin{DoxyCompactList}\small\item\em default tick conversion function This function is pointed to be \$self-\/$>$\{f\_\-x\_\-tick\} resp. \item\end{DoxyCompactList}\item 
+private float \hyperlink{classChart_1_1Base_a1f3ae34864bf296fafcab63416926b83}{\_\-xyRatio}
+\begin{DoxyCompactList}\small\item\em Get ratio width\_\-x/width\_\-y. \item\end{DoxyCompactList}\item 
+private float \hyperlink{classChart_1_1Base_ac21e93fb6498ea3137e15fd348e7b9ff}{\_\-xPixelInReal}
+\begin{DoxyCompactList}\small\item\em Get witdh of one Pixel in real coordinates in x-\/direction. \item\end{DoxyCompactList}\item 
+private float \hyperlink{classChart_1_1Base_afe24ee8f28c900069e65ddd666a242ff}{\_\-yPixelInReal}
+\begin{DoxyCompactList}\small\item\em Get witdh of one Pixel in real coordinates in y-\/direction. \item\end{DoxyCompactList}\item 
 private int \hyperlink{classChart_1_1Base_a0803aa94dabfc982195cab15392ba7bc}{\_\-init} (scalar x, scalar y)
 \begin{DoxyCompactList}\small\item\em Initialize all default options here. \item\end{DoxyCompactList}\item 
 private int \hyperlink{classChart_1_1Base_ac704c89b5b4b3f3f0e6fa35d6c5ca6c3}{\_\-copy\_\-data} (scalar extern\_\-ref)
 \begin{DoxyCompactList}\small\item\em Copy external data via a reference to internal memory. \item\end{DoxyCompactList}\item 
-private int \hyperlink{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}{\_\-color\_\-role\_\-to\_\-index} ($\backslash$list list\_\-of\_\-roles)
-\item 
 private array \hyperlink{classChart_1_1Base_a6a97b446c6c2f646dddd7f2a0076ba2e}{\_\-color\_\-spec\_\-to\_\-rgb} (scalar role, scalar spec)
 \begin{DoxyCompactList}\small\item\em Return an array (list of) rgb values for spec. \item\end{DoxyCompactList}\item 
 private int \hyperlink{classChart_1_1Base_afd4f3ee3925d1e765e099c80e6c98da7}{\_\-draw\_\-sub\_\-title} ()
@@ -111,8 +119,8 @@ private int \hyperlink{classChart_1_1Base_aac178efe7b3c275cd18fe3c86b4d7a6f}{\_\
 \begin{DoxyCompactList}\small\item\em draw grid\_\-lines for y \item\end{DoxyCompactList}\item 
 private int \hyperlink{classChart_1_1Base_af174cccca9ebbc23f588b6587e88fa1b}{\_\-draw\_\-y2\_\-grid\_\-lines} ()
 \begin{DoxyCompactList}\small\item\em draw grid\_\-lines for y \item\end{DoxyCompactList}\item 
-private int \hyperlink{classChart_1_1Base_a29c5e6856ca3df71719dc01eff7d1de8}{\_\-prepare\_\-brush} (scalar color, scalar type, scalar typeStyle)
-\begin{DoxyCompactList}\small\item\em draw grid\_\-lines for y \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+private int \hyperlink{classChart_1_1Base_ab86fa8ba6e10d109bd155bfefdb42ebf}{\_\-prepare\_\-brush} (scalar color, scalar type, scalar role)
+\begin{DoxyCompactList}\small\item\em prepare brush \item\end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Public Class Methods}
 \label{_amgrp76489900c371cf7d2ca502e43fa26e8e}
  \begin{DoxyCompactItemize}
@@ -134,21 +142,12 @@ int \hyperlink{classChart_1_1Base_ac68c2d5654211e9e5c36674324fe0451}{add\_\-pt} 
 \hyperlink{classChart_1_1Base_a080e4b93239edf6886745c59506c14e5}{add\_\-pt} ($\backslash$list data)
 \begin{DoxyCompactList}\small\item\em Graph API\par
  Add one dataset (as a reference to a list) to the dataref via. \item\end{DoxyCompactList}\item 
-\hypertarget{classChart_1_1Base_a1e5c4d17a66458070368d3f68b542c3e}{
-retval {\bfseries add\_\-pt} ()}
-\label{classChart_1_1Base_a1e5c4d17a66458070368d3f68b542c3e}
-
-\item 
 int \hyperlink{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{add\_\-dataset} (list data)
 \begin{DoxyCompactList}\small\item\em Graph API\par
  Add many datasets (implemented as a list) to the dataref,. \item\end{DoxyCompactList}\item 
 int \hyperlink{classChart_1_1Base_aa56e6de915dcdc29d00f66d9326b6503}{add\_\-dataset} ($\backslash$list data)
 \begin{DoxyCompactList}\small\item\em Graph API\par
- Add many datasets (implemented as a references to alist) to the dataref,. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
-\subsection*{Public Functions}
-\label{_amgrpda6bc86800313ecde6e56bd1b41a7c55}
- \begin{DoxyCompactItemize}
-\item 
+ Add many datasets (implemented as a references to alist) to the dataref,. \item\end{DoxyCompactList}\item 
 int \hyperlink{classChart_1_1Base_a57eedac06ec67f93222bbe1a2930b606}{add\_\-datafile} (scalar filename, scalar format)
 \begin{DoxyCompactList}\small\item\em Graph API\par
  it's also possible to add a complete datafile\par
@@ -164,7 +163,7 @@ int \hyperlink{classChart_1_1Base_a887fdd48d80d348d6a38ad799356b0ec}{cgi\_\-png}
 int \hyperlink{classChart_1_1Base_ad6bc3855bdc31bc6e264e390f5e660c2}{scalar\_\-png} (scalar dataref)
 \begin{DoxyCompactList}\small\item\em Produce the graph of options set in png format to be directly written for CGI. \item\end{DoxyCompactList}\item 
 int \hyperlink{classChart_1_1Base_aa9791b8cc8b287fa966402574afaf03f}{jpeg} (scalar file, scalar dataref)
-\begin{DoxyCompactList}\small\item\em Produce the graph of options set in JPG format to be directly. \item\end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Produce the graph of options set in JPG format to be directly plotted. \item\end{DoxyCompactList}\item 
 int \hyperlink{classChart_1_1Base_a4bb21f030ba3e48a8a1086634595a9cf}{cgi\_\-jpeg} (scalar dataref)
 \begin{DoxyCompactList}\small\item\em Produce the graph of options set in JPG format to be directly for CGI. \item\end{DoxyCompactList}\item 
 int \hyperlink{classChart_1_1Base_ac5d9aee386bf811e2770574fba85ec66}{scalar\_\-jpeg} (scalar dataref)
@@ -246,21 +245,6 @@ Calculate the Interval between ticks in x direction and compare the number of ti
 \item[\mbox{\tt[in]} {\em \$min}]Minimal value of dataset in x direction \item[\mbox{\tt[in]} {\em \$max}]Maximal value of dataset in x direction \item[\mbox{\tt[in]} {\em \$minF}]Inddicator if those min value is fixed \item[\mbox{\tt[in]} {\em \$maxF}]Inddicator if those max value is fixed \item[\mbox{\tt[in]} {\em \$minTicks}]Minimal number of tick in x direction \item[\mbox{\tt[in]} {\em \$maxTicks}]Maximal number of tick in x direction \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 \$tickInterval, \$tickCount, \$pMin, \$pMax 
-\end{DoxyReturn}
-\hypertarget{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}{
-\index{Chart::Base@{Chart::Base}!\_\-color\_\-role\_\-to\_\-index@{\_\-color\_\-role\_\-to\_\-index}}
-\index{\_\-color\_\-role\_\-to\_\-index@{\_\-color\_\-role\_\-to\_\-index}!Chart::Base@{Chart::Base}}
-\subsubsection[{\_\-color\_\-role\_\-to\_\-index}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-color\_\-role\_\-to\_\-index (
-\begin{DoxyParamCaption}
-\item[{$\backslash$list}]{ list\_\-of\_\-roles}
-\end{DoxyParamCaption}
-)}}
-\label{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}
-
-\begin{DoxyParams}{Parameters}
-\item[{\em $\backslash$@list\_\-of\_\-roles}]List of roles \end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-a (list of) color index(es) corresponding to the (list of) role(s) in @\_\-. 
 \end{DoxyReturn}
 \hypertarget{classChart_1_1Base_a6a97b446c6c2f646dddd7f2a0076ba2e}{
 \index{Chart::Base@{Chart::Base}!\_\-color\_\-spec\_\-to\_\-rgb@{\_\-color\_\-spec\_\-to\_\-rgb}}
@@ -572,7 +556,7 @@ status
 \end{DoxyReturn}
 
 
-Reimplemented in \hyperlink{classChart_1_1Composite_a346409df6cbd56dae5206294a8e9edcb}{Chart::Composite}, \hyperlink{classChart_1_1Direction_a4803bef9580feed235401ff290459cce}{Chart::Direction}, \hyperlink{classChart_1_1HorizontalBars_aabe5236ec45ce98269d60ea17944e283}{Chart::HorizontalBars}, and \hyperlink{classChart_1_1HorizontalBars_aabe5236ec45ce98269d60ea17944e283}{Chart::HorizontalBars}.
+Reimplemented in \hyperlink{classChart_1_1Composite_a346409df6cbd56dae5206294a8e9edcb}{Chart::Composite}, \hyperlink{classChart_1_1Direction_a4803bef9580feed235401ff290459cce}{Chart::Direction}, and \hyperlink{classChart_1_1HorizontalBars_aabe5236ec45ce98269d60ea17944e283}{Chart::HorizontalBars}.
 
 \hypertarget{classChart_1_1Base_af174cccca9ebbc23f588b6587e88fa1b}{
 \index{Chart::Base@{Chart::Base}!\_\-draw\_\-y2\_\-grid\_\-lines@{\_\-draw\_\-y2\_\-grid\_\-lines}}
@@ -783,26 +767,26 @@ main sub that controls all the plotting of the actual chart
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
-\hypertarget{classChart_1_1Base_a29c5e6856ca3df71719dc01eff7d1de8}{
+\hypertarget{classChart_1_1Base_ab86fa8ba6e10d109bd155bfefdb42ebf}{
 \index{Chart::Base@{Chart::Base}!\_\-prepare\_\-brush@{\_\-prepare\_\-brush}}
 \index{\_\-prepare\_\-brush@{\_\-prepare\_\-brush}!Chart::Base@{Chart::Base}}
 \subsubsection[{\_\-prepare\_\-brush}]{\setlength{\rightskip}{0pt plus 5cm}private int Chart::Base::\_\-prepare\_\-brush (
 \begin{DoxyParamCaption}
 \item[{scalar}]{ color, }
 \item[{scalar}]{ type, }
-\item[{scalar}]{ typeStyle}
+\item[{scalar}]{ role}
 \end{DoxyParamCaption}
 )}}
-\label{classChart_1_1Base_a29c5e6856ca3df71719dc01eff7d1de8}
+\label{classChart_1_1Base_ab86fa8ba6e10d109bd155bfefdb42ebf}
 
 
-draw grid\_\-lines for y 
+prepare brush 
 
-set the gdBrush object to trick GD into drawing fat lines \& points of interesting shapes Needed by \char`\"{}Lines\char`\"{}, \char`\"{}Points\char`\"{} and \char`\"{}LinesPoints\char`\"{} All hacked up by Richard Dice $<$\href{mailto:rdice@pobox.com}{\tt rdice@pobox.com}$>$ Sunday 16 May 1999
+set the gdBrush object to tick GD into drawing fat lines \& points of interesting shapes Needed by \char`\"{}Lines\char`\"{}, \char`\"{}Points\char`\"{} and \char`\"{}LinesPoints\char`\"{} All hacked up by Richard Dice $<$\href{mailto:rdice@pobox.com}{\tt rdice@pobox.com}$>$ Sunday 16 May 1999
 
 
 \begin{DoxyParams}{Parameters}
-\item[{\em \$color}]\item[{\em \$type}]'line','point' \item[{\em \$typeStyle}]one of 'circle', 'donut', 'triangle', 'upsidedownTriangle', 'square', 'hollowSquare', 'fatPlus' \end{DoxyParams}
+\item[{\em \$color}]\item[{\em \$type}]'line','point' \item[{\em \$role}]\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 status 
 \end{DoxyReturn}
@@ -890,7 +874,7 @@ Graph API\par
 \end{DoxySeeAlso}
 
 \begin{DoxyParams}{Parameters}
-\item[\mbox{\tt[in]} {\em \$filename}]Name of file which contents is to be added \item[\mbox{\tt[in]} {\em \$format}]'pt' or 'set' to distiguish between function add\_\-pt() in case of 'pt' or function \hyperlink{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{add\_\-dataset()} in case of 'set' \end{DoxyParams}
+\item[\mbox{\tt[in]} {\em \$filename}]Name of file which contents is to be added \item[\mbox{\tt[in]} {\em \$format}]'pt' or 'set' to distiguish between function \hyperlink{classChart_1_1Base_ac68c2d5654211e9e5c36674324fe0451}{add\_\-pt()} in case of 'pt' or function \hyperlink{classChart_1_1Base_a43dcf87aa2b9fd362ba104923c3f3d51}{add\_\-dataset()} in case of 'set' \end{DoxyParams}
 \hypertarget{classChart_1_1Base_aa56e6de915dcdc29d00f66d9326b6503}{
 \index{Chart::Base@{Chart::Base}!add\_\-dataset@{add\_\-dataset}}
 \index{add\_\-dataset@{add\_\-dataset}!Chart::Base@{Chart::Base}}
@@ -1114,8 +1098,10 @@ get all options
 
 \begin{DoxyReturn}{Returns}
 hash of all set options so far
+
+set options as a hash 
 \end{DoxyReturn}
-Return the set options as a hash \hypertarget{classChart_1_1Base_af9fec7910f7254177a81252a03a0f587}{
+\hypertarget{classChart_1_1Base_af9fec7910f7254177a81252a03a0f587}{
 \index{Chart::Base@{Chart::Base}!imagemap\_\-dump@{imagemap\_\-dump}}
 \index{imagemap\_\-dump@{imagemap\_\-dump}!Chart::Base@{Chart::Base}}
 \subsubsection[{imagemap\_\-dump}]{\setlength{\rightskip}{0pt plus 5cm}Chart::Base::imagemap\_\-dump (
@@ -1147,11 +1133,27 @@ Reimplemented in \hyperlink{classChart_1_1Composite_ab8dbbeec3544f8e9b1b10486aa4
 \label{classChart_1_1Base_aa9791b8cc8b287fa966402574afaf03f}
 
 
-Produce the graph of options set in JPG format to be directly. 
+Produce the graph of options set in JPG format to be directly plotted. 
 
-called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data 
+\par
+
+
+Called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data. The output has the jpeg format in opposite to png format produced by \begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_ac6b44856256fb2aa1bb40ee716431028}{png}
+\end{DoxySeeAlso}
+Uses the following private functions:\par
+ \begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_addecc110eb46a126acaad69e113d06ea}{\_\-set\_\-colors} 
+
+\hyperlink{classChart_1_1Base_ac704c89b5b4b3f3f0e6fa35d6c5ca6c3}{\_\-copy\_\-data} 
+
+\hyperlink{classChart_1_1Base_a13296be5b92a9880851977fe0abfdf01}{\_\-check\_\-data} 
+
+\hyperlink{classChart_1_1Base_ab021c0dceb1ae55e1697bbee667480fa}{\_\-draw}
+\end{DoxySeeAlso}
+
 \begin{DoxyParams}{Parameters}
-\item[{\em \$file}]Name of file to write graph into \item[{\em \$dataref}]\end{DoxyParams}
+\item[\mbox{\tt[in]} {\em \$file}]Name of file to write graph to \item[\mbox{\tt[in]} {\em \$dataref}]Reference to external data space \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 Status of the plot 
 \end{DoxyReturn}
@@ -1293,11 +1295,10 @@ Status of the plot
 
 Produce the graph of options set in png format to be directly written for CGI. 
 
-\par
- Called after the options are set, \par
+Called after the options are set, \par
  this method invokes all my private methods to actually draw the chart and plot the data 
 \begin{DoxyParams}{Parameters}
-\item[{\em \$dataref}]Reference to the data to be plotted \end{DoxyParams}
+\item[\mbox{\tt[in]} {\em \$dataref}]Reference to the data to be plotted \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 Status of the plot 
 \end{DoxyReturn}
@@ -1314,16 +1315,16 @@ Status of the plot
 
 Set all options. 
 
+main method for customizing the chart, lets users specify values for different parameters\par
+ The options are saved locally to be able to output them via \begin{DoxySeeAlso}{See also}
+\hyperlink{classChart_1_1Base_a91b33c2a7d570aac658b2660a4d7b809}{getopts()}
+\end{DoxySeeAlso}
 
 \begin{DoxyParams}{Parameters}
 \item[\mbox{\tt[in]} {\em \%opts}]Hash of options to the Chart \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-ok or croak
+ok or croak 
 \end{DoxyReturn}
-main method for customizing the chart, lets users specify values for different parameters\par
- The options are saved locally to be able to output them via \begin{DoxySeeAlso}{See also}
-\hyperlink{classChart_1_1Base_a91b33c2a7d570aac658b2660a4d7b809}{getopts()} 
-\end{DoxySeeAlso}
 
 
 Reimplemented in \hyperlink{classChart_1_1Composite_a00e87797c96ce57efc6b066cbe7d6333}{Chart::Composite}, and \hyperlink{classChart_1_1Direction_ab7104b48aa4219a995656088c121078d}{Chart::Direction}.
@@ -1350,6 +1351,21 @@ determine true value of argument
 
 
 \subsection{Member Data Documentation}
+\hypertarget{classChart_1_1Base_a2c02f66668131d6567338965e821d87a}{
+\index{Chart::Base@{Chart::Base}!\_\-brushStyles\_\-of\_\-roles@{\_\-brushStyles\_\-of\_\-roles}}
+\index{\_\-brushStyles\_\-of\_\-roles@{\_\-brushStyles\_\-of\_\-roles}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-brushStyles\_\-of\_\-roles}]{\setlength{\rightskip}{0pt plus 5cm}private int {\bf Chart::Base::\_\-brushStyles\_\-of\_\-roles}}}
+\label{classChart_1_1Base_a2c02f66668131d6567338965e821d87a}
+
+
+return a (list of) brushStyles corresponding to the (list of) role(s) 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em $\backslash$@list\_\-of\_\-roles}]List of roles \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(list of) brushStyle(s) corresponding to the (list of) role(s) in @\_\-. 
+\end{DoxyReturn}
 \hypertarget{classChart_1_1Base_a13296be5b92a9880851977fe0abfdf01}{
 \index{Chart::Base@{Chart::Base}!\_\-check\_\-data@{\_\-check\_\-data}}
 \index{\_\-check\_\-data@{\_\-check\_\-data}!Chart::Base@{Chart::Base}}
@@ -1368,6 +1384,22 @@ status of check
 
 Reimplemented in \hyperlink{classChart_1_1Composite_a67af0ad77d0c1f4f74da434ceb9cf53c}{Chart::Composite}, and \hyperlink{classChart_1_1StackedBars_a8d772463780f75cc985ae890ad8a94d1}{Chart::StackedBars}.
 
+\hypertarget{classChart_1_1Base_a14098e898b9f9b5dca8d7a39ab9d4d57}{
+\index{Chart::Base@{Chart::Base}!\_\-color\_\-role\_\-to\_\-index@{\_\-color\_\-role\_\-to\_\-index}}
+\index{\_\-color\_\-role\_\-to\_\-index@{\_\-color\_\-role\_\-to\_\-index}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-color\_\-role\_\-to\_\-index}]{\setlength{\rightskip}{0pt plus 5cm}private int {\bf Chart::Base::\_\-color\_\-role\_\-to\_\-index}}}
+\label{classChart_1_1Base_a14098e898b9f9b5dca8d7a39ab9d4d57}
+
+
+return a (list of) color index(es) corresponding to the (list of) role(s) 
+
+wantarray is a special keyword which returns a flag indicating which context your subroutine has been called in. It will return one of three values.
+
+\begin{DoxyItemize}
+\item true: If your subroutine has been called in list context \item false: If your subroutine has been called in scalar context \item undef: If your subroutine has been called in void context\end{DoxyItemize}
+\begin{DoxyReturn}{Returns}
+a (list of) color index(es) corresponding to the (list of) role(s) in @\_\-. 
+\end{DoxyReturn}
 \hypertarget{classChart_1_1Base_a060d522a2f0240cad4c746891d488f80}{
 \index{Chart::Base@{Chart::Base}!\_\-default\_\-f\_\-tick@{\_\-default\_\-f\_\-tick}}
 \index{\_\-default\_\-f\_\-tick@{\_\-default\_\-f\_\-tick}!Chart::Base@{Chart::Base}}
@@ -1418,7 +1450,7 @@ The title was defined by the user in set('title' =$>$ ....)\par
  The used font is taken from 'title\_\-font';\par
  The used color is calculated by function '\_\-color\_\-role\_\-to\_\-index' based on 'title' or 'text'\par
  \begin{DoxySeeAlso}{See also}
-\hyperlink{classChart_1_1Base_a43111a8e1210740ebd3a6aa9f9567c82}{\_\-color\_\-role\_\-to\_\-index} 
+\hyperlink{classChart_1_1Base_a14098e898b9f9b5dca8d7a39ab9d4d57}{\_\-color\_\-role\_\-to\_\-index} 
 \end{DoxySeeAlso}
 \begin{DoxyReturn}{Returns}
 status 
@@ -1434,6 +1466,42 @@ specify my colors
 
 \begin{DoxyReturn}{Returns}
 status 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_ac21e93fb6498ea3137e15fd348e7b9ff}{
+\index{Chart::Base@{Chart::Base}!\_\-xPixelInReal@{\_\-xPixelInReal}}
+\index{\_\-xPixelInReal@{\_\-xPixelInReal}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-xPixelInReal}]{\setlength{\rightskip}{0pt plus 5cm}private float {\bf Chart::Base::\_\-xPixelInReal}}}
+\label{classChart_1_1Base_ac21e93fb6498ea3137e15fd348e7b9ff}
+
+
+Get witdh of one Pixel in real coordinates in x-\/direction. 
+
+\begin{DoxyReturn}{Returns}
+width(interval) of reality in x direction 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_a1f3ae34864bf296fafcab63416926b83}{
+\index{Chart::Base@{Chart::Base}!\_\-xyRatio@{\_\-xyRatio}}
+\index{\_\-xyRatio@{\_\-xyRatio}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-xyRatio}]{\setlength{\rightskip}{0pt plus 5cm}private float {\bf Chart::Base::\_\-xyRatio}}}
+\label{classChart_1_1Base_a1f3ae34864bf296fafcab63416926b83}
+
+
+Get ratio width\_\-x/width\_\-y. 
+
+\begin{DoxyReturn}{Returns}
+ratio width\_\-x and width\_\-y 
+\end{DoxyReturn}
+\hypertarget{classChart_1_1Base_afe24ee8f28c900069e65ddd666a242ff}{
+\index{Chart::Base@{Chart::Base}!\_\-yPixelInReal@{\_\-yPixelInReal}}
+\index{\_\-yPixelInReal@{\_\-yPixelInReal}!Chart::Base@{Chart::Base}}
+\subsubsection[{\_\-yPixelInReal}]{\setlength{\rightskip}{0pt plus 5cm}private float {\bf Chart::Base::\_\-yPixelInReal}}}
+\label{classChart_1_1Base_afe24ee8f28c900069e65ddd666a242ff}
+
+
+Get witdh of one Pixel in real coordinates in y-\/direction. 
+
+\begin{DoxyReturn}{Returns}
+width(interval) of reality in y direction 
 \end{DoxyReturn}
 \hypertarget{classChart_1_1Base_a38c2792df08724efa7c4e1b9194cbe6e}{
 \index{Chart::Base@{Chart::Base}!named\_\-colors@{named\_\-colors}}

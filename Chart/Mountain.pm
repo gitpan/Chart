@@ -6,8 +6,8 @@
 #
 # maintained by
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2011-11-25
-# @version 2.4.3
+# @date 2012-01-06
+# @version 2.4.4
 #
 #  Updated for
 #  compatibility with
@@ -46,13 +46,13 @@
 
 package Chart::Mountain;
 
-use Chart::Base '2.4.3';
+use Chart::Base '2.4.4';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Mountain::ISA     = qw ( Chart::Base );
-$Chart::Mountain::VERSION = '2.4.3';
+$Chart::Mountain::VERSION = '2.4.4';
 
 #===================#
 #  private methods  #

@@ -250,6 +250,15 @@ Default is 18.
 Sets the width of the lines (for Chart::Lines, etc.) in pixels.
 Default is 6.
 
+=item 'brushStyle'
+
+Sets the shape of points for Chart::Points, Chart::LinesPoints.
+The possibilities are 'FilledCircle', 'circle', 'donut',
+'OpenCircle', 'fatPlus', 'triangle', 'upsidedownTriangle',
+'square', 'hollowSquare', 'OpenRectangle', 'FilledDiamond',
+'OpenDiamond', 'Star', 'OpenStar'.
+Default: 'FilledCircle
+
 =item 'skip_x_ticks'
 
 Sets the number of x-ticks and x-tick labels to skip.  (ie.  
@@ -473,7 +482,7 @@ Sets the number of ticks for the x-axis of a Split chart. Defaults to 5.
 =item 'scale'
 
 Every y-value of a split chart will be multiplied with that value, but
-the scale won't change. Which means that split allows to overdraw certain 
+the scale won't change. Which means that split allows one to overdraw certain 
 rows! Only useful if you want to give prominence to the maximal amplitudes
 of the data. Defaults to 1. 
 
