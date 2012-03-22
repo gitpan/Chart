@@ -691,6 +691,28 @@ from your html pages (ie. with a <lt>img src=image.pl<gt> HTML tag).
 
 =back
 
+=item Produce a png image as a scalar
+
+Like scalar_jpeg() the image is produced as a scalar
+so that the programmer-user can do whatever the heck
+s/he wants to with it:
+
+  	$obj-scalar_png($dataref)
+
+=back
+
+
+
+=item Produce a jpeg image as a scalar
+
+Like scalar_png() the image is produced as a scalar
+so that the programmer-user can do whatever the heck
+s/he wants to with it:
+
+  	$obj-scalar_jpeg($dataref)
+  	
+=back
+
 =head2 Imagemap Support
 
 Chart can also return the pixel positioning information so that you can

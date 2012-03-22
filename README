@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.4.4
+Chart version 2.4.5
 ------------------------------------------------------------------------
 
 
@@ -27,7 +27,14 @@ Lincoln Stein's GD module version 2.0.36 or higher.
 -------
 CHANGES
 -------
-2.4.4 
+2.4.5 Typo in _draw_x_ticks corrected
+      Methods scalar_png(), scalar_jpeg() corrected for result.
+      Test routine t/scalarImage.t added
+      Chart.pod corrected
+
+2.4.4 The brush styles to points and linespoints are extended.
+      Not only circles represent the points but a number of different
+      brush styles, linke donut, Star and so on.
 
 2.4.3 Corrections to imagemap production in Composite.pm and Lines.pm
 
@@ -246,7 +253,8 @@ Chart-Group (chart@fs.wettzell.de)
 COPYRIGHT
 ---------
 
-Copyright(c) 1997-1998 David Bonner, 1999 Peter Clark, 2001 Chart-Group at BKG.
+Copyright(c) 1997-1998 David Bonner, 1999 Peter Clark, 
+2001-2012 Chart-Group at BKG.
 All rights reserved.
 This program is free software; you can redistribute it and/or modify it under 
 the same terms as Perl itself.

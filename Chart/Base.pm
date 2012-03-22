@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-01-06
-# @version 2.4.4
+# @date 2012-03-22
+# @version 2.4.5
 
 ## @mainpage Chart::Base
 #
@@ -29,8 +29,9 @@ use GD;
 use Carp;
 use FileHandle;
 use Chart::Constants;
+use GD::Image;
 
-$Chart::Base::VERSION = '2.4.4';
+$Chart::Base::VERSION = '2.4.5';
 
 use vars qw(%named_colors);
 use strict;
@@ -474,14 +475,16 @@ sub cgi_png
 }
 
 ## @method int scalar_png($dataref)
-# Produce the graph of options set in png format to be directly
-# written for CGI.
+# Produce the graph of options set in PNG format to be directly returned
 #
-# Called after the options are set, \n
-# this method invokes all my private methods to actually
-# draw the chart and plot the data
-# @param[in] $dataref Reference to the data to be plotted
-# @return Status of the plot
+# called after the options are set, this method
+# invokes all my private methods to actually
+# draw the chart and return the image to the caller
+#
+# @param $dataref
+# @return returns the png image as a scalar value, so that
+#         the programmer-user can do whatever the heck
+#         s/he wants to with it
 sub scalar_png
 {
     my $self    = shift;
@@ -502,8 +505,7 @@ sub scalar_png
 
     # returns the png image as a scalar value, so that
     # the programmer/user can do whatever the she/he wants to with it
-    $self->{'gd_obj'}->png();
-    return 1;
+    return $self->{'gd_obj'}->png();
 }
 
 ## @method int jpeg($file,$dataref)
@@ -632,13 +634,16 @@ sub cgi_jpeg
 }
 
 ## @method int scalar_jpeg($dataref)
-# Produce the graph of options set in JPG format to be directly
+# Produce the graph of options set in JPG format to be directly returned
 #
 # called after the options are set, this method
 # invokes all my private methods to actually
-# draw the chart and plot the data
+# draw the chart and return the image to the caller
+#
 # @param $dataref
-# @return Status of the plot
+# @return returns the jpeg image as a scalar value, so that
+#         the programmer-user can do whatever the heck
+#         s/he wants to with it
 sub scalar_jpeg
 {
     my $self    = shift;
@@ -1059,7 +1064,7 @@ sub _init
     $self->{'colors_default_role'} = {
         'x_grid_lines'  => 'grid_lines',
         'y_grid_lines'  => 'grid_lines',
-        'y2_grid_lines' => 'grid_lines',    # should be added by Char::Composite...
+        'y2_grid_lines' => 'grid_lines',    # should be added by Chart::Composite...
     };
 
     # Define style to plot dots in Points and Lines
@@ -1346,7 +1351,6 @@ sub _color_role_to_index
         $index;
     } @_;
 
-
     #print STDERR "Result= ".$result[0]."\n";
     ( wantarray && @_ > 1 ? @result : $result[0] );
 }
@@ -1451,6 +1455,20 @@ sub _draw_title
     # write the first line
     $x = ( $self->{'curr_x_max'} - $self->{'curr_x_min'} ) / 2 + $self->{'curr_x_min'} - ( length( $lines[0] ) * $w ) / 2;
     $y = $self->{'curr_y_min'} + $self->{'text_space'};
+
+    # Tests for Version 2.5
+    #my $fontText = new GD::Text();
+    # ttf are found in /usr/lib/jvm/java-6-sun*/
+    # /var/share/fonts/truetype
+    #$fontText->set_font('LiberationSans-Regular.ttf');
+    #$fontText->set_text('Some text',14);
+    #if ( GD::Text->can_do_ttf() )
+    #{ carp "Can do ttf"; }
+    #else
+    #{ carp "No TTF"; }
+    # ttf is in GD::Text!
+    # #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     $self->{'gd_obj'}->string( $font, $x, $y, $lines[0], $color );
 
     # now loop through the rest of them
@@ -3541,7 +3559,7 @@ sub _draw_x_ticks
         {
             $x2 = $x1 + ( $delta / 2 ) + ( $delta * $_ );
             $self->{'gd_obj'}->line( $x2, $y1, $x2, $y2, $misccolor );
-            if (   $self->true( {'grid_lines'} )
+            if (   $self->true( $self->{'grid_lines'} )
                 or $self->true( $self->{'x_grid_lines'} ) )
             {
                 $self->{'grid_data'}->{'x'}->[$_] = $x2;

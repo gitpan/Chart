@@ -14,7 +14,7 @@
 #     BUILD_REQUIRES => {  }
 #     NAME => q[Chart]
 #     PREREQ_PM => { GD=>q[2] }
-#     VERSION => q[2.4.4]
+#     VERSION => q[2.4.5]
 #     dist => { COMPRESS=>q[gzip], SUFFIX=>q[gz] }
 
 # --- MakeMaker post_initialize section:
@@ -54,11 +54,11 @@ DIRFILESEP = /
 DFSEP = $(DIRFILESEP)
 NAME = Chart
 NAME_SYM = Chart
-VERSION = 2.4.4
+VERSION = 2.4.5
 VERSION_MACRO = VERSION
-VERSION_SYM = 2_4_4
+VERSION_SYM = 2_4_5
 DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
-XS_VERSION = 2.4.4
+XS_VERSION = 2.4.5
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
 INST_ARCHLIB = blib/arch
@@ -182,34 +182,23 @@ PERL_ARCHIVE_AFTER =
 
 TO_INST_PM = Chart.pod \
 	Chart/Bars.pm \
-	Chart/Bars.pm.bck \
 	Chart/Base.pm \
-	Chart/Base.pm.bck \
-	Chart/Base.pm.v0 \
 	Chart/BrushStyles.pm \
 	Chart/Composite.pm \
-	Chart/Composite.pm.bck \
 	Chart/Constants.pm \
-	Chart/Constants.pm.bck \
 	Chart/Direction.pm \
 	Chart/ErrorBars.pm \
 	Chart/HorizontalBars.pm \
-	Chart/HorizontalBars.pm.bck \
 	Chart/Lines.pm \
-	Chart/Lines.pm.bck \
 	Chart/LinesPoints.pm \
-	Chart/LinesPoints.pm.bck \
 	Chart/Mountain.pm \
 	Chart/Pareto.pm \
 	Chart/Pie.pm \
 	Chart/Points.pm \
-	Chart/Points.pm.bck \
 	Chart/Split.pm \
 	Chart/StackedBars.pm
 
-PM_TO_BLIB = Chart/Base.pm.bck \
-	$(INST_LIB)/Chart/Base.pm.bck \
-	Chart.pod \
+PM_TO_BLIB = Chart.pod \
 	$(INST_LIB)/Chart.pod \
 	Chart/Lines.pm \
 	$(INST_LIB)/Chart/Lines.pm \
@@ -217,8 +206,6 @@ PM_TO_BLIB = Chart/Base.pm.bck \
 	$(INST_LIB)/Chart/HorizontalBars.pm \
 	Chart/Constants.pm \
 	$(INST_LIB)/Chart/Constants.pm \
-	Chart/HorizontalBars.pm.bck \
-	$(INST_LIB)/Chart/HorizontalBars.pm.bck \
 	Chart/Pareto.pm \
 	$(INST_LIB)/Chart/Pareto.pm \
 	Chart/Composite.pm \
@@ -227,14 +214,8 @@ PM_TO_BLIB = Chart/Base.pm.bck \
 	$(INST_LIB)/Chart/Mountain.pm \
 	Chart/Direction.pm \
 	$(INST_LIB)/Chart/Direction.pm \
-	Chart/Lines.pm.bck \
-	$(INST_LIB)/Chart/Lines.pm.bck \
 	Chart/Pie.pm \
 	$(INST_LIB)/Chart/Pie.pm \
-	Chart/Composite.pm.bck \
-	$(INST_LIB)/Chart/Composite.pm.bck \
-	Chart/Base.pm.v0 \
-	$(INST_LIB)/Chart/Base.pm.v0 \
 	Chart/Points.pm \
 	$(INST_LIB)/Chart/Points.pm \
 	Chart/ErrorBars.pm \
@@ -245,16 +226,8 @@ PM_TO_BLIB = Chart/Base.pm.bck \
 	$(INST_LIB)/Chart/StackedBars.pm \
 	Chart/Base.pm \
 	$(INST_LIB)/Chart/Base.pm \
-	Chart/Points.pm.bck \
-	$(INST_LIB)/Chart/Points.pm.bck \
 	Chart/BrushStyles.pm \
 	$(INST_LIB)/Chart/BrushStyles.pm \
-	Chart/Constants.pm.bck \
-	$(INST_LIB)/Chart/Constants.pm.bck \
-	Chart/LinesPoints.pm.bck \
-	$(INST_LIB)/Chart/LinesPoints.pm.bck \
-	Chart/Bars.pm.bck \
-	$(INST_LIB)/Chart/Bars.pm.bck \
 	Chart/Split.pm \
 	$(INST_LIB)/Chart/Split.pm \
 	Chart/LinesPoints.pm \
@@ -327,7 +300,7 @@ RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
 DISTNAME = Chart
-DISTVNAME = Chart-2.4.4
+DISTVNAME = Chart-2.4.5
 
 
 # --- MakeMaker macro section:
@@ -548,7 +521,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) Generating META.yml
 	$(NOECHO) $(ECHO) '--- #YAML:1.0' > META_new.yml
 	$(NOECHO) $(ECHO) 'name:               Chart' >> META_new.yml
-	$(NOECHO) $(ECHO) 'version:            2.4.4' >> META_new.yml
+	$(NOECHO) $(ECHO) 'version:            2.4.5' >> META_new.yml
 	$(NOECHO) $(ECHO) 'abstract:           ~' >> META_new.yml
 	$(NOECHO) $(ECHO) 'author:  []' >> META_new.yml
 	$(NOECHO) $(ECHO) 'license:            unknown' >> META_new.yml
@@ -835,7 +808,7 @@ testdb_static :: testdb_dynamic
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd :
-	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="2.4.4">' > $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="2.4.5">' > $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <AUTHOR></AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
@@ -850,30 +823,21 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  Chart/Base.pm.bck $(INST_LIB)/Chart/Base.pm.bck \
 	  Chart.pod $(INST_LIB)/Chart.pod \
 	  Chart/Lines.pm $(INST_LIB)/Chart/Lines.pm \
 	  Chart/HorizontalBars.pm $(INST_LIB)/Chart/HorizontalBars.pm \
 	  Chart/Constants.pm $(INST_LIB)/Chart/Constants.pm \
-	  Chart/HorizontalBars.pm.bck $(INST_LIB)/Chart/HorizontalBars.pm.bck \
 	  Chart/Pareto.pm $(INST_LIB)/Chart/Pareto.pm \
 	  Chart/Composite.pm $(INST_LIB)/Chart/Composite.pm \
 	  Chart/Mountain.pm $(INST_LIB)/Chart/Mountain.pm \
 	  Chart/Direction.pm $(INST_LIB)/Chart/Direction.pm \
-	  Chart/Lines.pm.bck $(INST_LIB)/Chart/Lines.pm.bck \
 	  Chart/Pie.pm $(INST_LIB)/Chart/Pie.pm \
-	  Chart/Composite.pm.bck $(INST_LIB)/Chart/Composite.pm.bck \
-	  Chart/Base.pm.v0 $(INST_LIB)/Chart/Base.pm.v0 \
 	  Chart/Points.pm $(INST_LIB)/Chart/Points.pm \
 	  Chart/ErrorBars.pm $(INST_LIB)/Chart/ErrorBars.pm \
 	  Chart/Bars.pm $(INST_LIB)/Chart/Bars.pm \
 	  Chart/StackedBars.pm $(INST_LIB)/Chart/StackedBars.pm \
 	  Chart/Base.pm $(INST_LIB)/Chart/Base.pm \
-	  Chart/Points.pm.bck $(INST_LIB)/Chart/Points.pm.bck \
 	  Chart/BrushStyles.pm $(INST_LIB)/Chart/BrushStyles.pm \
-	  Chart/Constants.pm.bck $(INST_LIB)/Chart/Constants.pm.bck \
-	  Chart/LinesPoints.pm.bck $(INST_LIB)/Chart/LinesPoints.pm.bck \
-	  Chart/Bars.pm.bck $(INST_LIB)/Chart/Bars.pm.bck \
 	  Chart/Split.pm $(INST_LIB)/Chart/Split.pm \
 	  Chart/LinesPoints.pm $(INST_LIB)/Chart/LinesPoints.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib

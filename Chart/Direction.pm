@@ -3,8 +3,8 @@
 #
 # written by
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-01-06
-# @version 2.4.4
+# @date 2012-03-22
+# @version 2.4.5
 #
 
 # @section Chart::Direction
@@ -17,7 +17,7 @@
 
 package Chart::Direction;
 
-use Chart::Base '2.4.4';
+use Chart::Base '2.4.5';
 use GD;
 use Carp;
 
@@ -25,7 +25,7 @@ use strict;
 use POSIX;
 
 @Chart::Direction::ISA     = qw(Chart::Base);
-$Chart::Direction::VERSION = '2.4.4';
+$Chart::Direction::VERSION = '2.4.5';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

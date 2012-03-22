@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-01-06
-# @version 2.4.4
+# @date 2012-03-22
+# @version 2.4.5
 #
 #---------------------------------------------------------------------
 # History:
@@ -20,13 +20,13 @@
 
 package Chart::Composite;
 
-use Chart::Base '2.4.4';
+use Chart::Base '2.4.5';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Composite::ISA     = qw(Chart::Base);
-$Chart::Composite::VERSION = '2.4.4';
+$Chart::Composite::VERSION = '2.4.5';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

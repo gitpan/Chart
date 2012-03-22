@@ -192,13 +192,13 @@ Public Object Methods</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a887fdd48d80d348d6a38ad799356b0ec">cgi_png</a> (scalar dataref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in png format to be directly written for CGI.  <a href="#a887fdd48d80d348d6a38ad799356b0ec"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#ad6bc3855bdc31bc6e264e390f5e660c2">scalar_png</a> (scalar dataref)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in png format to be directly written for CGI.  <a href="#ad6bc3855bdc31bc6e264e390f5e660c2"></a><br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in PNG format to be directly returned.  <a href="#ad6bc3855bdc31bc6e264e390f5e660c2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#aa9791b8cc8b287fa966402574afaf03f">jpeg</a> (scalar file, scalar dataref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in JPG format to be directly plotted.  <a href="#aa9791b8cc8b287fa966402574afaf03f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#a4bb21f030ba3e48a8a1086634595a9cf">cgi_jpeg</a> (scalar dataref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in JPG format to be directly for CGI.  <a href="#a4bb21f030ba3e48a8a1086634595a9cf"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#ac5d9aee386bf811e2770574fba85ec66">scalar_jpeg</a> (scalar dataref)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in JPG format to be directly.  <a href="#ac5d9aee386bf811e2770574fba85ec66"></a><br/></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in JPG format to be directly returned.  <a href="#ac5d9aee386bf811e2770574fba85ec66"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#aee48a95d2dbc344911ee9a4cba3b51b0">make_gd</a> (scalar dataref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Produce the graph of options set in GD format to be directly.  <a href="#aee48a95d2dbc344911ee9a4cba3b51b0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChart_1_1Base.html#af9fec7910f7254177a81252a03a0f587">imagemap_dump</a> ()</td></tr>
@@ -1739,15 +1739,15 @@ set options as a hash </dd></dl>
 </div>
 <div class="memdoc">
 
-<p>Produce the graph of options set in JPG format to be directly. </p>
-<p>called after the options are set, this method invokes all my private methods to actually draw the chart and plot the data </p>
+<p>Produce the graph of options set in JPG format to be directly returned. </p>
+<p>called after the options are set, this method invokes all my private methods to actually draw the chart and return the image to the caller</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>$dataref</em>&nbsp;</td><td></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>Status of the plot </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>returns the jpeg image as a scalar value, so that the programmer-user can do whatever the heck s/he wants to with it </dd></dl>
 
 </div>
 </div>
@@ -1767,16 +1767,15 @@ set options as a hash </dd></dl>
 </div>
 <div class="memdoc">
 
-<p>Produce the graph of options set in png format to be directly written for CGI. </p>
-<p>Called after the options are set, <br/>
- this method invokes all my private methods to actually draw the chart and plot the data </p>
+<p>Produce the graph of options set in PNG format to be directly returned. </p>
+<p>called after the options are set, this method invokes all my private methods to actually draw the chart and return the image to the caller</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"><tt>[in]</tt>&nbsp;</td><td valign="top"><em>$dataref</em>&nbsp;</td><td>Reference to the data to be plotted </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>$dataref</em>&nbsp;</td><td></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="return"><dt><b>Returns:</b></dt><dd>Status of the plot </dd></dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>returns the png image as a scalar value, so that the programmer-user can do whatever the heck s/he wants to with it </dd></dl>
 
 </div>
 </div>
@@ -2052,7 +2051,7 @@ set options as a hash </dd></dl>
 <li>Chart/<a class="el" href="Base_8pm.html">Base.pm</a></li>
 </ul>
 </div>
-<hr class="footer"/><address class="footer"><small>Generated on Fri Jan 6 2012 22:02:20 by&nbsp;
+<hr class="footer"/><address class="footer"><small>Generated on Thu Mar 22 2012 08:27:51 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
 </body>

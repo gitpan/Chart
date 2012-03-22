@@ -7,8 +7,8 @@
 #  maintained by the Chart Group at Geodetic Fundamental Station Wettzell
 #  Chart@fs.wettzell.de
 # @author Chart Group (Chart@fs.wettzell.de)
-# @date 2012-01-06
-# @version 2.4.4
+# @date 2012-03-22
+# @version 2.4.5
 
 ## @class Chart::Lines
 # Lines class derived from class Base.
@@ -18,13 +18,13 @@
 #
 package Chart::Lines;
 
-use Chart::Base '2.4.4';
+use Chart::Base '2.4.5';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Lines::ISA     = qw(Chart::Base);
-$Chart::Lines::VERSION = '2.4.4';
+$Chart::Lines::VERSION = '2.4.5';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

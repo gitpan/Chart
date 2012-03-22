@@ -33,4 +33,6 @@ blib/
 ^samples.v0/
 ^Chart-
 ^utils/
-^doc/latex/
+^doc/doxygen_latex/
+^ToDo.txt
+^HowTo-test.txt
