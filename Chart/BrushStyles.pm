@@ -3,8 +3,8 @@
 #
 # written and maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-03-22
-# @version 2.4.5
+# @date 2012-10-03
+# @version 2.4.6
 #
 
 ## @class Chart::BrushStyles
@@ -23,14 +23,14 @@
 # \see FilledRectangle\n
 package Chart::BrushStyles;
 
-use Chart::Base '2.4.5';
+use Chart::Base '2.4.6';
 use GD;
 use Carp;
 use strict;
 use Chart::Constants;
 
 @Chart::BrushStyles::ISA     = qw(Chart::Base);
-$Chart::BrushStyles::VERSION = '2.4.5';
+$Chart::BrushStyles::VERSION = '2.4.6';
 
 ## @fn OpenCircle
 # @param[in] *GD::Image $rbrush Reference to GD::Image

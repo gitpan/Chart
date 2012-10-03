@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-03-22
-# @version 2.4.5
+# @date 2012-10-03
+# @version 2.4.6
 #
 
 ## @class Chart::LinesPoints
@@ -19,13 +19,13 @@
 
 package Chart::LinesPoints;
 
-use Chart::Base '2.4.5';
+use Chart::Base '2.4.6';
 use GD;
 use Carp;
 use strict;
 
 @Chart::LinesPoints::ISA     = qw(Chart::Base);
-$Chart::LinesPoints::VERSION = '2.4.5';
+$Chart::LinesPoints::VERSION = '2.4.6';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -93,17 +93,22 @@ sub _draw_data
     #for a xy-plot, use this delta and maybe an offset for the zero-axes
     if ( $self->true( $self->{'xy_plot'} ) )
     {
-        $diff      = ( $self->{'x_max_val'} - $self->{'x_min_val'} );
-        $diff      = 1 if $diff == 0;
-        $delta_num = $width / ( $self->{'x_max_val'} - $self->{'x_min_val'} );
-
-        if ( $self->{'x_min_val'} <= 0 && $self->{'x_max_val'} >= 0 )
+        my ( $xmin, $xmax ) = ( $self->{'x_min_val'}, $self->{'x_max_val'} );
+        if ( $self->{'xlabels'} )
         {
-            $zero_offset = abs( $self->{'x_min_val'} ) * abs($delta_num);
+            ( $xmin, $xmax ) = @{ $self->{'xrange'} };
         }
-        elsif ( $self->{'x_min_val'} > 0 || $self->{'x_max_val'} < 0 )
+        $diff      = $xmax - $xmin;
+        $diff      = 1 if $diff == 0;
+        $delta_num = $width / $diff;
+
+        if ( $xmin <= 0 && $xmax >= 0 )
         {
-            $zero_offset = -$self->{'x_min_val'} * $delta_num;
+            $zero_offset = abs($xmin) * abs($delta_num);
+        }
+        elsif ( $xmin > 0 || $xmax < 0 )
+        {
+            $zero_offset = -$xmin * $delta_num;
         }
         else
         {

@@ -3,8 +3,8 @@
 #
 # maintained and written by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-03-22
-# @version 2.4.5
+# @date 2012-10-03
+# @version 2.4.6
 
 ## @class Chart::HorizontalBars
 # HorizontalBars class derived from class Base.
@@ -14,13 +14,13 @@
 #
 package Chart::HorizontalBars;
 
-use Chart::Base '2.4.5';
+use Chart::Base '2.4.6';
 use GD;
 use Carp;
 use strict;
 
 @Chart::HorizontalBars::ISA     = qw(Chart::Base);
-$Chart::HorizontalBars::VERSION = '2.4.5';
+$Chart::HorizontalBars::VERSION = '2.4.6';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

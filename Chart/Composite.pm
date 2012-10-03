@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-03-22
-# @version 2.4.5
+# @date 2012-10-03
+# @version 2.4.6
 #
 #---------------------------------------------------------------------
 # History:
@@ -20,13 +20,13 @@
 
 package Chart::Composite;
 
-use Chart::Base '2.4.5';
+use Chart::Base '2.4.6';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Composite::ISA     = qw(Chart::Base);
-$Chart::Composite::VERSION = '2.4.5';
+$Chart::Composite::VERSION = '2.4.6';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -602,7 +602,7 @@ sub _draw_top_legend
     }
 
     # mark of the space used
-    $self->{'curr_y_min'} += ( $rows * $row_height ) + $self->{'text_space'} + 2 * $self->{'legend_space'};
+    $self->{'curr_y_min'} += $rows * $row_height + $self->{'text_space'} + 2 * $self->{'legend_space'};
 
     return;
 }
@@ -1066,7 +1066,7 @@ sub _draw_bottom_legend
     }
 
     # mark of the space used
-    $self->{'curr_y_max'} -= ( $rows * $row_height ) + $self->{'text_space'} + 2 * $self->{'legend_space'};
+    $self->{'curr_y_max'} -= ( $rows * $row_height ) + 2 * $self->{'text_space'} + 2 * $self->{'legend_space'};
 
     return;
 }

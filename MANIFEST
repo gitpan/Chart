@@ -205,6 +205,8 @@ doc/html/tab_s.png
 doc/html/tabs.css
 doc/html/todo.html
 doc/html/tree.html
+doc/LaTeX/Appendix.tex
+doc/LaTeX/AppendixRGB.tex
 doc/LaTeX/Aufbau.png
 doc/LaTeX/Aufbau1.png
 doc/LaTeX/Bars.tex
@@ -240,7 +242,6 @@ doc/LaTeX/Lines.tex
 doc/LaTeX/lines.tex
 doc/LaTeX/linespoints.tex
 doc/LaTeX/LinesPoints.tex
-doc/LaTeX/Makefile
 doc/LaTeX/mountain-1.png
 doc/LaTeX/mountain.png
 doc/LaTeX/mountain.tex
@@ -253,6 +254,8 @@ doc/LaTeX/pie.tex
 doc/LaTeX/points.png
 doc/LaTeX/points.tex
 doc/LaTeX/Points.tex
+doc/LaTeX/rgb.dat
+doc/LaTeX/rgb.tex
 doc/LaTeX/Split.tex
 doc/LaTeX/split.tex
 doc/LaTeX/stacked.tex
@@ -260,10 +263,8 @@ doc/LaTeX/Stacked.tex
 doc/LaTeX/stackedbars.png
 doc/LaTeX/stunde.png
 Documentation.pdf
-Makefile
 Makefile.PL
 MANIFEST			This list of files
-MANIFEST.SKIP
 META.yml
 patterns/PATTERN0.GIF
 patterns/PATTERN0.PNG
@@ -279,7 +280,6 @@ patterns/PATTERN5.GIF
 patterns/PATTERN5.PNG
 pm_to_blib
 README
-rgb.txt
 t/bars.t
 t/bars_10.t
 t/bars_2.t

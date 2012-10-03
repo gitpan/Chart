@@ -400,11 +400,14 @@ Similar to \attruse{f\_x\_tick}, but for $y$ labels.
 \end{AttrDecl}
 
 \begin{AttrDecl}{colors}
+\label{colors}
 This option lets you control the colors the chart will use. It takes a
 reference to a hash. The hash should contain keys mapped to references
 to arrays of \textsc{rgb} values. E.g.,\\
-\methoduse{\$obj->set('colors' \fatcomma {'background' \fatcomma [255,255,255]});}\\
-sets the background color to white (which is the default).
+\methoduse{\$obj->set('colors' \fatcomma \{'background' \fatcomma [255,255,255]\});}\\
+sets the background color to white (which is the default).\\
+Another possibility is to use named colors like 'red', 'blue'. The possible
+list of named colors can be found in chapter \ref{app:colors}, page \pageref{app:colors}.\\ 
 Valid keys for this hash are
 \begin{itemize}
 \item \literal{background} (background color for the chart)
@@ -447,7 +450,9 @@ This option changes the font of the ticks. The value must be a GD font.
 
 \begin{AttrDecl}{grey\_background}
 Puts a nice soft grey background on the actual data plot when set to
-\literal{true}. Default is \literal{true}.
+\literal{true}. This is a flag. If you set this flag to 'false' then you may
+redefine the background color to a color you like. For further information see chapter \ref{colors}
+on page \pageref{colors}. Default is \literal{true}.
 \end{AttrDecl}
 
 \begin{AttrDecl}{x\_grid\_lines}

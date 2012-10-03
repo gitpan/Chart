@@ -3,8 +3,8 @@
 #
 # written and maintained by
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-03-22
-# @version 2.4.5
+# @date 2012-10-03
+# @version 2.4.6
 #
 
 ## @class Chart::Pie
@@ -12,14 +12,14 @@
 #
 package Chart::Pie;
 
-use Chart::Base '2.4.5';
+use Chart::Base '2.4.6';
 use GD;
 use Carp;
 use Chart::Constants;
 use strict;
 
 @Chart::Pie::ISA     = qw(Chart::Base);
-$Chart::Pie::VERSION = '2.4.5';
+$Chart::Pie::VERSION = '2.4.6';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

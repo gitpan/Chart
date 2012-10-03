@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.4.5
+Chart version 2.4.6
 ------------------------------------------------------------------------
 
 
@@ -27,6 +27,12 @@ Lincoln Stein's GD module version 2.0.36 or higher.
 -------
 CHANGES
 -------
+2.4.6 Number of named colors extended
+      Documentation.pdf explains the use of colors (Appendix added) 
+      Corrections in base.pm, routines
+       _draw_bottom_legends, _draw_x_number_ticks
+       in LinesPoints.pm, routines  _draw_data
+ 
 2.4.5 Typo in _draw_x_ticks corrected
       Methods scalar_png(), scalar_jpeg() corrected for result.
       Test routine t/scalarImage.t added
