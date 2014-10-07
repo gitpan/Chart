@@ -6,22 +6,22 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-10-03
-# @version 2.4.6
+# @date 2014-06-18
+# @version 2.4.7
 
 ## @class Chart::Bars
 # Bars class provides all functions which are specific to
 # vertical bars
 package Chart::Bars;
 
-use Chart::Base '2.4.6';
+use Chart::Base '2.4.7';
 use GD;
 use Carp;
 
 use strict;
 
 @Chart::Bars::ISA     = qw(Chart::Base);
-$Chart::Bars::VERSION = '2.4.6';
+$Chart::Bars::VERSION = '2.4.7';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -32,7 +32,13 @@ $Chart::Bars::VERSION = '2.4.6';
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<#
 
 ## @method private _draw_data
+# @brief
 # finally get around to plotting the data for (vertical) bars
+#
+# @details
+# The user may define the kind of labelling the data by setting\n
+# 'label_values' to 'value' if she wants to have the absolut values\n
+# 'label_values' to 'none' if she wants to have no values (default)\n
 #
 sub _draw_data
 {
@@ -43,13 +49,41 @@ sub _draw_data
     my ( $x1, $x2, $x3, $y1, $y2, $y3 );
     my ( $width, $height, $delta1, $delta2, $map, $mod, $cut, $pink );
     my ( $i, $j, $color );
-    my $temp = 0;
+    my $temp      = 0;
+    my $font      = $self->{'legend_font'};
+    my $fontW     = $self->{'legend_font'}->width;
+    my $fontH     = $self->{'legend_font'}->height;
+    my $textcolor = $self->_color_role_to_index('text');
 
     # init the imagemap data field if they wanted it
     if ( $self->true( $self->{'imagemap'} ) )
     {
         $self->{'imagemap_data'} = [];
     }
+
+    # find the longest label
+    # first we need the length of the values
+    # draw the bars
+    my $max_label_len = 0;
+    for $i ( 1 .. $self->{'num_datasets'} )
+    {
+        for $j ( 0 .. $self->{'num_datapoints'} )
+        {
+
+            # don't try to draw anything if there's no data
+            if ( defined( $data->[$i][$j] )
+                && $data->[$i][$j] =~ /^[\-\+]{0,1}\s*[\d\.eE\-\+]+/ )
+            {
+                if ( defined $self->{'label_values'} && $self->{'label_values'} =~ /^value$/i )
+                {
+                    my $label = sprintf( "%.2f", $data->[$i][$j] );
+                    my $label_length = length($label);
+                    $max_label_len = $label_length if ( $max_label_len < $label_length );
+                }
+            }
+        }
+    }
+    $max_label_len *= $fontH;
 
     # find both delta values ($delta1 for stepping between different
     # datapoint names, $delta2 for stepping between datasets for that
@@ -158,6 +192,18 @@ sub _draw_data
                     {
                         $self->{'imagemap_data'}->[$i][$j] = [ $x2, $y3, $x3, $y2 ];
                     }
+
+                    if ( defined $self->{'label_values'} && $self->{'label_values'} =~ /^value$/i )
+                    {
+
+                        # draw data
+                        my $labelX = $x2;
+                        my $labelY = $y3 + $fontH;    #$max_label_len;
+                        if ( $labelY < 0 ) { $labelY = $y3; }
+                        my $label = sprintf( "%.2f", $data->[$i][$j] );
+                        $self->{'gd_obj'}->stringUp( $font, $labelX + $fontW * 0.5, $labelY, $label, $textcolor );
+                    }
+
                 }
                 else
                 {

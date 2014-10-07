@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-10-03
-# @version 2.4.6
+# @date 2014-06-18
+# @version 2.4.7
 
 ## @mainpage Chart::Base
 #
@@ -31,7 +31,7 @@ use FileHandle;
 use Chart::Constants;
 use GD::Image;
 
-$Chart::Base::VERSION = '2.4.6';
+$Chart::Base::VERSION = '2.4.7';
 
 use vars qw(%named_colors);
 use strict;
@@ -178,7 +178,7 @@ sub add_pt
     if ( ( ref $_[0] ) =~ /^ARRAY/ )
     {
         my $rdata = shift;
-        @data = @$rdata if defined @$rdata;
+        @data = @$rdata if @$rdata;
     }
     elsif ( ( ref \$_[0] ) =~ /^SCALAR/ )
     {
@@ -230,7 +230,7 @@ sub add_dataset
     if ( ( ref $_[0] ) =~ /^ARRAY/ )
     {
         my $rdata = shift;
-        @data = @$rdata if defined @$rdata;
+        @data = @$rdata if @$rdata;
     }
     elsif ( ( ref \$_[0] ) =~ /^SCALAR/ )
     {
@@ -839,6 +839,34 @@ sub false
     }
 
     return 0;
+}
+
+
+## @method modulo($a,$b)
+# Calculate float($a % $b) as the internal operator '%' 
+# does only calculate in integers
+# @param[in] $a
+# @param[in] 
+# @return $a % $b in float
+sub modulo
+{
+    my $pkg = shift;
+    my $a   = shift;
+    my $b   = shift;
+    
+    my $erg = 0.0;
+    
+    if ( !defined($a)  || !defined($b) || $b == 0 )
+    {
+		die "Modulo needs valid parameters!"
+        #return $erg;
+    }
+
+	my $div = $a / $b;
+	
+	$erg = $a - int ( $div) * $b;
+	
+	return $erg;
 }
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>#
@@ -1877,19 +1905,29 @@ sub _draw_title
     $x = ( $self->{'curr_x_max'} - $self->{'curr_x_min'} ) / 2 + $self->{'curr_x_min'} - ( length( $lines[0] ) * $w ) / 2;
     $y = $self->{'curr_y_min'} + $self->{'text_space'};
 
-    # Tests for Version 2.5
-    #my $fontText = new GD::Text();
-    # ttf are found in /usr/lib/jvm/java-6-sun*/
-    # /var/share/fonts/truetype
-    #$fontText->set_font('LiberationSans-Regular.ttf');
-    #$fontText->set_text('Some text',14);
-    #if ( GD::Text->can_do_ttf() )
-    #{ carp "Can do ttf"; }
-    #else
-    #{ carp "No TTF"; }
-    # ttf is in GD::Text!
-    # #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #-----------------------------------------------------------
 
+    # Tests for Version 2.5
+    # ttf are found in /var/share/fonts/truetype/freefont/
+
+    # /var/share/fonts/truetype
+
+    # Sketch for further processing
+    #    if ( $font ~= /^gd/ && ! -f $font )
+    #    {
+    #		$self->{'gd_obj'}->string( $font, $x, $y, $lines[0], $color );
+    #	}
+    #	elsif ( -f $font )
+    #	{
+    #		my $fontname = '/var/share/fonts/truetype/freefont/FreeSerifBoldItalic.ttf';
+    #		$self->{'gd_obj'}->stringFT( $color, $fontname, 8,0, $x, $y, $lines[0] );
+    #	}
+
+    #	my $fontname = '/var/share/fonts/truetype/freefont/FreeSerifBoldItalic.ttf';
+    #    #                                              size, angle
+    #	$self->{'gd_obj'}->stringFT( $color, $fontname, 12,0, $x, $y, $lines[0] );
+
+    #-----------------------------------------------------------------
     $self->{'gd_obj'}->string( $font, $x, $y, $lines[0], $color );
 
     # now loop through the rest of them
@@ -4592,8 +4630,7 @@ sub _xyRatio
 }
 
 ## @fn private float _xPixelInReal
-# Get witdh of one Pixel in real coordinates in x-direction
-#
+# Get width of one Pixel in real coordinates in x-direction
 #
 # @return width(interval) of reality in x direction
 #
@@ -4610,8 +4647,7 @@ sub _xPixelInReal
 }
 
 ## @fn private float _yPixelInReal
-# Get witdh of one Pixel in real coordinates in y-direction
-#
+# Get width of one Pixel in real coordinates in y-direction
 #
 # @return width(interval) of reality in y direction
 #

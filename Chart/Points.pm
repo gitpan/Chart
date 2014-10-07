@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-10-03
-# @version 2.4.6
+# @date 2014-06-18
+# @version 2.4.7
 #
 
 ## @class Chart::Points
@@ -18,13 +18,13 @@
 #
 package Chart::Points;
 
-use Chart::Base '2.4.6';
+use Chart::Base '2.4.7';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Points::ISA     = qw(Chart::Base);
-$Chart::Points::VERSION = '2.4.6';
+$Chart::Points::VERSION = '2.4.7';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

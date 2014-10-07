@@ -16,12 +16,15 @@ Chart/Points.pm
 Chart/Split.pm
 Chart/StackedBars.pm
 doc/html/annotated.html
+doc/html/annotated.js
 doc/html/Bars_8pm.html
 doc/html/Base_8pm.html
 doc/html/bc_s.png
+doc/html/bdwn.png
 doc/html/BrushStyles_8pm.html
 doc/html/classChart_1_1Bars-members.html
 doc/html/classChart_1_1Bars.html
+doc/html/classChart_1_1Bars.js
 doc/html/classChart_1_1Bars__coll__graph.map
 doc/html/classChart_1_1Bars__coll__graph.md5
 doc/html/classChart_1_1Bars__coll__graph.png
@@ -30,6 +33,7 @@ doc/html/classChart_1_1Bars__inherit__graph.md5
 doc/html/classChart_1_1Bars__inherit__graph.png
 doc/html/classChart_1_1Base-members.html
 doc/html/classChart_1_1Base.html
+doc/html/classChart_1_1Base.js
 doc/html/classChart_1_1Base__coll__graph.map
 doc/html/classChart_1_1Base__coll__graph.md5
 doc/html/classChart_1_1Base__coll__graph.png
@@ -38,6 +42,7 @@ doc/html/classChart_1_1Base__inherit__graph.md5
 doc/html/classChart_1_1Base__inherit__graph.png
 doc/html/classChart_1_1BrushStyles-members.html
 doc/html/classChart_1_1BrushStyles.html
+doc/html/classChart_1_1BrushStyles.js
 doc/html/classChart_1_1BrushStyles__coll__graph.map
 doc/html/classChart_1_1BrushStyles__coll__graph.md5
 doc/html/classChart_1_1BrushStyles__coll__graph.png
@@ -46,6 +51,7 @@ doc/html/classChart_1_1BrushStyles__inherit__graph.md5
 doc/html/classChart_1_1BrushStyles__inherit__graph.png
 doc/html/classChart_1_1Composite-members.html
 doc/html/classChart_1_1Composite.html
+doc/html/classChart_1_1Composite.js
 doc/html/classChart_1_1Composite__coll__graph.map
 doc/html/classChart_1_1Composite__coll__graph.md5
 doc/html/classChart_1_1Composite__coll__graph.png
@@ -55,6 +61,7 @@ doc/html/classChart_1_1Composite__inherit__graph.png
 doc/html/classChart_1_1Constants.html
 doc/html/classChart_1_1Direction-members.html
 doc/html/classChart_1_1Direction.html
+doc/html/classChart_1_1Direction.js
 doc/html/classChart_1_1Direction__coll__graph.map
 doc/html/classChart_1_1Direction__coll__graph.md5
 doc/html/classChart_1_1Direction__coll__graph.png
@@ -63,6 +70,7 @@ doc/html/classChart_1_1Direction__inherit__graph.md5
 doc/html/classChart_1_1Direction__inherit__graph.png
 doc/html/classChart_1_1ErrorBars-members.html
 doc/html/classChart_1_1ErrorBars.html
+doc/html/classChart_1_1ErrorBars.js
 doc/html/classChart_1_1ErrorBars__coll__graph.map
 doc/html/classChart_1_1ErrorBars__coll__graph.md5
 doc/html/classChart_1_1ErrorBars__coll__graph.png
@@ -71,6 +79,7 @@ doc/html/classChart_1_1ErrorBars__inherit__graph.md5
 doc/html/classChart_1_1ErrorBars__inherit__graph.png
 doc/html/classChart_1_1HorizontalBars-members.html
 doc/html/classChart_1_1HorizontalBars.html
+doc/html/classChart_1_1HorizontalBars.js
 doc/html/classChart_1_1HorizontalBars__coll__graph.map
 doc/html/classChart_1_1HorizontalBars__coll__graph.md5
 doc/html/classChart_1_1HorizontalBars__coll__graph.png
@@ -79,6 +88,7 @@ doc/html/classChart_1_1HorizontalBars__inherit__graph.md5
 doc/html/classChart_1_1HorizontalBars__inherit__graph.png
 doc/html/classChart_1_1Lines-members.html
 doc/html/classChart_1_1Lines.html
+doc/html/classChart_1_1Lines.js
 doc/html/classChart_1_1Lines__coll__graph.map
 doc/html/classChart_1_1Lines__coll__graph.md5
 doc/html/classChart_1_1Lines__coll__graph.png
@@ -87,6 +97,7 @@ doc/html/classChart_1_1Lines__inherit__graph.md5
 doc/html/classChart_1_1Lines__inherit__graph.png
 doc/html/classChart_1_1LinesPoints-members.html
 doc/html/classChart_1_1LinesPoints.html
+doc/html/classChart_1_1LinesPoints.js
 doc/html/classChart_1_1LinesPoints__coll__graph.map
 doc/html/classChart_1_1LinesPoints__coll__graph.md5
 doc/html/classChart_1_1LinesPoints__coll__graph.png
@@ -95,6 +106,7 @@ doc/html/classChart_1_1LinesPoints__inherit__graph.md5
 doc/html/classChart_1_1LinesPoints__inherit__graph.png
 doc/html/classChart_1_1Mountain-members.html
 doc/html/classChart_1_1Mountain.html
+doc/html/classChart_1_1Mountain.js
 doc/html/classChart_1_1Mountain__coll__graph.map
 doc/html/classChart_1_1Mountain__coll__graph.md5
 doc/html/classChart_1_1Mountain__coll__graph.png
@@ -103,6 +115,7 @@ doc/html/classChart_1_1Mountain__inherit__graph.md5
 doc/html/classChart_1_1Mountain__inherit__graph.png
 doc/html/classChart_1_1Pareto-members.html
 doc/html/classChart_1_1Pareto.html
+doc/html/classChart_1_1Pareto.js
 doc/html/classChart_1_1Pareto__coll__graph.map
 doc/html/classChart_1_1Pareto__coll__graph.md5
 doc/html/classChart_1_1Pareto__coll__graph.png
@@ -111,6 +124,7 @@ doc/html/classChart_1_1Pareto__inherit__graph.md5
 doc/html/classChart_1_1Pareto__inherit__graph.png
 doc/html/classChart_1_1Pie-members.html
 doc/html/classChart_1_1Pie.html
+doc/html/classChart_1_1Pie.js
 doc/html/classChart_1_1Pie__coll__graph.map
 doc/html/classChart_1_1Pie__coll__graph.md5
 doc/html/classChart_1_1Pie__coll__graph.png
@@ -119,6 +133,7 @@ doc/html/classChart_1_1Pie__inherit__graph.md5
 doc/html/classChart_1_1Pie__inherit__graph.png
 doc/html/classChart_1_1Points-members.html
 doc/html/classChart_1_1Points.html
+doc/html/classChart_1_1Points.js
 doc/html/classChart_1_1Points__coll__graph.map
 doc/html/classChart_1_1Points__coll__graph.md5
 doc/html/classChart_1_1Points__coll__graph.png
@@ -127,6 +142,7 @@ doc/html/classChart_1_1Points__inherit__graph.md5
 doc/html/classChart_1_1Points__inherit__graph.png
 doc/html/classChart_1_1Split-members.html
 doc/html/classChart_1_1Split.html
+doc/html/classChart_1_1Split.js
 doc/html/classChart_1_1Split__coll__graph.map
 doc/html/classChart_1_1Split__coll__graph.md5
 doc/html/classChart_1_1Split__coll__graph.png
@@ -135,6 +151,7 @@ doc/html/classChart_1_1Split__inherit__graph.md5
 doc/html/classChart_1_1Split__inherit__graph.png
 doc/html/classChart_1_1StackedBars-members.html
 doc/html/classChart_1_1StackedBars.html
+doc/html/classChart_1_1StackedBars.js
 doc/html/classChart_1_1StackedBars__coll__graph.map
 doc/html/classChart_1_1StackedBars__coll__graph.md5
 doc/html/classChart_1_1StackedBars__coll__graph.png
@@ -145,12 +162,20 @@ doc/html/classes.html
 doc/html/closed.png
 doc/html/Composite_8pm.html
 doc/html/Constants_8pm.html
+doc/html/dir_4c1e16b25926905315b25af094fe9aa3.html
+doc/html/dir_4c1e16b25926905315b25af094fe9aa3.js
+doc/html/dir_4c1e16b25926905315b25af094fe9aa3_dep.map
+doc/html/dir_4c1e16b25926905315b25af094fe9aa3_dep.md5
+doc/html/dir_4c1e16b25926905315b25af094fe9aa3_dep.png
 doc/html/Direction_8pm.html
 doc/html/doxygen.css
 doc/html/doxygen.png
+doc/html/dynsections.js
 doc/html/ErrorBars_8pm.html
 doc/html/files.html
+doc/html/files.js
 doc/html/ftv2blank.png
+doc/html/ftv2cl.png
 doc/html/ftv2doc.png
 doc/html/ftv2folderclosed.png
 doc/html/ftv2folderopen.png
@@ -158,9 +183,12 @@ doc/html/ftv2lastnode.png
 doc/html/ftv2link.png
 doc/html/ftv2mlastnode.png
 doc/html/ftv2mnode.png
+doc/html/ftv2mo.png
 doc/html/ftv2node.png
+doc/html/ftv2ns.png
 doc/html/ftv2plastnode.png
 doc/html/ftv2pnode.png
+doc/html/ftv2splitbar.png
 doc/html/ftv2vertline.png
 doc/html/functions.html
 doc/html/functions_func.html
@@ -170,6 +198,7 @@ doc/html/graph_legend.html
 doc/html/graph_legend.md5
 doc/html/graph_legend.png
 doc/html/hierarchy.html
+doc/html/hierarchy.js
 doc/html/HorizontalBars_8pm.html
 doc/html/index.html
 doc/html/inherit__graph__0.map
@@ -181,20 +210,34 @@ doc/html/inherit__graph__1.png
 doc/html/inherit__graph__2.map
 doc/html/inherit__graph__2.md5
 doc/html/inherit__graph__2.png
+doc/html/inherit_graph_0.map
+doc/html/inherit_graph_0.md5
+doc/html/inherit_graph_0.png
+doc/html/inherit_graph_1.map
+doc/html/inherit_graph_1.md5
+doc/html/inherit_graph_1.png
 doc/html/inherits.html
+doc/html/jquery.js
 doc/html/Lines_8pm.html
 doc/html/LinesPoints_8pm.html
 doc/html/main.html
 doc/html/Mountain_8pm.html
 doc/html/nav_f.png
+doc/html/nav_g.png
 doc/html/nav_h.png
+doc/html/navtree.css
+doc/html/navtree.js
+doc/html/navtreeindex0.js
 doc/html/open.png
 doc/html/pages.html
 doc/html/Pareto_8pm.html
 doc/html/Pie_8pm.html
 doc/html/Points_8pm.html
+doc/html/resize.js
 doc/html/Split_8pm.html
 doc/html/StackedBars_8pm.html
+doc/html/sync_off.png
+doc/html/sync_on.png
 doc/html/tab_a.png
 doc/html/tab_b.gif
 doc/html/tab_b.png
@@ -240,24 +283,24 @@ doc/LaTeX/hbars.tex
 doc/LaTeX/HorizontalBars.tex
 doc/LaTeX/Lines.tex
 doc/LaTeX/lines.tex
-doc/LaTeX/linespoints.tex
 doc/LaTeX/LinesPoints.tex
+doc/LaTeX/linespoints.tex
 doc/LaTeX/mountain-1.png
 doc/LaTeX/mountain.png
-doc/LaTeX/mountain.tex
 doc/LaTeX/Mountain.tex
+doc/LaTeX/mountain.tex
 doc/LaTeX/ort.png
 doc/LaTeX/pareto.tex
 doc/LaTeX/Pareto.tex
-doc/LaTeX/Pie.tex
 doc/LaTeX/pie.tex
+doc/LaTeX/Pie.tex
 doc/LaTeX/points.png
 doc/LaTeX/points.tex
 doc/LaTeX/Points.tex
 doc/LaTeX/rgb.dat
 doc/LaTeX/rgb.tex
-doc/LaTeX/Split.tex
 doc/LaTeX/split.tex
+doc/LaTeX/Split.tex
 doc/LaTeX/stacked.tex
 doc/LaTeX/Stacked.tex
 doc/LaTeX/stackedbars.png
@@ -266,6 +309,8 @@ Documentation.pdf
 Makefile.PL
 MANIFEST			This list of files
 META.yml
+MYMETA.json
+MYMETA.yml
 patterns/PATTERN0.GIF
 patterns/PATTERN0.PNG
 patterns/PATTERN1.GIF
@@ -298,6 +343,7 @@ t/composite_4.t
 t/composite_5.t
 t/composite_6.t
 t/composite_7.t
+t/composite_8.t
 t/composite_f.t
 t/direction_1.t
 t/direction_2.t
@@ -365,3 +411,4 @@ t/stackedbars_2.t
 t/stackedbars_3.t
 t/stackedbars_4.t
 TODO
+META.json                                Module JSON meta-data (added by MakeMaker)

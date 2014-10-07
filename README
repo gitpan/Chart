@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Chart version 2.4.6
+Chart version 2.4.7
 ------------------------------------------------------------------------
 
 
@@ -27,6 +27,11 @@ Lincoln Stein's GD module version 2.0.36 or higher.
 -------
 CHANGES
 -------
+2.4.7 Bug repaired: rt.cpan.org #81171::Composite w/two ::Lines and xy_plot ==> undefined value when drawing ticks
+      (t/composite_7.t and t/composite_8.t are showing the differences)
+      Base.pm: defined(@array) 
+      Chart.pod corrected for deprecated @ARR->[$i]
+      
 2.4.6 Number of named colors extended
       Documentation.pdf explains the use of colors (Appendix added) 
       Corrections in base.pm, routines

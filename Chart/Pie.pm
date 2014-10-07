@@ -3,8 +3,8 @@
 #
 # written and maintained by
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2012-10-03
-# @version 2.4.6
+# @date 2014-06-18
+# @version 2.4.7
 #
 
 ## @class Chart::Pie
@@ -12,14 +12,14 @@
 #
 package Chart::Pie;
 
-use Chart::Base '2.4.6';
+use Chart::Base '2.4.7';
 use GD;
 use Carp;
 use Chart::Constants;
 use strict;
 
 @Chart::Pie::ISA     = qw(Chart::Base);
-$Chart::Pie::VERSION = '2.4.6';
+$Chart::Pie::VERSION = '2.4.7';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -56,7 +56,7 @@ sub _draw_data
     my ( $font,          $fontW,       $fontH,         $labelX,            $labelY );
     my $label;
     my ( $i, $j, $color );
-    my $label_length;
+    my $label_length=0;
     my $degrees = 0;
     my $insidecolor;
     my $forbidden_degrees = 0;    # last occupied degree
@@ -93,7 +93,7 @@ sub _draw_data
     for $j ( 0 .. $self->{'num_datapoints'} )
     {
 
-        if ( defined $data->[1][$j] )
+        if ( defined $data->[1][$j] && $data->[1][$j] > 0 )
         {
 
             #add to sum
@@ -115,7 +115,7 @@ sub _draw_data
 
         # don't try to draw anything if there's no data
         $labelinfo{$j}{data} = 'undefined';
-        if ( defined( $data->[1][$j] ) )
+        if ( defined( $data->[1][$j] ) && $data->[1][$j] > 0 )
         {
             $labelinfo{$j}{data}      = $data->[1][$j];
             $label                    = $data->[0][$j];
@@ -183,7 +183,7 @@ sub _draw_data
 
     for $j ( 0 .. ( $self->{'num_datapoints'} - 1 ) )
     {
-
+	
         # So, get the degree offset for this dataset
         $end_degrees = $start_degrees + ( $data->[1][$j] / ( $dataset_sum || 1 ) * 360 );
 
@@ -191,30 +191,37 @@ sub _draw_data
 
         # stick the label in the middle of the slice
         $label_degrees = ( $start_degrees + $end_degrees ) / 2;
+		#print "Vor Modulo: label_degrees = $label_degrees\n";
+        $label_degrees = $self->modulo($label_degrees, 360.0);
+		#print "Nach Modulo: label_degrees = $label_degrees\n";
 
         $label        = $labelinfo{$j}{labelstring};
-        $label_length = $labelinfo{$j}{labellength};
-
+        $label_length = $labelinfo{$j}{labellength} || 0;
+        
+        #!!DEBUG!!!!
+        #print "Text=".$label.", StartDegrees=".$start_degrees.
+        #      ", end=".$end_degrees.
+        #      ", label_degree=".$label_degrees."\n";
+		
+		#   0 degrees means east
+		#  90 degrees means south
+		# 180 degrees means west
+		# 270 degrees means north
+		# 360 degrees means east again
         if (   ( $label_degrees >= 270 && $label_degrees <= 360 )
             || ( $label_degrees >= 0 && $label_degrees <= 90 ) )
         {
 
             # right side of the circle
-            # as 0 degrees means east
-
-            if ( abs($label_degrees) < 0.1 )
-            {
-
-                # too small angle
-                $radius = $self->{'curr_x_max'} - $label_length * $fontW;
-            }
-            else
             {
 
                 # $x value in respect of label arc
                 my $x = $radius * sin( $dg2rd * $label_degrees );
                 my $y = $radius * cos( $dg2rd * $label_degrees );
 
+				#!!DEBUG!!!!
+				#print "Text=".$label.": x=$x, y=$y\n";
+				
                 # i.e. the startpoint is at $centerX+$x, $centerY-$y
                 #test
                 #$self->{'gd_obj'}->rectangle( $centerX, $centerY, $centerX+$x, $centerY-$y, $misccolor );
@@ -227,7 +234,9 @@ sub _draw_data
                     # too far right, correct x
                     $right_pos = $self->{'curr_x_max'};
                     $x         = $right_pos - $centerX - $label_length * $fontW;
-                }
+					#!!DEBUG!!!!
+					#print "too far right: Text=".$label.": x=$x, y=$y\n";
+				}
 
                 # theoretical top position in respect to radius and height of label
                 # (Remark: direction to the top of the picture counts backwards!)
@@ -238,6 +247,8 @@ sub _draw_data
                     # too far up, correct $y
                     $top_pos = $self->{'curr_y_min'};
                     $y       = $centerY - $top_pos - $fontH;
+                    #!!DEBUG!!!!
+					#print "too far up: Text=".$label.": x=$x, y=$y\n";
                 }
 
                 my $down_pos = $centerY + $y + $fontH;
@@ -245,6 +256,8 @@ sub _draw_data
                 {
                     $down_pos = $self->{'curr_y_max'};
                     $y        = $down_pos - $centerY - $fontH;
+                    #!!DEBUG!!!!
+					#print "too far down: Text=".$label.": x=$x, y=$y\n";
                 }
 
   #test
@@ -253,11 +266,21 @@ sub _draw_data
   #       ->rectangle( $self->{'curr_x_min'}, $self->{'curr_y_min'}, $self->{'curr_x_max'}, $self->{'curr_y_max'}, $misccolor );
   #return;
 
-                $radius =
-                  $self->minimum( $radius, $x / sin( $dg2rd * $label_degrees ), abs( $y / cos( $dg2rd * $label_degrees ) ) );
+				#!!DEBUG!!!!
+				#print "before Line 270: label_degrees=$label_degrees, cos()=".  cos( $dg2rd * $label_degrees ). ", sin()=". sin( $dg2rd * $label_degrees )."\n";
+                if ( $label_degrees  == 0 )
+                {
+					$radius =
+						$self->minimum( $radius, abs( $y / cos( $dg2rd * $label_degrees ) ) );
+				}
+				else
+				{	 
+					$radius =
+						$self->minimum( $radius, $x / sin( $dg2rd * $label_degrees ), abs( $y / cos( $dg2rd * $label_degrees ) ) );
+				}
                 $radius = int( $radius + 0.5 );
 
-                #test
+                #!!DEBUG!!
                 #$self->{'gd_obj'}->line( $centerX, $centerY, $centerX+$radius, $centerY, gdBrushed );
 
             }
@@ -331,7 +354,8 @@ sub _draw_data
 
         # reset starting point for next dataset and continue.
         $start_degrees = $end_degrees;
-    }
+   
+	}
     $diameter = $radius * 2 - 2 * $labeldistance;
 
     $text_diameter = $diameter + $labeldistance;
@@ -340,7 +364,10 @@ sub _draw_data
     # for DEBUG!!
     #$self->{'gd_obj'}->arc($centerX, $centerY, $text_diameter, $text_diameter,
     #                           0, 360, $misccolor);
-
+ 
+    # for DEBUG!!
+    #print "-------------------------------------------\n";
+    
     # @details
     # Plot the pies
     $start_degrees = 0;
@@ -348,7 +375,8 @@ sub _draw_data
     for $j ( 0 .. ( $self->{'num_datapoints'} - 1 ) )
     {
 
-        #next if $labelinfo{$j}{data} eq 'undefined';
+        next if $labelinfo{$j}{data} eq 'undefined';
+		
         # get the color for this datapoint, take the color of the datasets
         $color = $self->_color_role_to_index( 'dataset' . $j );
 
@@ -367,13 +395,17 @@ sub _draw_data
 
         # stick the label in the middle of the slice
         $label_degrees = $degrees;
+        $label_degrees = $self->modulo($label_degrees, 360.0);
 
-        if ( $start_degrees != $end_degrees )
+        if ( $start_degrees < $end_degrees )
         {
 
             # draw filled Arc
-            $self->{'gd_obj'}->filledArc( $centerX, $centerY, $diameter, $diameter, $start_degrees, $end_degrees, $color );
-        }
+            # test
+            #print "centerX=$centerX, centerY=$centerY, diameter=$diameter, $start_degrees, ".int($start_degrees) . ", $end_degrees\n";
+            #$self->{'gd_obj'}->filledArc( $centerX, $centerY, $diameter, $diameter, $start_degrees, $end_degrees, $color );
+            $self->{'gd_obj'}->filledArc( $centerX, $centerY, $diameter, $diameter, int($start_degrees-0.5), int($end_degrees+0.5), $color );
+       }
 
         # Figure out where to place the label
         # $forbidden_degrees = angle of the center, representing the height of the label
@@ -423,6 +455,8 @@ sub _draw_data
         $labelX = $centerX + $text_diameter * 0.5 * cos( $label_degrees * $dg2rd );
         $labelY = $centerY + $text_diameter * 0.5 * sin( $label_degrees * $dg2rd );
 
+		#!!DEBUG!!!!
+		#print "Text=".$label.": labelX=$labelX, y=$labelY\n";
         #        # For debugging
         #        # Draw Point
         #        # reset the brush for points
