@@ -9,7 +9,6 @@ var classChart_1_1Composite =
     [ "_draw_right_legend", "classChart_1_1Composite.html#ae2376bb07ec85374f24b76ac0dbc813a", null ],
     [ "_draw_ticks", "classChart_1_1Composite.html#a7851868c22518f010a467689cec79b93", null ],
     [ "_draw_top_legend", "classChart_1_1Composite.html#a844a6a68ef755e13236e013decf9cddf", null ],
-    [ "_draw_x_number_ticks", "classChart_1_1Composite.html#a333db2b74a292e61a9f919db24835d4e", null ],
     [ "_draw_x_ticks", "classChart_1_1Composite.html#a346409df6cbd56dae5206294a8e9edcb", null ],
     [ "_draw_y2_grid_lines", "classChart_1_1Composite.html#a37406d5ce28e2e8a0465eeff8bfd6911", null ],
     [ "_draw_y_grid_lines", "classChart_1_1Composite.html#a6a727845be209cb4d9cb825ab6c5ffb1", null ],

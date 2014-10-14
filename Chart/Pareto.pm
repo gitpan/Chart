@@ -3,8 +3,8 @@
 #
 # written and maintained by
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2014-06-18
-# @version 2.4.7
+# @date 2014-10-14
+# @version 2.4.8
 #
 
 ## @class Chart::Pareto
@@ -12,13 +12,13 @@
 #
 package Chart::Pareto;
 
-use Chart::Base '2.4.7';
+use Chart::Base '2.4.8';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Pareto::ISA     = qw(Chart::Base);
-$Chart::Pareto::VERSION = '2.4.7';
+$Chart::Pareto::VERSION = '2.4.8';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

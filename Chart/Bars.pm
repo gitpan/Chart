@@ -6,22 +6,22 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2014-06-18
-# @version 2.4.7
+# @date 2014-10-14
+# @version 2.4.8
 
 ## @class Chart::Bars
 # Bars class provides all functions which are specific to
 # vertical bars
 package Chart::Bars;
 
-use Chart::Base '2.4.7';
+use Chart::Base '2.4.8';
 use GD;
 use Carp;
 
 use strict;
 
 @Chart::Bars::ISA     = qw(Chart::Base);
-$Chart::Bars::VERSION = '2.4.7';
+$Chart::Bars::VERSION = '2.4.8';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #

@@ -4,8 +4,8 @@
 #
 # written and maintained by
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2014-06-18
-# @version 2.4.7
+# @date 2014-10-14
+# @version 2.4.8
 #
 
 ## @class Chart::Constants

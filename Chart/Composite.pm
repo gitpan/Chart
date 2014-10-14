@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2014-06-18
-# @version 2.4.7
+# @date 2014-10-14
+# @version 2.4.8
 #
 #---------------------------------------------------------------------
 # History:
@@ -20,13 +20,13 @@
 
 package Chart::Composite;
 
-use Chart::Base '2.4.7';
+use Chart::Base '2.4.8';
 use GD;
 use Carp;
 use strict;
 
 @Chart::Composite::ISA     = qw(Chart::Base);
-$Chart::Composite::VERSION = '2.4.7';
+$Chart::Composite::VERSION = '2.4.8';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -1113,6 +1113,7 @@ sub _draw_ticks
     if ( $self->true( $self->{'xy_plot'} ) )
     {
         $self->_find_x_scale;
+
         # The following statement is necessary as the
         # _draw_x_number_ticks() located in Base.pm does nothing know
         # about different y_tick_label_length variables!

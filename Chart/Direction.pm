@@ -3,8 +3,8 @@
 #
 # written by
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2014-06-18
-# @version 2.4.7
+# @date 2014-10-14
+# @version 2.4.8
 #
 
 # @section Chart::Direction
@@ -17,7 +17,7 @@
 
 package Chart::Direction;
 
-use Chart::Base '2.4.7';
+use Chart::Base '2.4.8';
 use GD;
 use Carp;
 
@@ -25,7 +25,7 @@ use strict;
 use POSIX;
 
 @Chart::Direction::ISA     = qw(Chart::Base);
-$Chart::Direction::VERSION = '2.4.7';
+$Chart::Direction::VERSION = '2.4.8';
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>#
 #  public methods go here  #
@@ -287,12 +287,12 @@ sub _find_y_scale
 # and compare the number of ticks to
 # the user given values min_y_ticks, max_y_ticks
 #
-# @param[in] $dataset_min Minimal value in y direction
-# @param[in] $dataset_max Maximal value in y direction
-# @param[in] $flag_fixed_min Indicator whether the dataset_min value is fixed
-# @param[in] $flag_fixed_max Indicator whether the dataset_max value is fixed
-# @param[in] $minTicks Minimal number of ticks wanted
-# @param[in] $maxTicks Maximal number of ticks wanted
+# @param[in] dataset_min Minimal value in y direction
+# @param[in] dataset_max Maximal value in y direction
+# @param[in] flag_fixed_min Indicator whether the dataset_min value is fixed
+# @param[in] flag_fixed_max Indicator whether the dataset_max value is fixed
+# @param[in] minTicks Minimal number of ticks wanted
+# @param[in] maxTicks Maximal number of ticks wanted
 # @return $tickInterval, $tickCount, $pMin, $pMax
 #
 
@@ -850,8 +850,8 @@ sub _draw_data
 #  set the gdBrush object to trick GD into drawing fat lines
 #
 #
-# @param $color
-# @param $type
+# @param[in] color Color to be used
+# @param[in] type  Type of line
 # @return status
 sub _prepare_brush
 {

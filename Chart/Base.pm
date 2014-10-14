@@ -6,8 +6,8 @@
 #
 # maintained by the
 # @author Chart Group at Geodetic Fundamental Station Wettzell (Chart@fs.wettzell.de)
-# @date 2014-06-18
-# @version 2.4.7
+# @date 2014-10-14
+# @version 2.4.8
 
 ## @mainpage Chart::Base
 #
@@ -31,7 +31,7 @@ use FileHandle;
 use Chart::Constants;
 use GD::Image;
 
-$Chart::Base::VERSION = '2.4.7';
+$Chart::Base::VERSION = '2.4.8';
 
 use vars qw(%named_colors);
 use strict;
@@ -68,7 +68,7 @@ sub new
 #  The options are saved locally to be able to output them
 #  via @see getopts()
 #
-# @param[in] %opts Hash of options to the Chart
+# @param[in] opts Hash of options to the Chart
 # @return ok or croak
 #
 sub set
@@ -155,9 +155,9 @@ sub getopts
 # Graph API\n
 # Add one dataset (as a list) to the dataref
 #
-# @param @data Dataset to add
+# @param data Dataset to add
 
-## @method add_pt(\@data)
+## @method add_pt(\\\@data)
 # Graph API\n
 # Add one dataset (as a reference to a list) to the dataref
 # via
@@ -168,7 +168,7 @@ sub getopts
 # }
 # </pre>
 #
-# @param \@data Dataset to add
+# @param data Dataset to add
 #
 sub add_pt
 {
@@ -214,14 +214,14 @@ sub add_pt
 # Add many datasets (implemented as a list)
 # to the dataref,
 #
-# @param @data Dataset (list) to add
+# @param data Dataset (list) to add
 
-## @method int add_dataset(\@data)
+## @method int add_dataset(\\\@data)
 #  Graph API\n
 # Add many datasets (implemented as a references to alist)
 # to the dataref,
 #
-# @param \@data Dataset (reference to a list) to add
+# @param data Dataset (reference to a list) to add
 sub add_dataset
 {
     my $self = shift;
@@ -265,8 +265,8 @@ sub add_dataset
 # @see add_pt
 # @see add_dataset
 #
-# @param[in] $filename Name of file which contents is to be added
-# @param[in] $format 'pt' or 'set' to distiguish between function add_pt() in case of 'pt'
+# @param[in] filename Name of file which contents is to be added
+# @param[in] format 'pt' or 'set' to distiguish between function add_pt() in case of 'pt'
 #                 or function add_dataset() in case of 'set'
 sub add_datafile
 {
@@ -364,8 +364,8 @@ sub get_data
 # @see _copy_data
 # @see _check_data
 # @see _draw
-# @param[in] $file Name of file to write graph to
-# @param[in] $dataref Reference to external data space
+# @param[in] file Name of file to write graph to
+# @param[in] dataref Reference to external data space
 # @return Status of the plot
 sub png
 {
@@ -436,7 +436,7 @@ sub png
 # called after the options are set, this method
 # invokes all my private methods to actually
 # draw the chart and plot the data
-# @param $dataref
+# @param[in] dataref Reference to external data space
 # @return Status of the plot
 sub cgi_png
 {
@@ -481,7 +481,7 @@ sub cgi_png
 # invokes all my private methods to actually
 # draw the chart and return the image to the caller
 #
-# @param $dataref
+# @param dataref Reference to data
 # @return returns the png image as a scalar value, so that
 #         the programmer-user can do whatever the heck
 #         s/he wants to with it
@@ -523,8 +523,8 @@ sub scalar_png
 # @see _check_data
 # @see _draw
 #
-# @param[in] $file Name of file to write graph to
-# @param[in] $dataref Reference to external data space
+# @param[in] file Name of file to write graph to
+# @param[in] dataref Reference to external data space
 # @return Status of the plot
 #
 sub jpeg
@@ -595,7 +595,7 @@ sub jpeg
 # called after the options are set, this method
 # invokes all my private methods to actually
 # draw the chart and plot the data
-# @param $dataref
+# @param[in] dataref Reference to external data space
 # @return Status of the plot
 sub cgi_jpeg
 {
@@ -640,7 +640,7 @@ sub cgi_jpeg
 # invokes all my private methods to actually
 # draw the chart and return the image to the caller
 #
-# @param $dataref
+# @param dataref Reference to data area
 # @return returns the jpeg image as a scalar value, so that
 #         the programmer-user can do whatever the heck
 #         s/he wants to with it
@@ -674,7 +674,7 @@ sub scalar_jpeg
 # called after the options are set, this method
 # invokes all my private methods to actually
 # draw the chart and plot the data
-# @param $dataref
+# @param dataref Reference to data 
 # @return Status of the plot
 sub make_gd
 {
@@ -728,9 +728,9 @@ sub imagemap_dump
     return $ref;
 }
 
-## @method minimum(@array)
+## @method minimum (@array)
 # determine minimum of an array of values
-# @param @array List of numerical values
+# @param array List of numerical values (\@array)
 # @return Minimal value of list of values
 sub minimum
 {
@@ -748,7 +748,7 @@ sub minimum
 
 ## @method maximum(@array)
 # determine maximum of an array of values
-# @param @array List of numerical values
+# @param array List of numerical values (@array)
 # @return Maximal value of list of values
 sub maximum
 {
@@ -766,7 +766,7 @@ sub maximum
 
 ## @method arccos($a)
 # Function arccos(a)
-# @param $a Value
+# @param a Value
 # @return arccos(a)
 sub arccos
 {
@@ -778,7 +778,7 @@ sub arccos
 
 ## @method arcsin($a)
 # Function arcsin(a)
-# @param $a Value
+# @param  a Value
 # @return arcsin(a)
 sub arcsin
 {
@@ -788,9 +788,9 @@ sub arcsin
     return ( atan2( $a, sqrt( 1 - $a * $a ) ) );
 }
 
-## @method true($b)
+## @method true($arg)
 # determine true value of argument
-# @param[in] $b Bool value to check for true
+# @param[in] arg Bool value to check for true
 # @return 1 if argument is equal to TRUE, true, 1, t, T, and defined
 sub true
 {
@@ -814,9 +814,9 @@ sub true
     return 0;
 }
 
-## @method false($b)
+## @method false($arg)
 # determine false value of argument
-# @param[in] $b Bool value to check for true
+# @param[in] arg Bool value to check for true
 # @return 1 if argument is equal to false, FALSE, 0, f, F or undefined
 sub false
 {
@@ -841,32 +841,32 @@ sub false
     return 0;
 }
 
-
 ## @method modulo($a,$b)
-# Calculate float($a % $b) as the internal operator '%' 
+# Calculate float($a % $b) as the internal operator '%'
 # does only calculate in integers
-# @param[in] $a
-# @param[in] 
+# @param[in] a a in a%b
+# @param[in] b b in a%b
 # @return $a % $b in float
 sub modulo
 {
     my $pkg = shift;
     my $a   = shift;
     my $b   = shift;
-    
+
     my $erg = 0.0;
-    
-    if ( !defined($a)  || !defined($b) || $b == 0 )
+
+    if ( !defined($a) || !defined($b) || $b == 0 )
     {
-		die "Modulo needs valid parameters!"
-        #return $erg;
+        die "Modulo needs valid parameters!"
+
+          #return $erg;
     }
 
-	my $div = $a / $b;
-	
-	$erg = $a - int ( $div) * $b;
-	
-	return $erg;
+    my $div = $a / $b;
+
+    $erg = $a - int($div) * $b;
+
+    return $erg;
 }
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>#
@@ -875,8 +875,8 @@ sub modulo
 
 ## @fn private int _init($x,$y)
 # Initialize all default options here
-# @param[in] $x   Width of the final image in pixels (Default: 400)
-# @param[in] $y   Height of the final image in pixels (Default: 300)
+# @param[in] x   Width of the final image in pixels (Default: 400)
+# @param[in] y   Height of the final image in pixels (Default: 300)
 #
 sub _init
 {
@@ -1163,7 +1163,7 @@ sub _init
 #
 # Remember the external reference.\n
 # Therefore, this function can anly be called once!
-# @param $extern_ref  Reference to external data space
+# @param extern_ref  Reference to external data space
 sub _copy_data
 {
     my $self       = shift;
@@ -1762,7 +1762,7 @@ sub _set_colors
 # @li false: If your subroutine has been called in scalar context
 # @li undef: If your subroutine has been called in void context
 #
-# @return a (list of) color index(es) corresponding to the (list of) role(s) in \@_.
+# @return a (list of) color index(es) corresponding to the (list of) role(s) in \\\@_.
 #
 sub _color_role_to_index
 {
@@ -1806,9 +1806,9 @@ sub _color_role_to_index
 
 ## @fn private array _color_spec_to_rgb($role,$spec)
 # Return an array (list of) rgb values for spec
-# @param[in] $role name of a role
-# @param[in] $spec [r,g,b] or name
-# @return array of rgb values as a list (i.e., \@rgb)
+# @param[in] role name of a role
+# @param[in] spec [r,g,b] or name
+# @return array of rgb values as a list (i.e., \\\@rgb)
 #
 sub _color_spec_to_rgb
 {
@@ -1840,8 +1840,8 @@ sub _color_spec_to_rgb
 ## @fn private int _brushStyles_of_roles
 # return a (list of) brushStyles corresponding to the (list of) role(s)
 #
-# @param \@list_of_roles List of roles
-# @return (list of) brushStyle(s) corresponding to the (list of) role(s) in \@_.
+# @param list_of_roles List of roles (\\\@list_of_roles)
+# @return (list of) brushStyle(s) corresponding to the (list of) role(s) in \\\@_.
 #
 sub _brushStyles_of_roles
 {
@@ -2440,12 +2440,12 @@ sub _find_y_scale
 # and compare the number of ticks to
 # the user's given values min_y_ticks, max_y_ticks.
 #
-# @param[in] $dataset_min Minimal value in y direction
-# @param[in] $dataset_max Maximal value in y direction
-# @param[in] $flag_fixed_min Indicator whether the dataset_min value is fixed
-# @param[in] $flag_fixed_max Indicator whether the dataset_max value is fixed
-# @param[in] $minTicks Minimal number of ticks wanted
-# @param[in] $maxTicks Maximal number of ticks wanted
+# @param[in] dataset_min Minimal value in y direction
+# @param[in] dataset_max Maximal value in y direction
+# @param[in] flag_fixed_min Indicator whether the dataset_min value is fixed
+# @param[in] flag_fixed_max Indicator whether the dataset_max value is fixed
+# @param[in] minTicks Minimal number of ticks wanted
+# @param[in] maxTicks Maximal number of ticks wanted
 # @return Array of ($tickInterval, $tickCount, $pMin, $pMax)
 #
 sub _calcTickInterval
@@ -2537,12 +2537,12 @@ sub _calcTickInterval
 # and compare the number of ticks to
 # the user's given values minTicks, maxTicks.
 #
-# @param[in] $min Minimal value of dataset in x direction
-# @param[in] $max Maximal value of dataset in x direction
-# @param[in] $minF Inddicator if those min value is fixed
-# @param[in] $maxF Inddicator if those max value is fixed
-# @param[in] $minTicks Minimal number of tick in x direction
-# @param[in] $maxTicks Maximal number of tick in x direction
+# @param[in] min Minimal value of dataset in x direction
+# @param[in] max Maximal value of dataset in x direction
+# @param[in] minF Inddicator if those min value is fixed
+# @param[in] maxF Inddicator if those max value is fixed
+# @param[in] minTicks Minimal number of tick in x direction
+# @param[in] maxTicks Maximal number of tick in x direction
 # @return $tickInterval, $tickCount, $pMin, $pMax
 sub _calcXTickInterval
 {
@@ -2627,9 +2627,9 @@ sub _calcXTickInterval
 # @brief
 # Works out how many ticks would be displayed at that interval
 #
-# @param $min Minimal value
-# @param $max Maximal value
-# @param $interval value
+# @param min Minimal value
+# @param max Maximal value
+# @param interval value
 # @return ($tickCount, $minR, $maxR)
 #
 # @details
@@ -2658,9 +2658,9 @@ sub _countTicks
 # $roundUP can be +1 or -1 to indicate if rounding should be up or down.\n
 # written by David Pottage of Tao Group.
 #
-# @param $input
-# @param $interval
-# @param $roundUP
+# @param input
+# @param interval
+# @param roundUP
 # @return retN*interval
 sub _round2Tick
 {
@@ -2686,7 +2686,7 @@ sub _round2Tick
 # @details
 # written by David Pottage of Tao Group.
 #
-# @param $num Floating point number
+# @param num Floating point number
 # @return ( exponent, mantissa)
 sub _sepFP
 {
@@ -4370,9 +4370,9 @@ sub _draw_y2_grid_lines
 #  Needed by "Lines", "Points" and "LinesPoints"
 #  All hacked up by Richard Dice <rdice@pobox.com> Sunday 16 May 1999
 #
-# @param $color
-# @param $type    'line','point'
-# @param $role
+# @param color
+# @param type    'line','point'
+# @param role
 #
 # @return status
 sub _prepare_brush
